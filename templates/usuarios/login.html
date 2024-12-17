@@ -17,6 +17,25 @@
                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
          </div>
          {% endfor %}
+         {% if form.errors %}
+            <div class="alert alert-danger alert-dismissible fade show position-fixed top-0" style="max-width: 600px; margin-top: 10px;" role="alert">
+               {% for field in form %}
+                  {% if field.errors %}
+                     <strong>{{ field.label }}:</strong>
+                     {% for error in field.errors %}
+                        {{ error }}<br>
+                     {% endfor %}
+                  {% endif %}
+            {% endfor %}
+            
+            {% if form.non_field_errors %}
+                  {% for error in form.non_field_errors %}
+                     {{ error }}
+                  {% endfor %}
+            {% endif %}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+         </div>
+         {% endif %}
          <div class="card shadow-lg p-4" style="width: 100%; max-width: 400px;">
             <h3 class="text-center mb-4">Entrar</h3>
             <form action="{% url 'login' %}" method="POST">

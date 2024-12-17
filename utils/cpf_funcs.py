@@ -40,3 +40,12 @@ def cpf_generate():
     #  Retorna o CPF como string
     result = ''.join(map(str, cpf))
     return result
+
+
+
+def main():
+    print(cpf_generate())
+
+
+
+if __name__ == '__main__': main()

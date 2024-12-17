@@ -26,3 +26,5 @@ class Solicitacao(models.Model):
    obs = models.CharField(max_length=255, blank=False, null=False)
    data_cadastro = datetime.now()   
    status = models.CharField(max_length=100, choices=CHOICES_STATUS, default="")
+
+

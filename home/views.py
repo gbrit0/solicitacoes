@@ -39,4 +39,4 @@ def lista_solicitacoes(request):
    return render(request, 'home/index.html', context)
 
 def home(request):
-   return render(request, 'usuarios/login.html')
+   return render(request, 'home/index.html')

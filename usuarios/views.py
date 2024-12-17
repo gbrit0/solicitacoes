@@ -3,6 +3,7 @@ from usuarios.forms import LoginForms, CadastroForms
 from django.contrib import auth, messages
 from django.contrib.auth import get_user_model  
 from home.urls import lista_solicitacoes
+import re
 
 User = get_user_model()
 
@@ -17,6 +18,8 @@ def login(request):
       if form.is_valid():
          cpf = form['cpf'].value()
          senha = form['senha'].value()
+
+         cpf = re.sub(r'\D', '', cpf)
 
       usuario = auth.authenticate(
          request,
