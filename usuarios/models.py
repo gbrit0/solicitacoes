@@ -3,6 +3,8 @@ from django.db import models
 from django.core.validators import RegexValidator
 from django.utils.translation import gettext_lazy as _
 from utils.cpf_funcs import cpf_validate
+from django.utils import timezone
+import re
 
 class CustomUserManager(BaseUserManager):
     def create_user(self, cpf, email, password=None, **extra_fields):
@@ -39,6 +41,8 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
    nome = models.CharField(max_length=255)
    is_active = models.BooleanField(default=True)
    is_staff = models.BooleanField(default=False)
+
+   date_joined = models.DateTimeField(default=timezone.now)
    
    objects = CustomUserManager()
 
@@ -47,3 +51,8 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
    def __str__(self):
       return f"{self.nome} ({self.cpf})"
+   
+   def save(self, *args, **kwargs):
+        # Remove caracteres não numéricos antes de salvar
+        self.cpf = re.sub(r'\D', '', self.cpf)
+        super().save(*args, **kwargs)

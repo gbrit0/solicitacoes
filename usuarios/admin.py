@@ -5,6 +5,7 @@ from .models import CustomUser
 class CustomUserAdmin(UserAdmin):
     # Campos que serão exibidos no admin
     list_display = ('cpf', 'email', 'nome', 'is_staff', 'is_active')
+    list_display_links = ('cpf', 'email', 'nome', 'is_staff', 'is_active')
     search_fields = ('cpf', 'email', 'nome')
     ordering = ('nome',)
 

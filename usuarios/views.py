@@ -1,7 +1,8 @@
 from django.shortcuts import render, redirect
 from usuarios.forms import LoginForms, CadastroForms
 from django.contrib import auth, messages
-from django.contrib.auth import get_user_model  # Correto
+from django.contrib.auth import get_user_model  
+from home.urls import lista_solicitacoes
 
 User = get_user_model()
 
@@ -66,28 +67,31 @@ def cadastro(request):
         form = CadastroForms(request.POST)
         if form.is_valid():
             # Acesse os dados validados usando cleaned_data
-            cpf = form.cleaned_data['CPF']
-            nome = form.cleaned_data['Nome']
-            email = form.cleaned_data['Email']
-            senha = form.cleaned_data['password1']  # Password fields são password1 e password2
+            cpf = form.cleaned_data['cpf']
+            nome = form.cleaned_data['nome']
+            email = form.cleaned_data['email']
+            senha = form.cleaned_data['password1']
 
             # Verifique se o CPF já existe
-            if User.objects.filter(username=cpf).exists():
-                messages.error(request, "CPF já cadastrado.")
-                return redirect('cadastro')
+            if User.objects.filter(cpf=cpf).exists():
+               messages.error(request, "CPF já cadastrado.")
+               return redirect('cadastro')
 
             # Crie o usuário
             usuario = User.objects.create_user(
-                username=cpf,  # Use CPF como username
-                email=email,
-                password=senha,
-                first_name=nome  # Salve o nome no first_name
+               cpf=cpf,  # Use CPF como username
+               email=email,
+               password=senha,
+               nome=nome  # Salve o nome no first_name
             )
             usuario.save()
-            messages.success(request, "Usuário cadastrado com sucesso!")
-            return redirect('login')  # Redirecione para a página de login ou outra página desejada
+            messages.success(request, "Usuário cadastrado com sucesso!",)
+            return redirect('lista_solicitacoes')  
 
     else:
-        form = CadastroForms()
+      form = CadastroForms()
+      print("Erros de formulário:")
+      for field, errors in form.errors.items():
+            print(f"{field}: {errors}")
     
     return render(request, 'usuarios/cadastro.html', {"form": form})
