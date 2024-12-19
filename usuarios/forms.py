@@ -3,7 +3,8 @@ from utils.cpf_funcs import cpf_validate
 from django.contrib.auth.forms import UserCreationForm
 from .models import CustomUser
 from django.forms import ValidationError
-
+import mysql.connector
+import os
 
 class LoginForms(forms.Form):
    cpf = forms.CharField(
@@ -36,7 +37,7 @@ class LoginForms(forms.Form):
 
 class CadastroForms(UserCreationForm):
    class Meta:
-      model = CustomUser  # Ou seu CustomUser, se tiver um
+      model = CustomUser
       fields = ['nome', 'email', 'cpf']
       
       widgets = {
@@ -57,3 +58,68 @@ class CadastroForms(UserCreationForm):
    )
 
 
+class SolicitacaoForms(UserCreationForm):
+   c1_filial = forms.CharField(
+      label="Filial do Sistema",
+      max_length=4,
+      required=False,
+      default="0101        ",
+      choices=[],
+      widget=forms.PasswordInput(
+         attrs={
+            "class": "form-control",
+            "placeholder": "Digite sua senha novamente"
+         }
+      )
+   )
+   # c1_num                # O app deve buscar no campo e preencher automaticamente
+
+   # c1_item               # O app deve criar automaticamente numeros sequenciais 4 dígitos
+
+   b1_desc = forms.ChoiceField(
+      label="Produto",
+      required=True,
+      choices=[],
+      widget=forms.PasswordInput(
+         attrs={
+            "class": "form-control",
+            "placeholder": "Digite sua senha novamente"
+         }
+      ),
+      default=""
+   )
+
+
+
+
+
+   def __init__(self, *args, **kwargs):
+      super().__init__(*args, **kwargs)
+      pool = mysql.connector.pooling.MySQLConnectionPool(
+         pool_name="MySqlPool",
+         pool_size=10,
+         user=os.environ['USER'],
+         password=os.environ['PASSWORD'],
+         host=os.environ['HOST'],
+         database=os.environ['DATABASE']
+      )
+      with pool.get_connection() as conexaoComBanco:
+         with conexaoComBanco.cursor() as cursor:
+
+            cursor.execute("""SELECT 
+                                 M0_CODFIL AS cod_filial, 
+                                 M0_FILIAL AS filial 
+                              FROM SYS_COMPANY 
+                              WHERE D_E_L_E_T_ = '' 
+                              AND M0_NOME = 'BRG Geradores';""")
+            filiais = cursor.fetchall()
+
+            cursor.execute("""SELECT TOP 100
+                                 B1_COD AS cod_produto,
+                                 B1_DESC AS produto
+                              FROM SB1010
+                              WHERE B1_FILIAL = '01'""")
+            produtos = cursor.fetchall()
+
+      self.fields['c1_filial'].choices = filiais
+      self.fields['b1_desc'].choices = produtos

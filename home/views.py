@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from .models import Solicitacao
-from .forms import FiltroSolicitacaoForm
+from .forms import FiltroSolicitacaoForm, SolicitacaoForms
 
 def lista_solicitacoes(request):
    # Cria o formulário com os dados GET
@@ -40,3 +40,12 @@ def lista_solicitacoes(request):
 
 def home(request):
    return render(request, 'home/index.html')
+
+
+def solicitacao(request):
+   form = SolicitacaoForms(request.GET or None)
+   
+   context = {
+      'form': form,
+   }
+   return render(request, 'home/solicitacao.html', context)
