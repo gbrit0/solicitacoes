@@ -1,10 +1,14 @@
 # forms.py
 from django import forms
+from django.shortcuts import render, redirect
 from django.contrib.auth import get_user_model  # Correto
+from django.forms import formset_factory
+from django.views.generic import CreateView
+from .models import Solicitacao
+import pyodbc
+import os
 
 User = get_user_model()
-
-from .models import Solicitacao
 
 class FiltroSolicitacaoForm(forms.Form):
     data_inicio = forms.DateField(
@@ -29,44 +33,8 @@ class FiltroSolicitacaoForm(forms.Form):
         label='Usuário'
     )
 
+class SolicitacaoForm(forms.ModelForm):
+    pass
 
-class SolicitacaoForms(forms.Form):
-    tipo = forms.CharField(
-        max_length=255,
-        required=True,
-        label='Tipo de Solicitação',
-        widget=forms.DateInput(attrs={
-            'class': 'row form-control gt-3'
-        })
-    )
-    produto = forms.CharField(
-        max_length=255,
-        required=True,
-        label='Produto',
-        widget=forms.DateInput(attrs={
-            'class': 'row form-control gt-3'
-        })
-    )
-    quantidade = forms.FloatField(
-        label="Quantidade",
-        required=True,
-        widget=forms.DateInput(attrs={
-            'class': 'row form-control gt-3'
-        })
-    )
-    data_de_necessidade = forms.DateField(
-        required=True,
-        label="Data de Necessidade",
-        widget=forms.DateInput(attrs={
-            'type': 'date',
-            'class': 'row form-control gt-3'
-        })
-    )
-    obs = forms.CharField(
-        max_length=255,
-        label="Observação (opcional)",
-        widget=forms.DateInput(attrs={
-            'class': 'row form-control gt-3'
-        })
-    )
-    
+class CadastrarSolicitacaoForm(forms.ModelForm):
+    pass

@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+    <form method="POST">
+        {% csrf_token %}
+        
+        <h2>Dados da Solicitação</h2>
+        {{ solicitacao_form.as_p }}
+        
+        <h2>Produtos</h2>
+        {{ formset.management_form }}
+        
+        <div id="produtos-formset">
+            {% for form in formset %}
+                <div class="produto-form">
+                    {{ form.as_p }}
+                </div>
+            {% endfor %}
+        </div>
+        
+        <button type="button" id="adicionar-produto">Adicionar Produto</button>
+        <button type="submit">Salvar Solicitação</button>
+    </form>
+
+    <script>
+        document.getElementById('adicionar-produto').addEventListener('click', function() {
+            const formset = document.getElementById('produtos-formset');
+            const forms = formset.getElementsByClassName('produto-form');
+            const formNum = forms.length;
+            const totalForms = document.getElementById('id_produto_set-TOTAL_FORMS');
+            
+            // Clone o último form
+            const newForm = forms[0].cloneNode(true);
+            
+            // Atualiza os IDs e names dos campos
+            newForm.querySelectorAll('input, select').forEach(input => {
+                input.value = '';
+                input.id = input.id.replace('-0-', `-${formNum}-`);
+                input.name = input.name.replace('-0-', `-${formNum}-`);
+            });
+            
+            // Adiciona o novo form ao formset
+            formset.appendChild(newForm);
+            
+            // Atualiza o contador total de forms
+            totalForms.value = formNum + 1;
+        });
+    </script>
+
+{% endblock %}

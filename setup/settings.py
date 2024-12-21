@@ -16,12 +16,13 @@ from dotenv import load_dotenv
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-load_dotenv()
+load_dotenv(override=True)
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.getenv('SECRET_KEY')
+
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -39,7 +40,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'home.apps.HomeConfig',
-    'usuarios.apps.UsuariosConfig'
+    'usuarios.apps.UsuariosConfig',
+    'solicitacoes.apps.SolicitacoesConfig'
 ]
 
 MIDDLEWARE = [
@@ -101,9 +103,21 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
+    },
+    'protheus':{
+       'ENGINE': 'mssql',
+       'NAME': os.getenv("DATABASE"),
+       'USER': os.getenv("USER"),
+       'PASSWORD': os.getenv("PASSWORD"),
+       'HOST': os.getenv("HOST"),
+       'PORT': '1433',
+       'OPTIONS': {
+          'driver': 'ODBC Driver 17 for SQL Server'
+       }
     }
 }
 
+DATABASE_ROUTERS = ['home.routers.ProtheusRouter']
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators

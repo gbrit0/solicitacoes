@@ -1,6 +1,11 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
+from home.forms import FiltroSolicitacaoForm
+from django.shortcuts import render, redirect
+from django.views.generic import CreateView
+from .forms import SolicitacaoForm, CadastrarSolicitacaoForm
 from .models import Solicitacao
-from .forms import FiltroSolicitacaoForm, SolicitacaoForms
+
+
 
 def lista_solicitacoes(request):
    # Cria o formulário com os dados GET
@@ -42,10 +47,5 @@ def home(request):
    return render(request, 'home/index.html')
 
 
-def solicitacao(request):
-   form = SolicitacaoForms(request.GET or None)
-   
-   context = {
-      'form': form,
-   }
-   return render(request, 'home/solicitacao.html', context)
+def cadastrar_solicitacao(request):
+   form = CadastrarSolicitacaoForm(request.GET or None) 
