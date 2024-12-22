@@ -50,10 +50,10 @@ class SolicitacaoForm(forms.ModelForm):
 class ProdutosForm(forms.ModelForm):
     class Meta:
         model = Produto
-        fields = ['c1_descri', 'c1_quant']
+        fields = ['c1_produto', 'c1_quant']
 
 
-    c1_descri = forms.ChoiceField(
+    c1_produto = forms.ChoiceField(
         required=True,
         label="Produto",
         choices=[],
@@ -93,12 +93,12 @@ class ProdutosForm(forms.ModelForm):
         with pyodbc.connect(connectionString) as conexao:
             with conexao.cursor() as cursor:
                 cursor.execute("""SELECT 
-                                     TRIM(B1_COD) + TRIM(B1_UM) + TRIM(B1_LOCPAD) AS cod_produto,
-                                     B1_DESC as produto
+                                     TRIM(B1_COD) AS cod_produto,
+                                     TRIM(B1_DESC) as produto
                                   FROM SB1010
                                   WHERE D_E_L_E_T_ <> '*'
                                   AND B1_MSBLQL = '2'
                                   AND B1_FILIAL = '01'""")
                 
                 produtos = cursor.fetchall()
-                self.fields['c1_descri'].choices = [(p[0], p[1]) for p in produtos]
+                self.fields['c1_produto'].choices = [(p[0], p[1]) for p in produtos]

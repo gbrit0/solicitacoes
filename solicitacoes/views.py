@@ -67,7 +67,7 @@ def criar_solicitacao(request):
         Solicitacao,
         Produto,
         form=ProdutosForm,
-        fields=('c1_descri', 'c1_quant'),
+        fields=('c1_produto', 'c1_quant'),
         extra=1,
         can_delete=True
     )
@@ -107,23 +107,45 @@ def criar_solicitacao(request):
             
             solicitacao.save()
             
-            print(f" solicitacao.c1_filial: {solicitacao.c1_filial}")
-            print(f" solicitacao.c1_user: {solicitacao.c1_user}")
-            print(f" solicitacao.c1_emissao: {solicitacao.c1_emissao}")
-            print(f" solicitacao.user: {solicitacao.user}")
 
+            print(f"solicitacao.c1_filial: {solicitacao.c1_filial}")
+            print(f"solicitacao.c1_num: {solicitacao.c1_num}")
+            print(f"solicitacao.c1_cc: {solicitacao.c1_cc}")
+            print(f"solicitacao.c1_datprf: {solicitacao.c1_datprf}")
+            print(f"solicitacao.c1_user: {solicitacao.c1_user}")
+            print(f"solicitacao.c1_emissao: {solicitacao.c1_emissao}")
+            print(f"solicitacao.r_e_c_n_o: {solicitacao.r_e_c_n_o}")
+            print(f"solicitacao.user: {solicitacao.user}")
 
             # Agora trata o formset dos produtos
             formset = ProductFormset(request.POST, instance=solicitacao)
             
             if formset.is_valid():
-                instances = formset.save(commit=False)
+               instances = formset.save(commit=False)
+               connectionString = f"DRIVER={{ODBC Driver 18 for SQL Server}};SERVER={os.environ['HOST']};DATABASE={os.environ['DATABASE']};UID={os.environ['USER']};PWD={os.environ['PASSWORD']};TrustServerCertificate=yes"
+
+               with pyodbc.connect(connectionString) as conexao:
+                  with conexao.cursor() as cursor:
+                     for num, instance in enumerate(instances, start=1):
+                        instance.c1_item = f"{num:04d}"
+                        cursor.execute(f"select MAX(B1_DESC) from SB1010 WHERE B1_COD = '{instance.c1_produto}' AND D_E_L_E_T_ <> '*' AND B1_MSBLQL = '2' AND B1_FILIAL = '01'")
+                        instance.c1_descri = cursor.fetchall()[0][0]
+                        cursor.execute(f"select MAX(B1_UM) from SB1010 WHERE B1_COD = '{instance.c1_produto}' AND D_E_L_E_T_ <> '*' AND B1_MSBLQL = '2' AND B1_FILIAL = '01'")
+                        instance.c1_um =  cursor.fetchall()[0][0]
+                        cursor.execute(f"select MAX(B1_LOCPAD) from SB1010 WHERE B1_COD = '{instance.c1_produto}' AND D_E_L_E_T_ <> '*' AND B1_MSBLQL = '2' AND B1_FILIAL = '01'")
+                        instance.c1_local =  cursor.fetchall()[0][0]
+                        instance.save()
+
+                        print(f"instance.c1_num: {instance.c1_num}")
+                        print(f"instance.c1_item: {instance.c1_item}")
+                        print(f"instance.c1_produto: {instance.c1_produto}")
+                        print(f"instance.c1_descri: {instance.c1_descri}")
+                        print(f"instance.c1_um: {instance.c1_um}")
+                        print(f"instance.c1_local: {instance.c1_local}")
+                        print(f"instance.c1_quant: {instance.c1_quant}")
+
                 
-                for num, instance in enumerate(instances, start=1):
-                    instance.c1_item = f"{num:04d}"
-                    instance.save()
-                
-                return redirect('lista_solicitacoes')
+               return redirect('lista_solicitacoes')
     else:
         solicitacao_form = SolicitacaoForm()
         formset = ProductFormset()
