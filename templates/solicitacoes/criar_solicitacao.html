@@ -6,7 +6,20 @@
         {% csrf_token %}
         
         <h2>Dados da Solicitação</h2>
-        {{ solicitacao_form.as_p }}
+        <div class="mb-3">
+            <label for="{{ solicitacao_form.c1_cc.id_for_label }}" class="form-label">
+                {{ solicitacao_form.c1_cc.label }}
+            </label>
+            {{ solicitacao_form.c1_cc }}
+        </div>
+
+        <div class="mb-3">
+            <label for="{{ solicitacao_form.c1_datprf.id_for_label }}" class="form-label">
+                {{ solicitacao_form.c1_datprf.label }}
+            </label>
+            {{ solicitacao_form.c1_datprf }}
+        </div>
+
         
         <h2>Produtos</h2>
         {{ formset.management_form }}

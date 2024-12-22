@@ -1,6 +1,7 @@
 from django.db import models
 from django.utils import timezone
 from django.contrib.auth import get_user_model 
+import pyodbc, os
 
 User = get_user_model()
 
@@ -16,6 +17,22 @@ class Solicitacao(models.Model):
 
    def __str__(self):
       return self.c1_num
+   
+   def save(self, *args, **kwargs):
+      
+      connectionString = f"DRIVER={{ODBC Driver 18 for SQL Server}};SERVER={os.environ['HOST']};DATABASE={os.environ['DATABASE']};UID={os.environ['USER']};PWD={os.environ['PASSWORD']};TrustServerCertificate=yes"   
+      with pyodbc.connect(connectionString) as conexao:
+         with conexao.cursor() as cursor:
+            cursor.execute("""SELECT MAX(R_E_C_N_O_) + 1
+                              FROM SC1010
+                           """)
+            recno = cursor.fetchall()
+            # print(f"RECNOOOOOOOOOOOOOOOOOO    {recno[0][0]}")
+            self.r_e_c_n_o = recno[0][0]
+
+      super()  .save(*args, **kwargs)
+
+
 
 class Produto(models.Model):
    c1_num = models.ForeignKey(Solicitacao, to_field='c1_num', default='', on_delete=models.DO_NOTHING)

@@ -3,7 +3,7 @@ from home.forms import FiltroSolicitacaoForm
 from django.shortcuts import render, redirect
 from django.views.generic import CreateView
 from .forms import SolicitacaoForm, CadastrarSolicitacaoForm
-from .models import Solicitacao
+from solicitacoes.models import Solicitacao
 
 
 
@@ -12,7 +12,7 @@ def lista_solicitacoes(request):
    form = FiltroSolicitacaoForm(request.GET or None)
    
    # Consulta base de solicitacoes
-   solicitacoes = Solicitacao.objects.all().order_by('-id')
+   solicitacoes = Solicitacao.objects.all().order_by('-c1_datprf')
    
     # Verifica se o formulário é válido
    if form.is_valid():
@@ -30,10 +30,10 @@ def lista_solicitacoes(request):
 
       # Filtro de usuário
       if usuario:
-         solicitacoes = solicitacoes.filter(solicitante=usuario)
+         solicitacoes = solicitacoes.filter(user=usuario)
 
    else:
-      solicitacoes = Solicitacao.objects.all().order_by('-id')
+      solicitacoes = Solicitacao.objects.all().order_by('-c1_datprf')
    
    # Contexto para o template
    context = {

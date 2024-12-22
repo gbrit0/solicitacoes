@@ -4,7 +4,6 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import get_user_model  # Correto
 from django.forms import formset_factory
 from django.views.generic import CreateView
-from .models import Solicitacao
 import pyodbc
 import os
 

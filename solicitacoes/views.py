@@ -1,9 +1,11 @@
 from django.shortcuts import render, redirect
 from django.forms import ModelForm
-from .models import Produto, Solicitacao
+from solicitacoes.models import Produto, Solicitacao
 from django.forms import inlineformset_factory
 from django.utils import timezone
 import pyodbc, os
+from solicitacoes.forms import ProdutosForm, SolicitacaoForm
+
 
 def index(request, id_solicitacao):
    solicitacao = Solicitacao.objects.get(c1_num=id_solicitacao)
@@ -11,7 +13,7 @@ def index(request, id_solicitacao):
    ProductFormset = inlineformset_factory(
       Solicitacao,
       Produto,
-      fields=('c1_produto', 'c1_descri', 'c1_um', 'c1_local', 'c1_quant')
+      fields=('c1_descri', 'c1_quant')
    )
     
    if request.method == 'POST':
@@ -53,7 +55,7 @@ def index(request, id_solicitacao):
       'solicitacao': solicitacao
    }
    
-   return render(request, 'home/login.html', context)
+   return render(request, 'lista_solicitacoes', context)
 
 class SolicitacaoForm(ModelForm):
     class Meta:
@@ -64,7 +66,8 @@ def criar_solicitacao(request):
     ProductFormset = inlineformset_factory(
         Solicitacao,
         Produto,
-        fields=('c1_produto', 'c1_descri', 'c1_um', 'c1_local', 'c1_quant'),
+        form=ProdutosForm,
+        fields=('c1_descri', 'c1_quant'),
         extra=1,
         can_delete=True
     )
@@ -94,15 +97,22 @@ def criar_solicitacao(request):
                                  """)
                   ultimo_num = cursor.fetchall()
             if ultimo_num:
-               proximo_num = str(int(ultimo_num.c1_num) + 1).zfill(6)
+               proximo_num = str(int(ultimo_num[0][0]) + 1).zfill(6)
             else:
                proximo_num = '000001'
             
             
 
             solicitacao.c1_num = proximo_num
+            
             solicitacao.save()
             
+            print(f" solicitacao.c1_filial: {solicitacao.c1_filial}")
+            print(f" solicitacao.c1_user: {solicitacao.c1_user}")
+            print(f" solicitacao.c1_emissao: {solicitacao.c1_emissao}")
+            print(f" solicitacao.user: {solicitacao.user}")
+
+
             # Agora trata o formset dos produtos
             formset = ProductFormset(request.POST, instance=solicitacao)
             
@@ -113,7 +123,7 @@ def criar_solicitacao(request):
                     instance.c1_item = f"{num:04d}"
                     instance.save()
                 
-                return redirect('index', id_solicitacao=solicitacao.c1_num)
+                return redirect('lista_solicitacoes')
     else:
         solicitacao_form = SolicitacaoForm()
         formset = ProductFormset()
