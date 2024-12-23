@@ -4,6 +4,7 @@ from django.contrib import auth, messages
 from django.contrib.auth import get_user_model  
 from home.urls import lista_solicitacoes
 import re
+from django.contrib.auth.decorators import login_required
 
 User = get_user_model()
 
@@ -30,41 +31,17 @@ def login(request):
       if usuario is not None:
          auth.login(request, usuario)
          messages.success(request, f"Login realizado com sucesso!")
-         return redirect('home')
+         prox_pag = request.GET.get('next','lista_solicitacoes')
+         return redirect(prox_pag)
       else:
          messages.error(request, f"Erro ao efetuar login. Tente novamente.")
          return redirect('login')
 
    return render(request, 'usuarios/login.html', {"form": form})
 
-# def cadastro(request):
-#    form = CadastroForms()
 
-#    if request.method == 'POST':
-#       form = CadastroForms(request.POST)
 
-#       if form.is_valid():
-#          nome = form['nome'].value()
-#          email = form['email'].value()
-#          cpf = form['cpf'].value()
-#          senha = form['senha'].value()
-
-#       if User.objects.filter(cpf=cpf).exists():
-#          messages.error(request, f"Cpf já cadastrado.")
-#          return redirect('cadastro')
-      
-#       usuario = User.objects.create_user(
-#          username=nome,
-#          cpf=cpf,
-#          email=email,
-#          password=senha
-#       )
-#       usuario.save()
-#       messages.success(request, f"Usuário cadastrado com sucesso!")
-#       return redirect('usuarios/cadastro.html')
-
-#    return render(request, 'usuarios/cadastro.html', {"form": form})
-
+@login_required(login_url='/login')
 def cadastro(request):
     if request.method == 'POST':
         form = CadastroForms(request.POST)
@@ -98,3 +75,8 @@ def cadastro(request):
             print(f"{field}: {errors}")
     
     return render(request, 'usuarios/cadastro.html', {"form": form})
+
+
+def logout(request):
+   auth.logout(request)
+   return redirect('login')
