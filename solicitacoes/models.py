@@ -9,11 +9,13 @@ class Solicitacao(models.Model):
    c1_filial = '0101' # models.CharField(max_length=4, null=False) 
    c1_num = models.CharField(max_length=6, null=False, default='', primary_key=True) # max(sc1)
    c1_cc = models.CharField(max_length=60, null=False, default='')
-   c1_datprf = models.DateField()
-   c1_user = "000000"
+   c1_datprf = models.DateField(blank=False)
+   c1_solicit = "000000"
    c1_emissao = timezone.now
+   c1_obs = models.CharField(max_length=30, null=False, default="")
    r_e_c_n_o = models.BigIntegerField()
    user = models.ForeignKey(User, to_field='cpf', default='', on_delete=models.DO_NOTHING)
+   tipo = "compra"
 
    def __str__(self):
       return self.c1_num

@@ -6,7 +6,7 @@ from solicitacoes.models import Produto, Solicitacao
 class SolicitacaoForm(forms.ModelForm):
     class Meta:
         model = Solicitacao
-        fields = ['c1_cc', 'c1_datprf']
+        fields = ['c1_cc', 'c1_datprf', 'c1_obs']
 
     c1_cc = forms.ChoiceField(
         required=True,
@@ -22,8 +22,18 @@ class SolicitacaoForm(forms.ModelForm):
         label="Data de Necessidade",
         widget=forms.DateInput(attrs={
             'class': 'form-control',
+            'type':'date',
             'placeholder': 'Data de Necessidade',
         }),
+    )
+
+    c1_obs = forms.CharField(
+        required=True,
+        label="Observação",
+        widget=forms.TextInput(attrs={
+            'class':'form-control',
+            'placeholder':'Observação'
+        })
     )
         
         

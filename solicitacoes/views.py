@@ -57,10 +57,6 @@ def index(request, id_solicitacao):
    
    return render(request, 'lista_solicitacoes', context)
 
-class SolicitacaoForm(ModelForm):
-    class Meta:
-        model = Solicitacao
-        fields = ['c1_cc', 'c1_datprf']  # Apenas campos editáveis
 
 def criar_solicitacao(request):
     ProductFormset = inlineformset_factory(
@@ -142,7 +138,7 @@ def criar_solicitacao(request):
                         print(f"instance.c1_descri: {instance.c1_descri}")
                         print(f"instance.c1_um: {instance.c1_um}")
                         print(f"instance.c1_local: {instance.c1_local}")
-                        print(f"instance.c1_quant: {instance.c1_quant}")
+                        print(f"instance.c1_quant: {instance.c1_quant}\n")
 
                 
                return redirect('lista_solicitacoes')
