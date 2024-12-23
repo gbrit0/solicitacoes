@@ -3,7 +3,7 @@ from usuarios.forms import LoginForms, CadastroForms
 from django.contrib import auth, messages
 from django.contrib.auth import get_user_model  
 from home.urls import lista_solicitacoes
-import re
+import re, time
 from django.contrib.auth.decorators import login_required
 
 User = get_user_model()
@@ -34,7 +34,8 @@ def login(request):
          prox_pag = request.GET.get('next','lista_solicitacoes')
          return redirect(prox_pag)
       else:
-         messages.error(request, f"Erro ao efetuar login. Tente novamente.")
+         messages.error(request, f"É necessário logar para usar o sistema. Redirecionando...")
+         time.sleep(3)
          return redirect('login')
 
    return render(request, 'usuarios/login.html', {"form": form})

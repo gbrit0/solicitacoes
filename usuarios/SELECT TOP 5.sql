@@ -14,8 +14,7 @@ SELECT DISTINCT TOP 5
    , SC1010.R_E_C_N_O_      -- (pk, bigint, não nulo)  
 -- Identificador único de todas as tabelas.
 FROM SC1010
-order by R_E_C_N_O_ DESC
-WHERE C1_NUM = ''
+ORDER BY R_E_C_N_O_ DESC
 
 
 
@@ -24,4 +23,4 @@ INSERT INTO SC1010
    C1_LOCAL, C1_QUANT, C1_EMISSAO, C1_DATPRF, C1_SOLICIT, C1_OBS, R_E_C_N_O_)
 VALUES ('0101', '073367', '0001', 'descr', '01', 'f4565480', '01', '4', '20241223', '20241223', '000000', 'Obs', 117548)
 
-
+DELETE FROM SC1010 WHERE R_E_C_N_O_ = 117548

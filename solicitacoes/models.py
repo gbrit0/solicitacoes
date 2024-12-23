@@ -12,7 +12,7 @@ class Solicitacao(models.Model):
    c1_datprf = models.DateField( blank=False)
    c1_solicit = "000000"
    c1_emissao = models.DateField(blank=False)
-   c1_obs = models.CharField(max_length=30, null=False, default="")
+   c1_obs = models.CharField(max_length=30, default="")
    user = models.ForeignKey(User, to_field='cpf', default='', on_delete=models.DO_NOTHING)
    tipo = "compra"
 
@@ -41,7 +41,7 @@ class Produto(models.Model):
                               FROM SC1010
                            """)
             recno = cursor.fetchall()
-            # print(f"RECNOOOOOOOOOOOOOOOOOO    {recno[0][0]}")
+            
             self.r_e_c_n_o = recno[0][0]
 
       super().save(*args, **kwargs)

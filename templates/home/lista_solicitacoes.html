@@ -71,13 +71,13 @@
             <nav class="d-flex align-items-center">
                 <ul class="nav">
                     <li class="nav-item">
-                        <a class="nav-link text-white" href="#">Opção 1</a>
+                        <a class="nav-link  text-white" href="{% url 'lista_solicitacoes' %}">Lista de Solicitações</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link text-white" href="#">Opção 2</a>
+                        <a class="nav-link text-white" href="{% url 'criar_solicitacao' %}">Nova Solicitação de Compras</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link text-white" href="#">Opção 3</a>
+                        <a class="nav-link text-white" href="{% url 'cadastro' %}">Cadastrar Usuário</a>
                     </li>
                 </ul>
                 <a class="btn btn-outline-light ms-3" href="{% url 'logout' %}">Sair</a>

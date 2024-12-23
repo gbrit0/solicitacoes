@@ -4,9 +4,6 @@ from solicitacoes.models import Produto, Solicitacao
 from django.forms import inlineformset_factory
 from django.utils import timezone
 import pyodbc, os
-import datetime
-
-from django.contrib import auth, messages
 
 from django.contrib.auth.decorators import login_required
 
@@ -109,7 +106,7 @@ def criar_solicitacao(request):
                                           '{solicitacao.c1_solicit}', 
                                           '{solicitacao.c1_obs}', 
                                           '{instance.r_e_c_n_o}')"""
-                     
+                     print(f"\n{produto}\n")
                      cursor.execute(insert)
                      conexao.commit()
                

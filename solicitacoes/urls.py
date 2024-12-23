@@ -1,7 +1,7 @@
 from django.urls import path
-from . import views
+from solicitacoes.views import criar_solicitacao
 
 
 urlpatterns = [
-   path('solicitacao/nova/', views.criar_solicitacao, name='criar_solicitacao'),
+   path('cadastrar_solicitacao', criar_solicitacao, name='criar_solicitacao'),
 ]

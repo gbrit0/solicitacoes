@@ -1,18 +1,19 @@
 from django.shortcuts import render, redirect
 from home.forms import FiltroSolicitacaoForm
 from django.shortcuts import render, redirect
-from django.views.generic import CreateView
+from django.contrib.auth.decorators import login_required
 from .forms import SolicitacaoForm, CadastrarSolicitacaoForm
-from solicitacoes.models import Solicitacao
+from solicitacoes.models import Solicitacao, Produto
 
 
-
+@login_required(login_url='login')
 def lista_solicitacoes(request):
    # Cria o formulário com os dados GET
    form = FiltroSolicitacaoForm(request.GET or None)
    
    # Consulta base de solicitacoes
-   solicitacoes = Solicitacao.objects.all().order_by('-c1_datprf')
+   solicitacoes = Solicitacao.objects.all().prefetch_related('c1_num').order_by('-c1_datprf')
+   produtos = Produto.objects.all().order_by('-c1_num')
    
     # Verifica se o formulário é válido
    if form.is_valid():
@@ -22,11 +23,11 @@ def lista_solicitacoes(request):
       
       # Lógica de filtro
       if data_inicio and data_fim:
-         solicitacoes = solicitacoes.filter(data_cadastro__range=[data_inicio, data_fim])
+         solicitacoes = solicitacoes.filter(c1_emissao__range=[data_inicio, data_fim])
       elif data_inicio:
-         solicitacoes = solicitacoes.filter(data_cadastro__gte=data_inicio)
+         solicitacoes = solicitacoes.filter(c1_emissao__gte=data_inicio)
       elif data_fim:
-         solicitacoes = solicitacoes.filter(data_cadastro__lte=data_fim)
+         solicitacoes = solicitacoes.filter(c1_emissao__lte=data_fim)
 
       # Filtro de usuário
       if usuario:
@@ -38,14 +39,9 @@ def lista_solicitacoes(request):
    # Contexto para o template
    context = {
       'solicitacoes': solicitacoes,
-      'form': form
+      'form': form,
+      'produtos': produtos
    }
    
    return render(request, 'home/index.html', context)
 
-def home(request):
-   return render(request, 'home/index.html')
-
-
-def cadastrar_solicitacao(request):
-   form = CadastrarSolicitacaoForm(request.GET or None) 

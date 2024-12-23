@@ -1,16 +1,75 @@
 {% load static %}
-</div>
-        
-<!-- Corpo da página -->
-<main class="container py-4">
-    <!-- <h1 class="mb-4">Bem-vindo!</h1> -->
-    
-</main>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        $(document).ready(function() {
+        var table = $('#solicitacoesTable').DataTable({
+            language: {
+                url: '//cdn.datatables.net/plug-ins/1.11.5/i18n/pt-BR.json'
+            },
+            dom: 'Bfrtip',
+            buttons: [
+                {
+                    extend: 'csv',
+                    text: '<i class="fas fa-file-csv btn btn-secondary"></i>', //  Exportar CSV 
+                    filename: 'Solicitacoes',
+                    exportOptions: {
+                        columns: ':visible'
+                    }
+                },
+                {
+                    extend: 'excel',
+                    text: '<i class="fas fa-file-excel btn btn-secondary"></i>', //  Exportar Excel
+                    filename: 'Solicitacoes',
+                    exportOptions: {
+                        columns: ':visible'
+                    }
+                },
+                {
+                    extend: 'pdf',
+                    text: '<i class="fas fa-file-pdf btn btn-secondary"></i>', //  Exportar PDF
+                    filename: 'Solicitacoes',
+                    exportOptions: {
+                        columns: ':visible'
+                    }
+                },
+                {
+                    extend: 'print',
+                    text: '<i class="fas fa-print btn btn-secondary"></i>', //  Imprimir
+                    exportOptions: {
+                        columns: ':visible'
+                    }
+                }
+            ],
+            pageLength: 10,
+            lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "Todos"]],
+            order: [[0, 'desc']]
+        });
 
-<script>
-    $(function () {
-        $('select').selectpicker();
-    });
-</script>
+            // Filtro por solicitante
+            $('#solicitanteFilter').on('change', function() {
+                table.column(0).search(this.value).draw();
+            });
+
+            // Filtro por data de necessidade
+            $('#inicioDataFilter').on('change', function() {
+                var formattedDate = this.value.split('-').reverse().join('/');
+                table.column(3).search(formattedDate).draw();
+            });
+            
+            // Filtro por data de necessidade
+            $('#fimDataFilter').on('change', function() {
+                var formattedDate = this.value.split('-').reverse().join('/');
+                table.column(5).search(formattedDate).draw();
+            });
+
+        });
+    </script>
+    <script>
+        $(function () {
+            $('select').selectpicker();
+        });
+    </script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 </body>
-</html>
