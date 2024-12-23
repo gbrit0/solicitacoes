@@ -45,7 +45,6 @@ def criar_solicitacao(request):
          solicitacao.c1_user = '000000'
          solicitacao.c1_emissao = timezone.now()
          solicitacao.user = request.user
-         # print(f"request.user: {request.user}")
          
          connectionString = f"DRIVER={{ODBC Driver 18 for SQL Server}};SERVER={os.environ['HOST']};DATABASE={os.environ['DATABASE']};UID={os.environ['USER']};PWD={os.environ['PASSWORD']};TrustServerCertificate=yes"
 
@@ -106,7 +105,6 @@ def criar_solicitacao(request):
                                           '{solicitacao.c1_solicit}', 
                                           '{solicitacao.c1_obs}', 
                                           '{instance.r_e_c_n_o}')"""
-                     print(f"\n{produto}\n")
                      cursor.execute(insert)
                      conexao.commit()
                

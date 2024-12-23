@@ -1,6 +1,6 @@
 {% load static %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -104,31 +104,33 @@
 
             <table id="solicitacoesTable" class="table table-bordered" data-toggle="table">
                 <thead>
-                <tr>
-                    <th>Id</th>
-                    <th>Tipo de Solicitação</th>
-                    <th>Solicitante</th>
-                    <th>Produto</th>
-                    <th>Quantidade</th>
-                    <th>Data de Necessidade</th>
-                    <th>Observações</th>
-                    <th>Cadastro</th>
-                </tr>
+                    <tr>
+                        <th>Id</th>
+                        <th>Tipo</th>
+                        <th>Solicitante</th>
+                        <th>Produto</th>
+                        <th>Quantidade</th>
+                        <th>Data de Necessidade</th>
+                        <th>Observações</th>
+                        <th>Emissão</th>
+                    </tr>
                 </thead>
                 <tbody>
-                {% for solicitacao in solicitacoes %}
-                <tr>
-                    <td>{{ solicitacao.id }}</td>
-                    <td>{{ solicitacao.tipo }}</td>
-                    <td>{{ solicitacao.solicitante.nome }}</td>
-                    <td>{{ solicitacao.produto }}</td>
-                    <td>{{ solicitacao.quantidade }}</td>
-                    <td>{{ solicitacao.data_de_necessidade|date:"d/m/Y" }}</td>
-                    <td>{{ solicitacao.obs }}</td>
-                    <td>{{ solicitacao.data_cadastro|date:"d/m/Y H:i" }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
+                    {% for dado in dados %}
+                        {% for produto in dado.produtos %}
+                            <tr>
+                                <td>{{ dado.solicitacao.c1_num }}</td>
+                                <td>{{ dado.solicitacao.tipo }}</td>
+                                <td>{{ dado.solicitacao.user.nome }}</td>
+                                <td>{{ produto.c1_descri }}</td>
+                                <td>{{ produto.c1_quant }}</td>
+                                <td>{{ dado.solicitacao.c1_datprf|date:"d/m/Y" }}</td>
+                                <td>{{ dado.solicitacao.c1_obs }}</td>
+                                <td>{{ dado.solicitacao.c1_emissao|date:"d/m/Y" }}</td>
+                            </tr>
+                        {% endfor %}
+                    {% endfor %}
+                </tbody>
             </table>
         </div>
     </main>
