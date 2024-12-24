@@ -1,6 +1,7 @@
 from django import forms
 import pyodbc
 import os
+from django.forms import inlineformset_factory
 from solicitacoes.models import Produto, Solicitacao
 
 class SolicitacaoForm(forms.ModelForm):
@@ -112,3 +113,14 @@ class ProdutosForm(forms.ModelForm):
                 
                 produtos = cursor.fetchall()
                 self.fields['c1_produto'].choices = [(p[0], p[1]) for p in produtos]
+
+
+ProductFormset = inlineformset_factory(
+      Solicitacao,
+      Produto,
+      form=ProdutosForm,
+      fields=('c1_produto', 'c1_quant'),
+      extra=1,
+      can_delete=True,
+      can_delete_extra=True
+   )

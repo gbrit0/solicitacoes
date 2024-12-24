@@ -11,31 +11,34 @@
    </head>
    <body class="bg-light">
       <div class="container d-flex justify-content-center align-items-center vh-100">
-         {% for message in messages %}
-         <div class="alert alert-dark alert-dismissible fade show position-fixed top-0" style="max-width: 600px; margin-top: 10px;" role="alert">
-               {{ message }}
-               <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-         </div>
-         {% endfor %}
-         {% if form.errors %}
-            <div class="alert alert-danger alert-dismissible fade show position-fixed top-0" style="max-width: 600px; margin-top: 10px;" role="alert">
-               {% for field in form %}
-                  {% if field.errors %}
-                     <strong>{{ field.label }}:</strong>
-                     {% for error in field.errors %}
-                        {{ error }}<br>
-                     {% endfor %}
-                  {% endif %}
+         <div class="messages position-fixed start-50 translate-middle" style="z-index: 1050; width: 100%; max-width: 600px;">
+            {% for message in messages %}
+               <div class="alert {% if message.tags %}alert-{{ message.tags }}{% else %}alert-dark{% endif %} alert-dismissible fade show position-fixed top-0" style="max-width: 600px;"" role="alert">
+                    <p class="mb-0">{{message}}</p>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="close"></button>
+                </div>
             {% endfor %}
-            
-            {% if form.non_field_errors %}
-                  {% for error in form.non_field_errors %}
-                     {{ error }}
-                  {% endfor %}
+                
+            {% if form.errors %}
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                {% for field in form %}
+                {% if field.errors %}
+                    <strong>{{ field.label }}:</strong>
+                    {% for error in field.errors %}
+                    {{ error }}<br>
+                    {% endfor %}
+                {% endif %}
+                {% endfor %}
+                
+                {% if form.non_field_errors %}
+                {% for error in form.non_field_errors %}
+                    {{ error }}
+                {% endfor %}
+                {% endif %}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
             {% endif %}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-         </div>
-         {% endif %}
+        </div>
          <div class="card shadow-lg p-4" style="width: 100%; max-width: 400px;">
             <h3 class="text-center mb-4">Entrar</h3>
             <form action="{% url 'login' %}" method="POST">

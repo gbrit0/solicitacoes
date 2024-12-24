@@ -12,7 +12,7 @@ def lista_solicitacoes(request):
    form = FiltroSolicitacaoForm(request.GET or None)
    
    # Consulta base de solicitacoes
-   solicitacoes = Solicitacao.objects.all().prefetch_related('c1_num').order_by('-c1_datprf')
+   solicitacoes = Solicitacao.objects.all().prefetch_related('user').order_by('-c1_datprf')
    produtos = Produto.objects.all().order_by('-c1_num')
    
     # Verifica se o formulário é válido

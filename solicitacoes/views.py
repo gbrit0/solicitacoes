@@ -1,35 +1,13 @@
 from django.shortcuts import render, redirect
-from django.forms import ModelForm
-from solicitacoes.models import Produto, Solicitacao
-from django.forms import inlineformset_factory
 from django.utils import timezone
 import pyodbc, os
-
 from django.contrib.auth.decorators import login_required
 
-from solicitacoes.forms import ProdutosForm, SolicitacaoForm
+from solicitacoes.forms import SolicitacaoForm, ProductFormset
 
-
-def sanitize_sql_value(value):
-   
-   if isinstance(value, str):
-      # Remove caracteres especiais ou substitui por equivalentes seguros
-      value = value.replace("\n", " ")  
-      value = value.replace("\r", " ")  
-      
-   
-   return value
 
 @login_required(login_url='login')
 def criar_solicitacao(request):
-   ProductFormset = inlineformset_factory(
-      Solicitacao,
-      Produto,
-      form=ProdutosForm,
-      fields=('c1_produto', 'c1_quant'),
-      extra=1,
-      can_delete=True
-   )
     
    if request.method == 'POST':
       solicitacao_form = SolicitacaoForm(request.POST)
@@ -78,8 +56,9 @@ def criar_solicitacao(request):
 
             with pyodbc.connect(connectionString) as conexao:
                with conexao.cursor() as cursor:
-                  for num, instance in enumerate(instances, start=1):
-                     instance.c1_item = f"{num:04d}"
+                  for num, instance in enumerate(instances):
+                     print(f"num, instance {num, instance}")
+                     instance.c1_item = f"{num+1:04d}"
                      cursor.execute(f"select MAX(B1_DESC) from SB1010 WHERE B1_COD = '{instance.c1_produto}' AND D_E_L_E_T_ <> '*' AND B1_MSBLQL = '2' AND B1_FILIAL = '01'")
                      instance.c1_descri = cursor.fetchall()[0][0]
                      cursor.execute(f"select MAX(B1_UM) from SB1010 WHERE B1_COD = '{instance.c1_produto}' AND D_E_L_E_T_ <> '*' AND B1_MSBLQL = '2' AND B1_FILIAL = '01'")
@@ -88,11 +67,13 @@ def criar_solicitacao(request):
                      instance.c1_local =  cursor.fetchall()[0][0]
                      instance.save()
 
-                     produto = str(instance.c1_descri).replace("\n", " ").replace("\r", " ")
+                     produto = str(instance.c1_descri).replace("\n", " ").replace("\r", " ")[:30]  # substituindo caracteres especiais e 
+                                                                                                   # limitando a 30 caracteres pois é o máximo que a sc1010
+                                                                                                   # permite em c1_descri
                      insert = f"""INSERT INTO SC1010
                                  (C1_FILIAL, C1_NUM, C1_ITEM, C1_DESCRI, C1_CC, C1_PRODUTO, 
                                  C1_LOCAL, C1_QUANT, C1_EMISSAO, C1_DATPRF, C1_SOLICIT, C1_OBS, R_E_C_N_O_)
-                                 VALUES ('{solicitacao.c1_filial}', 
+                                 VALUES ( '{solicitacao.c1_filial}', 
                                           '{solicitacao.c1_num}', 
                                           '{instance.c1_item}', 
                                           '{produto}', 
@@ -105,6 +86,7 @@ def criar_solicitacao(request):
                                           '{solicitacao.c1_solicit}', 
                                           '{solicitacao.c1_obs}', 
                                           '{instance.r_e_c_n_o}')"""
+
                      cursor.execute(insert)
                      conexao.commit()
                
@@ -119,3 +101,4 @@ def criar_solicitacao(request):
    }
    
    return render(request, 'solicitacoes/criar_solicitacao.html', context)
+
