@@ -194,50 +194,38 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Handle add product button
             document.getElementById('adicionar-produto').addEventListener('click', function() {
-                const formsetContainer = document.getElementById('produtos-formset');
-                const newRow = formsetContainer.querySelector('.produto-form').cloneNode(true);
+                // Pegar o total atual de forms
+                const totalForms = document.querySelector('[name$="-TOTAL_FORMS"]');
+                const currentFormCount = parseInt(totalForms.value);
                 
-                // Clear the values in the cloned row
-                newRow.querySelectorAll('input').forEach(input => input.value = '');
+                // Clonar a primeira linha
+                const emptyForm = document.querySelector('.produto-form').cloneNode(true);
                 
-                // Update form indices
-                updateFormIndices();
+                // Atualizar apenas os atributos do novo form com o índice correto
+                emptyForm.querySelectorAll('input, select').forEach(element => {
+                    element.id = element.id.replace(/\d+/, currentFormCount);
+                    element.name = element.name.replace(/\d+/, currentFormCount);
+                    element.value = '';
+                });
                 
-                formsetContainer.appendChild(newRow);
-                
-                // Scroll to the bottom of the container to show the new row
-                const scrollContainer = document.querySelector('.table-scroll-container');
-                scrollContainer.scrollTop = scrollContainer.scrollHeight;
+                // Adicionar o novo form e atualizar o contador
+                document.getElementById('produtos-formset').appendChild(emptyForm);
+                totalForms.value = currentFormCount + 1;
             });
 
-            // Handle remove product buttons
+            // Handler para remover produtos
             document.addEventListener('click', function(e) {
                 if (e.target.closest('.remove-produto')) {
                     const row = e.target.closest('.produto-form');
                     if (document.querySelectorAll('.produto-form').length > 1) {
                         row.remove();
-                        updateFormIndices();
+                        // Atualizar apenas o total de forms
+                        const totalForms = document.querySelector('[name$="-TOTAL_FORMS"]');
+                        totalForms.value = document.querySelectorAll('.produto-form').length;
                     }
                 }
             });
-
-            function updateFormIndices() {
-                const forms = document.querySelectorAll('.produto-form');
-                forms.forEach((form, index) => {
-                    form.querySelectorAll('input, select').forEach(input => {
-                        input.name = input.name.replace(/\d+/, index);
-                        input.id = input.id.replace(/\d+/, index);
-                    });
-                });
-                
-                // Update total forms count in management form
-                const totalForms = document.querySelector('[name$="-TOTAL_FORMS"]');
-                if (totalForms) {
-                    totalForms.value = forms.length;
-                }
-            }
         });
     </script>
 </body>

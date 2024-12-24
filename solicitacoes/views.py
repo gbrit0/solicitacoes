@@ -4,21 +4,59 @@ from solicitacoes.models import Produto, Solicitacao
 from django.forms import inlineformset_factory
 from django.utils import timezone
 import pyodbc, os
-
+from django.views.generic.edit import (
+    CreateView, UpdateView
+)
 from django.contrib.auth.decorators import login_required
 
 from solicitacoes.forms import ProdutosForm, SolicitacaoForm
 
 
-def sanitize_sql_value(value):
-   
-   if isinstance(value, str):
-      # Remove caracteres especiais ou substitui por equivalentes seguros
-      value = value.replace("\n", " ")  
-      value = value.replace("\r", " ")  
+class SolicitacaoInline():
+   form_class = SolicitacaoForm
+   model = Solicitacao
+   template = "solicitacoes/criar_solicitacao.html"
+
+   def form_valid(self, form):
+      named_formsets = self.get_named_formsets()
+      if not all((x.is_valid() for x in named_formsets.values())):
+         return self.render_to_response(self.get_context_data(form=form))
       
+      self.object = form.save()
+
+      for name, formset in named_formsets.items():
+         formset_save_func = getattr(self, 'formset_{0}_valid'.format(name))
+         if formset_save_func is not None:
+            formset_save_func(formset)
+         else:
+            formset.save()
+      return redirect('products:list_products')
    
-   return value
+   def formset_products_valid(self, formset):
+        """
+        Hook for custom formset saving.Useful if you have multiple formsets
+        """
+        products = formset.save(commit=False)  # self.save_formset(formset, contact)
+        # add this 2 lines, if you have can_delete=True parameter 
+        # set in inlineformset_factory func
+        for obj in formset.deleted_objects:
+            obj.delete()
+        for product in products:
+            product.c1_num = self.object
+            product.save()
+
+# class SolicitacaoCreate(SolicitacaoInline, CreateView):
+#    def get_context_data(self, **kwargs):
+#       ctx = super(SolicitacaoCreate, self).get_context_data(**kwargs)
+#       ctx['named_formsets'] = self.get_named_formsets()
+#       return ctx
+   
+#    def get_named_formsets(self):
+#       if self.request.method == 'GET':
+#          return {
+#             'produtos': ProdutosFormSet
+#          }
+
 
 @login_required(login_url='login')
 def criar_solicitacao(request):
@@ -78,8 +116,8 @@ def criar_solicitacao(request):
 
             with pyodbc.connect(connectionString) as conexao:
                with conexao.cursor() as cursor:
-                  for num, instance in enumerate(instances, start=1):
-                     instance.c1_item = f"{num:04d}"
+                  for num, instance in enumerate(instances):
+                     instance.c1_item = f"{num+1:04d}"
                      cursor.execute(f"select MAX(B1_DESC) from SB1010 WHERE B1_COD = '{instance.c1_produto}' AND D_E_L_E_T_ <> '*' AND B1_MSBLQL = '2' AND B1_FILIAL = '01'")
                      instance.c1_descri = cursor.fetchall()[0][0]
                      cursor.execute(f"select MAX(B1_UM) from SB1010 WHERE B1_COD = '{instance.c1_produto}' AND D_E_L_E_T_ <> '*' AND B1_MSBLQL = '2' AND B1_FILIAL = '01'")
@@ -105,6 +143,7 @@ def criar_solicitacao(request):
                                           '{solicitacao.c1_solicit}', 
                                           '{solicitacao.c1_obs}', 
                                           '{instance.r_e_c_n_o}')"""
+                     print(instance)
                      cursor.execute(insert)
                      conexao.commit()
                
@@ -119,3 +158,4 @@ def criar_solicitacao(request):
    }
    
    return render(request, 'solicitacoes/criar_solicitacao.html', context)
+
