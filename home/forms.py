@@ -14,8 +14,8 @@ class FiltroSolicitacaoForm(forms.Form):
         required=False, 
         label='Data Início',
         widget=forms.DateInput(attrs={
-            'type': 'date',  # Importante para HTML5
-            'class': 'row form-control gt-3',  # Para estilização
+            'type': 'date',  
+            'class': 'row form-control gt-3',
         })
     )
     data_fim = forms.DateField(
@@ -29,7 +29,12 @@ class FiltroSolicitacaoForm(forms.Form):
     usuario = forms.ModelChoiceField(
         queryset=User.objects.all(), 
         required=False, 
-        label='Usuário'
+        label='Usuário',
+        widget=forms.Select(attrs={
+            'class':'form-select',
+            'aria-label':"Todos",
+            'placeholder':'Todos'
+        })
     )
 
 class SolicitacaoForm(forms.ModelForm):
