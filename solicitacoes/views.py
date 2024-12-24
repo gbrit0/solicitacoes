@@ -86,21 +86,7 @@ def criar_solicitacao(request):
                                           '{solicitacao.c1_solicit}', 
                                           '{solicitacao.c1_obs}', 
                                           '{instance.r_e_c_n_o}')"""
-                     
-                     print(f"<---------- ITEM {num+1:04d} ----------->")
-                     print(f"""solicitacao.c1_filial: {solicitacao.c1_filial}""")
-                     print(f"""solicitacao.c1_num: {solicitacao.c1_num}""")
-                     print(f"""instance.c1_item: {instance.c1_item}""")
-                     print(f"""produto: {produto}""")
-                     print(f"""solicitacao.c1_cc: {solicitacao.c1_cc}""")
-                     print(f"""instance.c1_produto: {instance.c1_produto}""")
-                     print(f"""instance.c1_local: {instance.c1_local}""")
-                     print(f"""instance.c1_quant: {instance.c1_quant}""")
-                     print(f"""str(solicitacao.c1_emissao).replace("-", "")[:8]: {str(solicitacao.c1_emissao).replace("-", "")[:8]}""")
-                     print(f"""str(solicitacao.c1_datprf).replace("-", ""): {str(solicitacao.c1_datprf).replace("-", "")}""")
-                     print(f"""solicitacao.c1_solicit: {solicitacao.c1_solicit}""")
-                     print(f"""solicitacao.c1_obs: {solicitacao.c1_obs}""")
-                     print(f"""instance.r_e_c_n_o: {instance.r_e_c_n_o}\n""")
+
                      cursor.execute(insert)
                      conexao.commit()
                
