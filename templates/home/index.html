@@ -63,8 +63,8 @@
                     </li>
                     {% endif %}
                 </ul>
-                <a class="btn btn-outline-light ms-3" href="{% url 'logout' %}">Sair</a>
-                <button class="btn btn-light ms-2">Perfil</button>
+                <a class="btn btn-light ms-3" href="{% url 'logout' %}">Sair</a>
+                <!-- <button class="btn btn-light ms-2">Perfil</button> -->
             </nav>
         </div>
     </header>
@@ -117,7 +117,7 @@
                 <thead>
                     <tr>
                         <th>Id</th>
-                        <th>Tipo</th>
+                        <!-- <th>Tipo</th> Tipo oculto, quando adicionar a solicitação de compras passar a exibir -->
                         <th>Solicitante</th>
                         <th>Produto</th>
                         <th>Quantidade</th>
@@ -131,7 +131,7 @@
                         {% for produto in solicitacao.produto_set.all %}
                             <tr>
                                 <td>{{ solicitacao.c1_num }}</td>
-                                <td>{{ solicitacao.tipo }}</td>
+                                <!-- <td>{{ solicitacao.tipo }}</td>   Tipo oculto, quando adicionar a solicitação de compras passar a exibir -->
                                 <td>{{ solicitacao.user.nome }}</td>
                                 <td>{{ produto.c1_descri }}</td>
                                 <td>{{ produto.c1_quant }}</td>

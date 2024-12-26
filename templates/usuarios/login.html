@@ -42,7 +42,8 @@
       <!-- Login container -->
       <div class="container d-flex justify-content-center align-items-center vh-100">
          <div class="card shadow-lg p-4" style="width: 100%; max-width: 400px;">
-            <h3 class="text-center mb-4">Entrar</h3>
+            <h3 class="text-center mb-4">Sistema de Solicitações</h3>
+            <!-- <h4 class="text-center mb-4">Entrar</h4> -->
             <form action="{% url 'login' %}" method="POST">
                {% csrf_token %}
                   <div class="row">
@@ -55,12 +56,12 @@
                   </div>
                   <button type="submit" class="btn btn-primary w-100">Entrar</button>
             </form>
-            <div class="text-center mt-3">
+            <!-- <div class="text-center mt-3">
                <a href="#">Esqueceu sua senha?</a>
             </div>
             <div class="text-center mt-2">
                <small>Não tem uma conta? <a href="#">Cadastre-se</a></small>
-            </div>
+            </div> -->
          </div>
       </div>
 
