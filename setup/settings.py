@@ -53,6 +53,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'usuarios.middleware.RoleMiddleware',
+    'usuarios.middleware.LimitSessionMiddleware',
 ]
 
 ROOT_URLCONF = 'setup.urls'
@@ -169,6 +170,7 @@ from django.contrib.messages import constants as messages
 MESSAGE_TAGS = {
     messages.ERROR: 'danger',
     messages.SUCCESS: 'success',
+    messages.WARNING: 'warning',
 }
 
 # Limite de tempo de conexão

@@ -65,3 +65,9 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
             # Remove caracteres não numéricos antes de salvar
             self.cpf = re.sub(r'\D', '', self.cpf)
             super().save(*args, **kwargs)
+
+
+class ActiveSession(models.Model):
+    user = models.OneToOneField(CustomUser, on_delete=models.DO_NOTHING, related_name='active_session')
+    session_key = models.CharField(max_length=40)
+    created_at = models.DateTimeField(auto_now_add=True)
