@@ -3,12 +3,13 @@
 
 {% block content %}
 <form action="{% url 'cadastrar_solicitacao' %}" method="POST" style="width: 50%">
-    <div class="messages position-fixed start-50 translate-middle" style="z-index: 1050; width: 100%; max-width: 600px;">
+    <!-- Messages container -->
+    <div class="messages position-fixed top-0 start-50 translate-middle-x mt-3" style="z-index: 1050; width: 100%; max-width: 600px;">
         {% for message in messages %}
-           <div class="alert {% if message.tags %}alert-{{ message.tags }}{% else %}alert-dark{% endif %} alert-dismissible fade show position-fixed top-0" style="max-width: 600px;"" role="alert">
-                <p class="mb-0">{{message}}</p>
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="close"></button>
-            </div>
+           <div class="alert {% if message.tags %}alert-{{ message.tags }}{% else %}alert-dark{% endif %} alert-dismissible fade show" role="alert">
+            <p class="mb-0">{{message}}</p>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="close"></button>
+        </div>
         {% endfor %}
             
         {% if form.errors %}

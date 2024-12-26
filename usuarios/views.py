@@ -34,8 +34,7 @@ def login(request):
          prox_pag = request.GET.get('next','lista_solicitacoes')
          return redirect(prox_pag)
       else:
-         messages.error(request, f"É necessário logar para usar o sistema. Redirecionando...")
-         time.sleep(3)
+         messages.error(request, f"Erro no login!")
          return redirect('login')
 
    return render(request, 'usuarios/login.html', {"form": form})
@@ -80,4 +79,5 @@ def cadastro(request):
 
 def logout(request):
    auth.logout(request)
+   messages.success(request, f"Você será redirecionado para a página de login!")
    return redirect('login')

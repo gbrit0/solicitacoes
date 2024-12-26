@@ -57,9 +57,11 @@
                     <li class="nav-item">
                         <a class="nav-link text-white" href="{% url 'criar_solicitacao' %}">Nova Solicitação de Compras</a>
                     </li>
+                    {% if user.role == 'admin' %}
                     <li class="nav-item">
                         <a class="nav-link text-white" href="{% url 'cadastro' %}">Cadastrar Usuário</a>
                     </li>
+                    {% endif %}
                 </ul>
                 <a class="btn btn-outline-light ms-3" href="{% url 'logout' %}">Sair</a>
                 <button class="btn btn-light ms-2">Perfil</button>
@@ -70,42 +72,46 @@
     <!-- Corpo da página -->
     <main class="container py-4">
         <div class="table-responsive">
-            <div class="messages position-fixed start-50 translate-middle" style="z-index: 1050; width: 100%; max-width: 600px;">
+            <!-- Messages container -->
+        <div class="messages position-fixed top-0 start-50 translate-middle-x mt-3" style="z-index: 1050; width: 100%; max-width: 600px;">
                 {% for message in messages %}
-                   <div class="alert {% if message.tags %}alert-{{ message.tags }}{% else %}alert-dark{% endif %} alert-dismissible fade show position-fixed top-0" style="max-width: 600px;"" role="alert">
-                        <p class="mb-0">{{message}}</p>
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="close"></button>
-                    </div>
+                <div class="alert {% if message.tags %}alert-{{ message.tags }}{% else %}alert-dark{% endif %} alert-dismissible fade show" role="alert">
+                    <p class="mb-0">{{message}}</p>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="close"></button>
+                </div>
                 {% endfor %}
-                    
+                
                 {% if form.errors %}
                 <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                    {% for field in form %}
-                    {% if field.errors %}
-                        <strong>{{ field.label }}:</strong>
-                        {% for error in field.errors %}
-                        {{ error }}<br>
-                        {% endfor %}
-                    {% endif %}
+                {% for field in form %}
+                {% if field.errors %}
+                    <strong>{{ field.label }}:</strong>
+                    {% for error in field.errors %}
+                    {{ error }}<br>
                     {% endfor %}
-                    
-                    {% if form.non_field_errors %}
-                    {% for error in form.non_field_errors %}
-                        {{ error }}
-                    {% endfor %}
-                    {% endif %}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                {% endif %}
+                {% endfor %}
+                
+                {% if form.non_field_errors %}
+                {% for error in form.non_field_errors %}
+                    {{ error }}
+                {% endfor %}
+                {% endif %}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
                 {% endif %}
-            </div>
-            <form method="get" class="">
-                {{ form.as_p }}
-                <button type="submit">Filtrar</button>
+        </div>
+            <form method="get" >
+                <label for="{{ field.id_for_label }}" class="form-label">{{ form.data_inicio.label }}</label>
+                {{ form.data_inicio }}
+                <label for="{{ field.id_for_label }}" class="form-label">{{ form.data_fim.label }}</label>
+                {{ form.data_fim }}
+                {% if user.role == 'admin' %}
+                    <label for="{{ field.id_for_label }}" class="form-label">{{ form.usuario.label }}</label>
+                    {{ form.usuario }}
+                {% endif %}
+                <button type="submit" >Filtrar</button>
             </form>
-            <!-- <form method="get">
-                {{ form.as_p }}
-                <button type="submit">Filtrar</button>
-            </form> -->
 
             <table id="solicitacoesTable" class="table table-bordered" data-toggle="table">
                 <thead>

@@ -39,13 +39,21 @@ class LoginForms(forms.Form):
 class CadastroForms(UserCreationForm):
    class Meta:
       model = CustomUser
-      fields = ['nome', 'email', 'cpf']
+      fields = ['nome', 'email', 'cpf', 'role']
       
       widgets = {
          'nome': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Nome completo'}),
          'email': forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'Ex. joao@gmail.com'}),
-         'cpf': forms.TextInput(attrs={'class': 'form-control', 'placeholder': '000.000.000-00', "onkeyup": "mascararCPF(this)"}),
+         'cpf': forms.TextInput(attrs={'class': 'form-control', 'placeholder': '000.000.000-00', "onkeyup": "mascararCPF(this)"})
       }
+
+   
+   role = forms.ChoiceField(
+      label="Papel",
+      choices=CustomUser.ROLES,
+      widget=forms.Select( attrs={'class': 'form-control', 'placeholder':'Papel'}),
+      
+   )
 
    # Adicione campos de senha explicitamente
    password1 = forms.CharField(
@@ -57,6 +65,9 @@ class CadastroForms(UserCreationForm):
       label="Confirme a Senha",
       widget=forms.PasswordInput(attrs={"class": "form-control", "placeholder": "Confirme sua senha"})
    )
+
+
+
 
 class ProdutoForm(forms.Form):
    b1_desc = forms.ChoiceField(           # setar este valor no campo c1_produto da SC1010
