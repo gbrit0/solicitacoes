@@ -94,8 +94,10 @@ class ProdutosForm(forms.ModelForm):
         label="Centro de Custo",
         choices=[],
         widget=forms.Select(attrs={
-            'class': 'form-control',
-            'placeholder': 'Centro de Custo',
+            'class': 'selectpicker form-control',
+            "data-live-search":"True",
+            "data-size": '5',
+            'Title': 'Selecione um centro de custo',
         }),
     )
     c1_datprf = forms.DateField(
