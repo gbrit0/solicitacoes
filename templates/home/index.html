@@ -133,37 +133,38 @@
                     </div>
                 </div>
             </form>
-
-            <table id="solicitacoesTable" class="table table-bordered table-striped" data-toggle="table">
-                <thead>
-                    <tr>
-                        <th>Id</th>
-                        <!-- <th>Tipo</th> Tipo oculto, quando adicionar a solicitação de compras passar a exibir -->
-                        <th>Solicitante</th>
-                        <th>Produto</th>
-                        <th>Quantidade</th>
-                        <th>Data de Necessidade</th>
-                        <th>Observações</th>
-                        <th>Emissão</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for solicitacao in solicitacoes %}
-                        {% for produto in solicitacao.produto_set.all %}
-                            <tr>
-                                <td>{{ produto.c1_num }}</td>
-                                <!-- <td>{{ solicitacao.tipo }}</td>   Tipo oculto, quando adicionar a solicitação de compras passar a exibir -->
-                                <td>{{ solicitacao.user.nome }}</td>
-                                <td>{{ produto.c1_descri }}</td>
-                                <td>{{ produto.c1_quant }}</td>
-                                <td>{{ produto.c1_datprf|date:"d/m/Y" }}</td>
-                                <td>{{ produto.c1_obs }}</td>
-                                <td>{{ solicitacao.c1_emissao|date:"d/m/Y" }}</td>
-                            </tr>
+            <div>
+                <table id="solicitacoesTable" class="table table-bordered table-striped" data-toggle="table">
+                    <thead>
+                        <tr>
+                            <th>Id</th>
+                            <!-- <th>Tipo</th> Tipo oculto, quando adicionar a solicitação de compras passar a exibir -->
+                            <th>Solicitante</th>
+                            <th>Produto</th>
+                            <th>Quantidade</th>
+                            <th>Data de Necessidade</th>
+                            <th>Observações</th>
+                            <th>Emissão</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for solicitacao in solicitacoes %}
+                            {% for produto in solicitacao.produto_set.all %}
+                                <tr>
+                                    <td>{{ produto.c1_num }}</td>
+                                    <!-- <td>{{ solicitacao.tipo }}</td>   Tipo oculto, quando adicionar a solicitação de compras passar a exibir -->
+                                    <td>{{ solicitacao.user.nome }}</td>
+                                    <td>{{ produto.c1_descri }}</td>
+                                    <td>{{ produto.c1_quant }}</td>
+                                    <td>{{ produto.c1_datprf|date:"d/m/Y" }}</td>
+                                    <td>{{ produto.c1_obs }}</td>
+                                    <td>{{ solicitacao.c1_emissao|date:"d/m/Y" }}</td>
+                                </tr>
+                            {% endfor %}
                         {% endfor %}
-                    {% endfor %}
-                </tbody>
-            </table>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </main>
 
