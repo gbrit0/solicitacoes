@@ -6,8 +6,15 @@ from django.contrib import messages
 from solicitacoes.forms import SolicitacaoForm, ProductFormset
 
 
-# @login_required(login_url='login')
+@login_required(login_url='login')
 def criar_solicitacao(request):
+   solicitacao_form = SolicitacaoForm()
+   formset = ProductFormset()
+      
+   context = {
+      'solicitacao_form': solicitacao_form,
+      'formset': formset
+   }
    try: 
       if request.method == 'POST':
          solicitacao_form = SolicitacaoForm(request.POST)

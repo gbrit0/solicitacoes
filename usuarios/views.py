@@ -45,7 +45,7 @@ def login(request):
 
 
 @role_required(['admin',])
-# @login_required(login_url='/login')
+@login_required(login_url='/login')
 def cadastro(request):
     if request.method == 'POST':
         form = CadastroForms(request.POST)

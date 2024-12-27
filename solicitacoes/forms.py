@@ -69,8 +69,10 @@ class ProdutosForm(forms.ModelForm):
         label="Produto",
         choices=[],
         widget=forms.Select(attrs={
-            'class': 'form-control',
-            'placeholder': 'Produto',
+            'class': 'selectpicker form-control',
+            "data-live-search":"True",
+            "data-size": '5',
+            'title':'Selecione um produto'
         }),
     )
 
