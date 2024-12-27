@@ -4,15 +4,15 @@ from django.contrib.auth.decorators import login_required
 from solicitacoes.models import Solicitacao, Produto
 
 
-@login_required(login_url='login')
+# @login_required(login_url='login')
 def lista_solicitacoes(request):
    form = FiltroSolicitacaoForm(request.GET or None)
     
    # Verifica se é admin
-   if request.user.role == 'admin':
-      solicitacoes = Solicitacao.objects.all()
-   else:
-      solicitacoes = Solicitacao.objects.filter(user=request.user)
+   # if request.user.role == 'admin':
+   solicitacoes = Solicitacao.objects.all()
+   # else:
+   #    solicitacoes = Solicitacao.objects.filter(user=request.user)
    
    solicitacoes = solicitacoes.prefetch_related('user').order_by('-c1_datprf')
    produtos = Produto.objects.all().order_by('-c1_num')
@@ -30,8 +30,8 @@ def lista_solicitacoes(request):
          solicitacoes = solicitacoes.filter(c1_emissao__lte=data_fim)
 
       # Filtro de usuário apenas para admin
-      if usuario and request.user.role == 'admin':
-         solicitacoes = solicitacoes.filter(user=usuario)
+      # if usuario and request.user.role == 'admin':
+      solicitacoes = solicitacoes.filter(user=usuario)
    
    context = {
       'solicitacoes': solicitacoes,

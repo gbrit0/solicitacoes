@@ -57,11 +57,11 @@
                     <li class="nav-item">
                         <a class="nav-link text-white" href="{% url 'criar_solicitacao' %}">Nova Solicitação de Compras</a>
                     </li>
-                    {% if user.role == 'admin' %}
+                    <!-- {% if user.role == 'admin' %}
                     <li class="nav-item">
                         <a class="nav-link text-white" href="{% url 'cadastro' %}">Cadastrar Usuário</a>
                     </li>
-                    {% endif %}
+                    {% endif %} -->
                 </ul>
                 <a class="btn btn-light ms-3" href="{% url 'logout' %}">Sair</a>
                 <!-- <button class="btn btn-light ms-2">Perfil</button> -->
@@ -101,19 +101,29 @@
                 </div>
                 {% endif %}
         </div>
-            <form method="get" >
-                <label for="{{ field.id_for_label }}" class="form-label">{{ form.data_inicio.label }}</label>
-                {{ form.data_inicio }}
-                <label for="{{ field.id_for_label }}" class="form-label">{{ form.data_fim.label }}</label>
-                {{ form.data_fim }}
-                {% if user.role == 'admin' %}
-                    <label for="{{ field.id_for_label }}" class="form-label">{{ form.usuario.label }}</label>
-                    {{ form.usuario }}
-                {% endif %}
-                <button type="submit" >Filtrar</button>
+            <form method="get" class="form-group">
+                <div class="row d-flex align-items-center pb-5">
+                    <div class="col-3">
+                        <label for="{{ field.id_for_label }}" class="form-label">{{ form.data_inicio.label }}</label>
+                        {{ form.data_inicio }}
+                    </div>
+                    <div class="col-3">
+                        <label for="{{ field.id_for_label }}" class="form-label">{{ form.data_fim.label }}</label>
+                        {{ form.data_fim }}
+                    </div>
+                    <div class="col-3">
+                        <label for="{{ field.id_for_label }}" class="form-label">{{ form.usuario.label }}</label>
+                        {{ form.usuario }}
+                    </div>
+                    <!-- {% if user.role == 'admin' %}
+                    {% endif %} -->
+                    <div class="col-3">
+                        <button type="submit" class="btn  btn-lg fa-solid fa-filter"></button>
+                    </div>
+                </div>
             </form>
 
-            <table id="solicitacoesTable" class="table table-bordered" data-toggle="table">
+            <table id="solicitacoesTable" class="table table-bordered table-striped" data-toggle="table">
                 <thead>
                     <tr>
                         <th>Id</th>
@@ -211,6 +221,33 @@
                     var formattedDate = this.value.split('-').reverse().join('/');
                     table.column(5).search(formattedDate).draw();
                 });
+
+                
+      
+                const style = document.createElement('style');
+                style.textContent = `
+                    .dt-buttons .dt-button {
+                        border: none !important;
+                        border-radius: 0 !important;
+                        display: inline-block !important;
+                        background-image: none !important;
+                        background-color: transparent !important;
+                        box-shadow: none !important;
+                        padding: 0 !important;
+                    }
+                    
+                    .dt-buttons {
+                        margin-bottom: 15px;
+                        display: flex;
+                        gap: 10px;
+                    }
+
+                    .dt-buttons .btn {
+                        padding: 8px 15px;
+                        margin: 0 5px;
+                    }
+                `;
+                document.head.appendChild(style);
 
             });
         </script>

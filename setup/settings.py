@@ -53,8 +53,9 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'usuarios.middleware.RoleMiddleware',
-    'usuarios.middleware.LimitSessionMiddleware',
+    'usuarios.middleware.SessionTimeoutMiddleware',
 ]
+
 
 ROOT_URLCONF = 'setup.urls'
 
@@ -173,8 +174,15 @@ MESSAGE_TAGS = {
     messages.WARNING: 'warning',
 }
 
+
 # Limite de tempo de conexão
 
-SESSION_COOKIE_AGE = 900  # 15 minutos
+SESSION_COOKIE_AGE = 15  # 15 minutos
+
 SESSION_SAVE_EVERY_REQUEST = True
+
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+
+SESSION_ENGINE = 'django.contrib.sessions.backends.db'
+
+MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'

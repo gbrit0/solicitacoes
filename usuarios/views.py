@@ -9,39 +9,43 @@ from django.contrib.auth.decorators import login_required
 User = get_user_model()
 
 
-
 def login(request):
-   form = LoginForms()
+    form = LoginForms()
+    
+    # Mover a verificação de timeout_message para depois da criação do form
+    if request.session.get('timeout_message'):
+        messages.error(request, "Você foi desconectado devido ao limite de tempo de sessão.")
+        del request.session['timeout_message']
+    
+    if request.method == 'POST':
+        form = LoginForms(request.POST)
 
-   if request.method == 'POST':
-      form = LoginForms(request.POST)
+        if form.is_valid():
+            cpf = form['cpf'].value()
+            senha = form['senha'].value()
 
-      if form.is_valid():
-         cpf = form['cpf'].value()
-         senha = form['senha'].value()
+            cpf = re.sub(r'\D', '', cpf)
 
-         cpf = re.sub(r'\D', '', cpf)
+            usuario = auth.authenticate(
+                request,
+                username=cpf,
+                password=senha
+            )
 
-      usuario = auth.authenticate(
-         request,
-         username=cpf,
-         password=senha
-      )
+            if usuario is not None:
+                auth.login(request, usuario)
+                messages.success(request, "Login realizado com sucesso!")
+                prox_pag = request.GET.get('next','lista_solicitacoes')
+                return redirect(prox_pag)
+            else:
+                messages.error(request, "Erro no login!")
+                return redirect('login')
 
-      if usuario is not None:
-         auth.login(request, usuario)
-         messages.success(request, f"Login realizado com sucesso!")
-         prox_pag = request.GET.get('next','lista_solicitacoes')
-         return redirect(prox_pag)
-      else:
-         messages.error(request, f"Erro no login!")
-         return redirect('login')
-
-   return render(request, 'usuarios/login.html', {"form": form})
+    return render(request, 'usuarios/login.html', {"form": form})
 
 
 @role_required(['admin',])
-@login_required(login_url='/login')
+# @login_required(login_url='/login')
 def cadastro(request):
     if request.method == 'POST':
         form = CadastroForms(request.POST)
@@ -82,3 +86,4 @@ def logout(request):
    messages.success(request, f"Você será redirecionado para a página de login!")
    time.sleep(3)
    return redirect('login')
+

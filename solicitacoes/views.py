@@ -6,7 +6,7 @@ from django.contrib import messages
 from solicitacoes.forms import SolicitacaoForm, ProductFormset
 
 
-@login_required(login_url='login')
+# @login_required(login_url='login')
 def criar_solicitacao(request):
    try: 
       if request.method == 'POST':
