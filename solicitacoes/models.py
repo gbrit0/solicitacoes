@@ -8,11 +8,8 @@ User = get_user_model()
 class Solicitacao(models.Model):
    c1_filial = '0101' # models.CharField(max_length=4, null=False) 
    c1_num = models.CharField(max_length=6, null=False, default='', primary_key=True) # max(sc1)
-   c1_cc = models.CharField(max_length=60, null=False, default='')
-   c1_datprf = models.DateField( blank=False)
    c1_solicit = "000000"
    c1_emissao = models.DateField(blank=False)
-   c1_obs = models.CharField(max_length=30, default="")
    user = models.ForeignKey(User, to_field='cpf', default='', on_delete=models.DO_NOTHING)
    tipo = "compra"
 
@@ -26,7 +23,10 @@ class Produto(models.Model):
    c1_descri = models.CharField(max_length=50, null=False) # b1_descri
    c1_um = models.CharField(max_length=2, null=False) # b1_um
    c1_local = models.CharField(max_length=2, null=False) # b1_locpad
-   c1_quant = models.DecimalField(max_digits=12, decimal_places=2)   
+   c1_quant = models.DecimalField(max_digits=12, decimal_places=2)
+   c1_cc = models.CharField(max_length=60, null=False, default='')
+   c1_datprf = models.DateField(blank=False, default='2025-01-01')   
+   c1_obs = models.CharField(max_length=30, default="")
    r_e_c_n_o = models.BigIntegerField(primary_key=True, default=0)
 
    def __str__(self):

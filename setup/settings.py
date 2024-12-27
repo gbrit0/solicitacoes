@@ -41,7 +41,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'home.apps.HomeConfig',
     'usuarios.apps.UsuariosConfig',
-    'solicitacoes.apps.SolicitacoesConfig'
+    'solicitacoes.apps.SolicitacoesConfig',
+    'widget_tweaks',
 ]
 
 MIDDLEWARE = [
@@ -177,7 +178,7 @@ MESSAGE_TAGS = {
 
 # Limite de tempo de conexão
 
-SESSION_COOKIE_AGE = 15  # 15 minutos
+SESSION_COOKIE_AGE = 900  # 15 minutos
 
 SESSION_SAVE_EVERY_REQUEST = True
 

@@ -35,5 +35,5 @@ class SessionTimeoutMiddleware(MiddlewareMixin):
                 request.session['timeout_message'] = timeout_message  # Definir após o logout
                 return redirect('login')
 
-        request.session['session_expiry'] = (datetime.now() + timedelta(seconds=15 * 60)).timestamp()
+        request.session['session_expiry'] = (datetime.now() + timedelta(seconds=900)).timestamp()
 

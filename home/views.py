@@ -14,7 +14,7 @@ def lista_solicitacoes(request):
    else:
       solicitacoes = Solicitacao.objects.filter(user=request.user)
    
-   solicitacoes = solicitacoes.prefetch_related('user').order_by('-c1_datprf')
+   solicitacoes = solicitacoes.prefetch_related('user').order_by('-c1_num')
    produtos = Produto.objects.all().order_by('-c1_num')
    
    if form.is_valid():

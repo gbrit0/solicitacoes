@@ -151,13 +151,13 @@
                     {% for solicitacao in solicitacoes %}
                         {% for produto in solicitacao.produto_set.all %}
                             <tr>
-                                <td>{{ solicitacao.c1_num }}</td>
+                                <td>{{ produto.c1_num }}</td>
                                 <!-- <td>{{ solicitacao.tipo }}</td>   Tipo oculto, quando adicionar a solicitação de compras passar a exibir -->
                                 <td>{{ solicitacao.user.nome }}</td>
                                 <td>{{ produto.c1_descri }}</td>
                                 <td>{{ produto.c1_quant }}</td>
-                                <td>{{ solicitacao.c1_datprf|date:"d/m/Y" }}</td>
-                                <td>{{ solicitacao.c1_obs }}</td>
+                                <td>{{ produto.c1_datprf|date:"d/m/Y" }}</td>
+                                <td>{{ produto.c1_obs }}</td>
                                 <td>{{ solicitacao.c1_emissao|date:"d/m/Y" }}</td>
                             </tr>
                         {% endfor %}
