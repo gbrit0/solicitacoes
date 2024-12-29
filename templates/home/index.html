@@ -113,7 +113,7 @@
                 {% endif %}
         </div>
             <form method="get" class="form-group">
-                <div class="row d-flex align-items-center pb-5">
+                <!-- <div class="row d-flex align-items-center pb-5">
                     <div class="col-3">
                         <label for="{{ field.id_for_label }}" class="form-label">{{ form.data_inicio.label }}</label>
                         {{ form.data_inicio }}
@@ -128,10 +128,53 @@
                         {{ form.usuario }}
                     </div>
                     {% endif %}
-                    <div class="col-3">
+                    <div class="col-">
                         <button type="submit" class="btn  btn-lg fa-solid fa-filter"></button>
                     </div>
+                </div> -->
+                <!-- <div class="d-flex align-items-center pb-5 gap-3 w-100">
+                    <div class="flex-grow-1">
+                        <label for="{{ field.id_for_label }}" class="form-label">{{ form.data_inicio.label }}</label>
+                        {{ form.data_inicio }}
+                    </div>
+                    <div class="flex-grow-1">
+                        <label for="{{ field.id_for_label }}" class="form-label">{{ form.data_fim.label }}</label>
+                        {{ form.data_fim }}
+                    </div>
+                    {% if user.role == 'admin' %}
+                    <div class="flex-grow-1">
+                        <label for="{{ field.id_for_label }}" class="form-label">{{ form.usuario.label }}</label>
+                        {{ form.usuario }}
+                    </div>
+                    {% endif %}
+                    <div class="d-flex align-items-end">
+                        <button type="submit" class="btn btn-lg">
+                            <i class="fa-solid fa-filter"></i>
+                        </button>
+                    </div>
+                </div> -->
+                <div class="d-flex align-items-center pb-5 gap-3 w-100">
+                    <div class="flex-grow-1">
+                        <label for="{{ field.id_for_label }}" class="form-label">{{ form.data_inicio.label }}</label>
+                        {{ form.data_inicio }}
+                    </div>
+                    <div class="flex-grow-1">
+                        <label for="{{ field.id_for_label }}" class="form-label">{{ form.data_fim.label }}</label>
+                        {{ form.data_fim }}
+                    </div>
+                    {% if user.role == 'admin' %}
+                    <div class="flex-grow-1">
+                        <label for="{{ field.id_for_label }}" class="form-label">{{ form.usuario.label }}</label>
+                        {{ form.usuario }}
+                    </div>
+                    {% endif %}
+                    <div class="d-flex align-items-end align-self-end" style="height: 100%;">
+                        <button type="submit" class="btn btn-primary d-flex align-items-center" style="height: 100%; padding: 10px 20px;">
+                            <i class="fa-solid fa-filter me-2"></i> Filtrar
+                        </button>
+                    </div>
                 </div>
+                
             </form>
             <div>
                 <table id="solicitacoesTable" class="table table-bordered table-striped" data-toggle="table">

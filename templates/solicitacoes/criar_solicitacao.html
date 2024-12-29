@@ -138,10 +138,8 @@
     </header>
     <form class="page-container" method="POST">
         {% csrf_token %}
-        <div class="solicitacao-section">
-            <!-- Messages container -->
-            
-            <!-- <div class="card">
+        <!-- <div class="solicitacao-section"  style="visibility: hidden;">
+            <div class="card">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-start">
                         <div class="flex-grow-1">
@@ -160,8 +158,8 @@
                         
                     </div>
                 </div>
-            </div> -->
-        </div>
+            </div>
+        </div> -->
 
         <div class="produtos-section">
             <div class="messages position-fixed top-0 start-50 translate-middle-x mt-3" style="z-index: 1050; width: 100%; max-width: 600px;">
@@ -172,7 +170,7 @@
                     </div>
                     {% endfor %}
                 </div>
-            <div class="card">
+            <div class="card" style="width: 100%">
                 <div class="card-body d-flex flex-column">
                     <h2 class="card-title mb-4">Produtos</h2>
                     {{ formset.management_form }}

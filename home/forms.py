@@ -29,7 +29,7 @@ class FiltroSolicitacaoForm(forms.Form):
         required=False, 
         label='Usuário',
         widget=forms.Select(attrs={
-            'class':'form-select',
+            'class':'row form-select gt-3',
             'aria-label':"Todos",
             'placeholder':'Todos'
         })

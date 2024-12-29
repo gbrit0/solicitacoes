@@ -6,12 +6,12 @@ import pyodbc, os
 User = get_user_model()
 
 class Solicitacao(models.Model):
-   c1_filial = '0101' # models.CharField(max_length=4, null=False) 
+   c1_filial = models.CharField(max_length=4, null=False, default='0101') # '0101'
    c1_num = models.CharField(max_length=6, null=False, default='', primary_key=True) # max(sc1)
-   c1_solicit = "000000"
+   c1_solicit = models.CharField(max_length=6, null=False, default='000000')
    c1_emissao = models.DateField(blank=False)
    user = models.ForeignKey(User, to_field='cpf', default='', on_delete=models.DO_NOTHING)
-   tipo = "compra"
+   tipo = models.CharField(max_length=15, null=False, default='Compra')
 
    def __str__(self):
       return self.c1_num

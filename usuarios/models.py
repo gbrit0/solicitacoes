@@ -59,7 +59,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         ]
 
     def __str__(self):
-        return f"{self.nome})"
+        return f"{self.nome}"
     
     def save(self, *args, **kwargs):
             # Remove caracteres não numéricos antes de salvar
