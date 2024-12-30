@@ -85,6 +85,11 @@ class ProdutosForm(forms.ModelForm):
         required=False,
         widget=forms.HiddenInput()
     )
+    
+    c1_filent = forms.CharField(
+        required=False,
+        widget=forms.HiddenInput()
+    )
 
     b1_locpad = forms.CharField(
         required=False,

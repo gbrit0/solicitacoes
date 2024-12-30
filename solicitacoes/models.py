@@ -23,6 +23,7 @@ class Produto(models.Model):
    c1_produto = models.CharField(max_length=15, null=False) # b1_cod
    c1_descri = models.CharField(max_length=50, null=False) # b1_descri
    c1_um = models.CharField(max_length=2, null=False) # b1_um
+   c1_filent = models.CharField(max_length=4, null=False, default='0101')
    c1_local = models.CharField(max_length=2, null=False) # b1_locpad
    c1_quant = models.DecimalField(max_digits=12, decimal_places=2)
    c1_cc = models.CharField(max_length=60, null=False, default='')

@@ -58,12 +58,16 @@ def criar_solicitacao(request):
 
                             cursor.execute(f"select MAX(B1_LOCPAD) from SB1010 WHERE B1_COD = '{instance.c1_produto}' AND D_E_L_E_T_ <> '*' AND B1_MSBLQL = '2' AND B1_FILIAL = '01'")
                             instance.c1_local =  cursor.fetchall()[0][0]
-                                
+                            
+                            instance.c1_filent = '0101'
+
                             instance.save()
                             
                             insert = (
-                                f"INSERT INTO SC1010 (C1_FILIAL, C1_NUM, C1_ITEM, C1_DESCRI, C1_CC, C1_PRODUTO, "
-                                f"C1_LOCAL, C1_QUANT, C1_EMISSAO, C1_DATPRF, C1_SOLICIT, C1_XOBMEMO, R_E_C_N_O_, C1_XSOLWEB) "
+                                f"INSERT INTO SC1010 "
+                                f"(C1_FILIAL, C1_NUM, C1_ITEM, C1_DESCRI, C1_CC, C1_PRODUTO, "
+                                f"C1_LOCAL, C1_QUANT, C1_EMISSAO, C1_UM, C1_FILENT, "
+                                f"C1_DATPRF, C1_SOLICIT, C1_XOBMEMO, R_E_C_N_O_, C1_XSOLWEB) "
                                 f"VALUES ('{solicitacao_form.c1_filial}', "
                                 f"'{solicitacao_form.c1_num}', "
                                 f"'{instance.c1_item}', "
@@ -73,6 +77,8 @@ def criar_solicitacao(request):
                                 f"'{instance.c1_local}', "
                                 f"'{instance.c1_quant}', "
                                 f"'{str(solicitacao_form.c1_emissao).replace('-', '')[:8]}', "
+                                f"'{instance.c1_um}',"
+                                f"'{instance.c1_filent}',"
                                 f"'{str(instance.c1_datprf).replace('-', '')}', "
                                 f"'{solicitacao_form.c1_solicit}', "
                                 f"CONVERT(VARBINARY(MAX), '{instance.c1_obs}'), "
@@ -81,20 +87,20 @@ def criar_solicitacao(request):
                             )
 
 
-                            print(insert)
                             cursor.execute(insert)
                             conexao.commit()
                             
-                messages.success(request, "Solicitação criada com sucesso!")
+                messages.success(request, "Solicitação cadastrada com sucesso!")
                 return redirect('lista_solicitacoes')  
                 
             except Exception as e:
-                messages.error(request, f"Erro ao criar solicitação: {str(e)}")
-                return render(request, 'solicitacoes/criar_solicitacao.html', {
-                    'solicitacao_form': solicitacao_form,
-                    'formset': formset,
-                    'errors': formset.errors  
-                })
+                messages.error(request, f"Erro ao criar solicitação, por favor contate o admnistrador. ERRO: {e}")
+                # return render(request, 'solicitacoes/criar_solicitacao.html', {
+                #     'solicitacao_form': solicitacao_form,
+                #     'formset': formset,
+                #     'errors': formset.errors  
+                # })
+                return redirect('lista_solicitacoes')
         else:
             return render(request, 'solicitacoes/criar_solicitacao.html', {
                 'solicitacao_form': solicitacao_form,

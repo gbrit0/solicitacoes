@@ -5,6 +5,7 @@ from django.contrib.auth import get_user_model
 from .decorators import role_required
 import re, time
 from django.contrib.auth.decorators import login_required
+from django.db import IntegrityError
 
 User = get_user_model()
 
@@ -50,36 +51,40 @@ def cadastro(request):
     if request.method == 'POST':
         form = CadastroForms(request.POST)
         if form.is_valid():
-            # Acesse os dados validados usando cleaned_data
-            cpf = form.cleaned_data['cpf']
-            nome = form.cleaned_data['nome']
-            email = form.cleaned_data['email']
-            senha = form.cleaned_data['password1']
-            role = form.cleaned_data['role']
+            try:
+                # Acesse os dados validados usando cleaned_data
+                # cpf = form.cleaned_data['cpf']
+                cpf = str(re.sub(r'\D', '', form.cleaned_data['cpf']))
+                nome = form.cleaned_data['nome']
+                email = form.cleaned_data['email']
+                senha = form.cleaned_data['password1']
+                role = form.cleaned_data['role']
+                
+                # Verifique se o CPF já existe
+                if User.objects.filter(cpf=cpf).exists():
+                    messages.error(request, "CPF já cadastrado.")
+                    return render(request, 'usuarios/cadastro.html', {"form": form})
 
-            # Verifique se o CPF já existe
-            if User.objects.filter(cpf=cpf).exists():
-               messages.error(request, "CPF já cadastrado.")
-               return redirect('cadastro')
+                try:
+                    User.objects.create_user(
+                        cpf=cpf,
+                        email=email,
+                        password=senha,
+                        nome=nome,
+                        role=role
+                    )
+                except IntegrityError:
+                    messages.error(request, "Erro: Este CPF já está cadastrado no sistema.")
+                    return render(request, 'usuarios/cadastro.html', {"form": form})
+                messages.success(request, "Usuário cadastrado com sucesso!")
+                return redirect('lista_solicitacoes')
 
-            # Crie o usuário
-            usuario = User.objects.create_user(
-               cpf=cpf,  # Use CPF como username
-               email=email,
-               password=senha,
-               nome=nome,
-               role=role
-            )
-            usuario.save()
-            messages.success(request, "Usuário cadastrado com sucesso!",)
-            return redirect('lista_solicitacoes')  
-
+            except Exception as e:
+                messages.error(request, f"Erro ao cadastrar usuário: {str(e)}")
+                return render(request, 'usuarios/cadastro.html', {"form": form})
     else:
-      form = CadastroForms()
-      print("Erros de formulário:")
-      for field, errors in form.errors.items():
-            print(f"{field}: {errors}")
-    
+        form = CadastroForms()
+
     return render(request, 'usuarios/cadastro.html', {"form": form})
 
 
