@@ -106,7 +106,9 @@ class ProdutoForm(forms.Form):
    )
    def __init__(self, *args, **kwargs):
       super().__init__(*args, **kwargs)
-
+      print(f"SERVER={os.environ['HOST']}")
+      print(f"DATABASE={os.environ['DATABASE']}")
+      print(f"UID={os.environ['USER']}")
       connectionString = f"DRIVER={{ODBC Driver 18 for SQL Server}};SERVER={os.environ['HOST']};DATABASE={os.environ['DATABASE']};UID={os.environ['USER']};PWD={os.environ['PASSWORD']};TrustServerCertificate=yes"
       
       
@@ -168,7 +170,9 @@ class SolicitacaoForms(forms.Form):
 
    def __init__(self, *args, **kwargs):
       super().__init__(*args, **kwargs)
-
+      print(f"SERVER={os.environ['HOST']}")
+      print(f"DATABASE={os.environ['DATABASE']}")
+      print(f"UID={os.environ['USER']}")
       connectionString = f"DRIVER={{ODBC Driver 18 for SQL Server}};SERVER={os.environ['HOST']};DATABASE={os.environ['DATABASE']};UID={os.environ['USER']};PWD={os.environ['PASSWORD']};TrustServerCertificate=yes"
       
       

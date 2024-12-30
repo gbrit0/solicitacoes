@@ -20,7 +20,9 @@ def criar_solicitacao(request):
                 solicitacao_form.c1_emissao = timezone.now()
                 solicitacao_form.user = request.user
                 solicitacao_form.tipo = 'Compra'
-        
+                print(f"SERVER={os.environ['HOST']}")
+                print(f"UID={os.environ['USER']}")
+                print(f"DATABASE={os.environ['DATABASE']}")
                 # Busca próximo número
                 connectionString = f"DRIVER={{ODBC Driver 18 for SQL Server}};SERVER={os.environ['HOST']};DATABASE={os.environ['DATABASE']};UID={os.environ['USER']};PWD={os.environ['PASSWORD']};TrustServerCertificate=yes"
                 with pyodbc.connect(connectionString) as conexao:

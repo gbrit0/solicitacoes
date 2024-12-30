@@ -34,8 +34,10 @@ class Produto(models.Model):
       return self.c1_produto
    
    def save(self, *args, **kwargs):
-      
-      connectionString = f"DRIVER={{ODBC Driver 18 for SQL Server}};SERVER={os.environ['HOST']};DATABASE={os.environ['DATABASE']};UID={os.environ['USER']};PWD={os.environ['PASSWORD']};TrustServerCertificate=yes"   
+      print(f"SERVER={os.environ['HOST']}")
+      print(f"DATABASE={os.environ['DATABASE']}")
+      print(f"UID={os.environ['USER']}")
+      connectionString = f"DRIVER={{ODBC Driver 18 for SQL Server}};SERVER={os.environ['HOST']};DATABASE={os.environ['DATABASE']};UID={os.environ['USER']};PWD={os.environ['PASSWORD']};TrustServerCertificate=yes"
       with pyodbc.connect(connectionString) as conexao:
          with conexao.cursor() as cursor:
             cursor.execute("""SELECT MAX(R_E_C_N_O_) + 1
@@ -48,6 +50,7 @@ class Produto(models.Model):
       super().save(*args, **kwargs)
 
 class StatusPedido(models.Model):
+   recno = models.AutoField(db_column='R_E_C_N_O_', primary_key=True)  # Mapeia a coluna R_E_C_N_O_
    C7_NUM = models.CharField(max_length=6)
    C7_QUJE = models.FloatField()
    C7_QTDACLA = models.FloatField()
