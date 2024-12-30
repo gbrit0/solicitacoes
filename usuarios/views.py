@@ -55,6 +55,7 @@ def cadastro(request):
             nome = form.cleaned_data['nome']
             email = form.cleaned_data['email']
             senha = form.cleaned_data['password1']
+            role = form.cleaned_data['role']
 
             # Verifique se o CPF já existe
             if User.objects.filter(cpf=cpf).exists():
@@ -66,7 +67,8 @@ def cadastro(request):
                cpf=cpf,  # Use CPF como username
                email=email,
                password=senha,
-               nome=nome  # Salve o nome no first_name
+               nome=nome,
+               role=role
             )
             usuario.save()
             messages.success(request, "Usuário cadastrado com sucesso!",)
