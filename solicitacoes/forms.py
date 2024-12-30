@@ -113,9 +113,11 @@ class ProdutosForm(forms.ModelForm):
                                 FROM CTT010 
                                 WHERE D_E_L_E_T_ <> '*'
                                 AND CTT_BLOQ = '2'
-                                AND CTT_FILIAL = '0101'
+                                -- AND CTT_FILIAL = '0101'
                                 AND CTT_CLASSE = '2'""")
                 
+                # <=========== DESCOMENTAR O CTT_FILIAL QUANDO COLOCAR EM PRODUÇÃO ==================>
+
                 centros_de_custo = cursor.fetchall()
                 self.fields['c1_cc'].choices = centros_de_custo
 
