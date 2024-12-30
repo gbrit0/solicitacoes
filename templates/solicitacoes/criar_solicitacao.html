@@ -238,6 +238,30 @@
                                 </tr>
                                 {% endfor %}
                             </tbody>
+                            <table style="display: none;">
+                                <tr id="empty-form-template" class="produto-form">
+                                    <td>
+                                        {{ formset.empty_form.c1_cc }}
+                                    </td>
+                                    <td>
+                                        {{ formset.empty_form.c1_produto }}
+                                    </td>
+                                    <td>
+                                        {{ formset.empty_form.c1_quant }}
+                                    </td>
+                                    <td>
+                                        {{ formset.empty_form.c1_datprf }}
+                                    </td>
+                                    <td>
+                                        {{ formset.empty_form.c1_obs }}
+                                    </td>
+                                    <td>
+                                        <button type="button" class="btn btn-danger btn-sm remove-produto">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            </table>
                         </table>
                     </div>
                     <div class="add-produto-container text-end">
@@ -268,7 +292,7 @@
 
     <script>
         $(document).ready(function() {
-            $('.selectpicker').selectpicker({
+            $('.selectsearch').selectpicker({
                 liveSearch: true,
                 size: 10
             });
@@ -282,10 +306,15 @@
                 // Clonar a primeira linha
                 const emptyForm = document.querySelector('.produto-form').cloneNode(true);
                 
+                emptyForm.querySelectorAll('.selectsearch').forEach(select => {
+                    $(select).selectpicker('update');
+                });
+                
                 // Remover mensagens de erro da linha clonada
                 emptyForm.querySelectorAll('.errorlist, .invalid-feedback').forEach(element => {
                     element.remove(); // Remove elementos de mensagens de erro
                 });
+                
 
                 // Atualizar apenas os atributos do novo form com o índice correto
                 emptyForm.querySelectorAll('input, select').forEach(element => {

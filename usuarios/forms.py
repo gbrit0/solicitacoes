@@ -76,7 +76,7 @@ class ProdutoForm(forms.Form):
       choices=[],
       widget=forms.Select(
          attrs={
-            "class": "form-control selectpicker",
+            "class": "form-control selectsearch",
             "data-live-search":"true",
             "placeholder": "Produto"
          }
@@ -88,7 +88,7 @@ class ProdutoForm(forms.Form):
       choices=[], 
       widget=forms.Select(
          attrs={
-            "class": "form-control selectpicker",
+            "class": "form-control selectsearch",
             "data-live-search":"true",
             "placeholder": "Armazém"
          }
@@ -133,7 +133,7 @@ class SolicitacaoForms(forms.Form):
       choices=[],
       widget=forms.Select(
          attrs={
-            "class": "form-control selectpicker",
+            "class": "form-control selectsearch",
             "data-live-search":"true",
             "placeholder": "Filial do Sistema"
          }
@@ -148,7 +148,7 @@ class SolicitacaoForms(forms.Form):
       choices=[],
       widget=forms.Select(
          attrs={
-            "class": "form-control selectpicker",
+            "class": "form-control selectsearch",
             "data-live-search":"true",
             "placeholder": "Filial do Sistema"
          }

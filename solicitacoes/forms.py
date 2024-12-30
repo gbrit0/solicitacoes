@@ -30,7 +30,7 @@ class ProdutosForm(forms.ModelForm):
         label="Produto",
         choices=[],
         widget=forms.Select(attrs={
-            'class': 'selectpicker form-control',
+            'class': 'selectsearch form-control',
             "data-live-search":"True",
             "data-size": '5',
             'title':'Selecione um produto'
@@ -51,7 +51,7 @@ class ProdutosForm(forms.ModelForm):
         label="Centro de Custo",
         choices=[],
         widget=forms.Select(attrs={
-            'class': 'selectpicker form-control',
+            'class': 'selectsearch form-control',
             "data-live-search":"True",
             "data-size": '5',
             'Title': 'Selecione um centro de custo',
