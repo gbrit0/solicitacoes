@@ -18,9 +18,6 @@
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 
-    <!-- Bootstrap Select CSS -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/css/bootstrap-select.min.css">
-
     <!-- FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
@@ -175,7 +172,7 @@
                     <h2 class="card-title mb-4">Produtos</h2>
                     {{ formset.management_form }}
                     
-                    <div class="table-scroll-container">
+                    <form id="myForm" method="post" action="" class="table-scroll-container">
                         <table class="table table-hover" id="produtos-table">
                             <thead>
                                 <tr>
@@ -232,7 +229,7 @@
                                     </td>
                                     <td>
                                         <button type="button" class="btn btn-danger btn-sm remove-produto">
-                                            <i class="fas fa-trash"></i>
+                                            <i class="fas fa-trash">{% if form.instance.pk %}{{ form.DELETE }}{% endif %}</i>
                                         </button>
                                     </td>
                                 </tr>
@@ -280,6 +277,8 @@
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.3/dist/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.1.3/dist/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+    
+    <!-- <script src="{% static 'js/jquery.formset.js' %}"></script> -->
 
     <!-- Latest compiled and minified CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/css/bootstrap-select.min.css">
@@ -290,6 +289,16 @@
     <!-- (Optional) Latest compiled and minified JavaScript translation files -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/js/i18n/defaults-*.min.js"></script>
 
+    
+
+    <!-- <script type="text/javascript">
+        $(function() {
+            $('#myForm tbody tr').formset({
+                prefix: '{{ formset.prefix }}'
+            });
+        })
+    </script> -->
+
     <script>
         $(document).ready(function() {
             $('.selectsearch').selectpicker({
@@ -297,34 +306,39 @@
                 size: 10
             });
         });
+        
         document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('adicionar-produto').addEventListener('click', function() {
                 // Pegar o total atual de forms
                 const totalForms = document.querySelector('[name$="-TOTAL_FORMS"]');
                 const currentFormCount = parseInt(totalForms.value);
                 
-                // Clonar a primeira linha
-                const emptyForm = document.querySelector('.produto-form').cloneNode(true);
+                const emptyFormTemplate = document.getElementById('empty-form-template');
+                const newForm = emptyFormTemplate.cloneNode(true);
                 
-                emptyForm.querySelectorAll('.selectsearch').forEach(select => {
-                    $(select).selectpicker('update');
+                // Atualizar os atributos do novo formulário
+                newForm.id = `form-${currentFormCount}`;
+                newForm.classList.remove('d-none');
+                newForm.querySelectorAll('input, select, textarea').forEach(element => {
+                    element.id = element.id.replace('__prefix__', currentFormCount);
+                    element.name = element.name.replace('__prefix__', currentFormCount);
+                    element.value = ''; 
                 });
                 
-                // Remover mensagens de erro da linha clonada
-                emptyForm.querySelectorAll('.errorlist, .invalid-feedback').forEach(element => {
-                    element.remove(); // Remove elementos de mensagens de erro
+                newForm.querySelectorAll('[data-id*="__prefix__"]').forEach(element => {    //  o elemento duplicado do select-picker parece ter algo a ver com o
+                                                                                            // __prefix__, ao invés de assumir o id ele insere o texto "__prefix__"
+                                                                                            // então o que fiz foi remover esse elemento depois da cópia
+                    element.remove();
                 });
-                
 
-                // Atualizar apenas os atributos do novo form com o índice correto
-                emptyForm.querySelectorAll('input, select').forEach(element => {
-                    element.id = element.id.replace(/\d+/, currentFormCount);
-                    element.name = element.name.replace(/\d+/, currentFormCount);
-                    element.value = '';
-                });
-                
-                // Adicionar o novo form e atualizar o contador
-                document.getElementById('produtos-formset').appendChild(emptyForm);
+                // Inicializar selectpicker nos novos selects
+                $(newForm).find('.selectsearch').selectpicker('refresh');
+
+                // Adicionar o novo formulário ao formset
+                document.getElementById('produtos-formset').appendChild(newForm);
+
+
+                // Atualizar o total de formulários
                 totalForms.value = currentFormCount + 1;
             });
 

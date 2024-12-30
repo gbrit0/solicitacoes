@@ -12,7 +12,6 @@ def criar_solicitacao(request):
     if request.method == 'POST':
         solicitacao_form = SolicitacaoForm()
         formset = ProductFormset(request.POST)
-        hidden_formset = ProductFormset()
         if formset.is_valid():
             try:
                 solicitacao_form = solicitacao_form.save(commit=False)
@@ -83,23 +82,26 @@ def criar_solicitacao(request):
                             conexao.commit()
                             
                 messages.success(request, "Solicitação criada com sucesso!")
-                return redirect('lista_solicitacoes')  # Adicione esta URL nas suas urls.py
+                return redirect('lista_solicitacoes')  
                 
             except Exception as e:
                 messages.error(request, f"Erro ao criar solicitação: {str(e)}")
                 return render(request, 'solicitacoes/criar_solicitacao.html', {
                     'solicitacao_form': solicitacao_form,
                     'formset': formset,
-                    'hidden_formset': hidden_formset
+                    'errors': formset.errors  
                 })
-                # raise e
+        else:
+            return render(request, 'solicitacoes/criar_solicitacao.html', {
+                'solicitacao_form': solicitacao_form,
+                'formset': formset,
+                'errors': formset.errors  
+            })
     
 
     solicitacao_form = SolicitacaoForm()
     formset = ProductFormset()
-    hidden_formset = ProductFormset()
     return render(request, 'solicitacoes/criar_solicitacao.html', {
         'solicitacao_form': solicitacao_form,
-        'formset': formset,
-        'hidden_formset': hidden_formset
+        'formset': formset
     })
