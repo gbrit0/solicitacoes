@@ -1,7 +1,31 @@
 from django.shortcuts import render
 from home.forms import FiltroSolicitacaoForm
 from django.contrib.auth.decorators import login_required
-from solicitacoes.models import Solicitacao, Produto
+from solicitacoes.models import Solicitacao, Produto, StatusPedido
+
+
+def calcular_status(solicitacao):
+    if solicitacao.C7_CONAPRO == 'R':
+        return 'rejeitado'
+    elif solicitacao.C7_CONAPRO == 'B' and solicitacao.C7_QUJE < solicitacao.C7_QUANT:
+        return 'em_aprovacao'
+    elif solicitacao.C7_RESIDUO:
+        return 'eliminado'
+    elif solicitacao.C7_CONTRA and solicitacao.C7_RESIDUO:
+        return 'contrato'
+    elif solicitacao.C7_TIPO != '1':
+        return 'autorizacao'
+    elif solicitacao.C7_QQTDACLA > 0:
+        return 'em_recebimento'
+    elif solicitacao.C7_QUJE >= solicitacao.C7_QUANT:
+        return 'recebido'
+    elif solicitacao.C7_QUJE > 0 and solicitacao.C7_QUJE < solicitacao.C7_QUANT:
+        return 'parcial'
+    elif solicitacao.C7_QUJE == 0 and solicitacao.C7_QQTDACLA == 0:
+        return 'pendente'
+    return 'indefinido'
+
+# Na view:
 
 
 @login_required(login_url='login')
@@ -32,6 +56,9 @@ def lista_solicitacoes(request):
       # Filtro de usuário apenas para admin
       if usuario and request.user.role == 'admin':
          solicitacoes = solicitacoes.filter(user=usuario)
+   
+#    for solicitacao in solicitacoes:
+#       solicitacao.status = {sp.c7_num: calcular_status(sp) for sp in StatusPedido.objects.all()}
    
    context = {
       'solicitacoes': solicitacoes,

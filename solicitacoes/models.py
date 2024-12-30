@@ -12,6 +12,7 @@ class Solicitacao(models.Model):
    c1_emissao = models.DateField(blank=False)
    user = models.ForeignKey(User, to_field='cpf', default='', on_delete=models.DO_NOTHING)
    tipo = models.CharField(max_length=15, null=False, default='Compra')
+   status = models.CharField(max_length=30, default='')
 
    def __str__(self):
       return self.c1_num
@@ -45,3 +46,19 @@ class Produto(models.Model):
             self.r_e_c_n_o = recno[0][0]
 
       super().save(*args, **kwargs)
+
+class StatusPedido(models.Model):
+   C7_NUM = models.CharField(max_length=6)
+   C7_QUJE = models.FloatField()
+   C7_QTDACLA = models.FloatField()
+   C7_CONAPRO = models.CharField(max_length=1)
+   C7_TIPO = models.CharField(max_length=1)
+   C7_RESIDUO = models.CharField(max_length=1)
+   C7_QUANT = models.FloatField()
+   C7_CONTRA = models.CharField(max_length=1)
+
+   class Meta:
+      managed = False
+      db_table = 'SC7010'
+
+   objects = models.Manager().db_manager('protheus')

@@ -81,39 +81,38 @@
     </header>
 
     <!-- Corpo da página -->
-    <main class="container py-4">
+    <div class="container py-4 card mt-3">
         <div class="table-responsive">
-            <!-- Messages container -->
-        <div class="messages position-fixed top-0 start-50 translate-middle-x mt-3" style="z-index: 1050; width: 100%; max-width: 600px;">
+            <div class="messages position-fixed top-0 start-50 translate-middle-x mt-3" style="z-index: 1050; width: 100%; max-width: 600px;">
                 {% for message in messages %}
-                <div class="alert {% if message.tags %}alert-{{ message.tags }}{% else %}alert-dark{% endif %} alert-dismissible fade show" role="alert">
-                    <p class="mb-0">{{message}}</p>
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="close"></button>
-                </div>
+                    <div class="alert {% if message.tags %}alert-{{ message.tags }}{% else %}alert-dark{% endif %} alert-dismissible fade show" role="alert">
+                        <p class="mb-0">{{message}}</p>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="close"></button>
+                    </div>
                 {% endfor %}
-                
+    
                 {% if form.errors %}
-                <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                {% for field in form %}
-                {% if field.errors %}
-                    <strong>{{ field.label }}:</strong>
-                    {% for error in field.errors %}
-                    {{ error }}<br>
-                    {% endfor %}
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        {% for field in form %}
+                            {% if field.errors %}
+                                <strong>{{ field.label }}:</strong>
+                                {% for error in field.errors %}
+                                    {{ error }}<br>
+                                {% endfor %}
+                            {% endif %}
+                        {% endfor %}
+    
+                        {% if form.non_field_errors %}
+                            {% for error in form.non_field_errors %}
+                                {{ error }}
+                            {% endfor %}
+                        {% endif %}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
                 {% endif %}
-                {% endfor %}
-                
-                {% if form.non_field_errors %}
-                {% for error in form.non_field_errors %}
-                    {{ error }}
-                {% endfor %}
-                {% endif %}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-                {% endif %}
-        </div>
+            </div>
             <form method="get" class="form-group">
-                
+    
                 <div class="d-flex align-items-center pb-5 gap-3 w-100">
                     <div class="flex-grow-1">
                         <label for="{{ field.id_for_label }}" class="form-label">{{ form.data_inicio.label }}</label>
@@ -124,10 +123,10 @@
                         {{ form.data_fim }}
                     </div>
                     {% if user.role == 'admin' %}
-                    <div class="flex-grow-1">
-                        <label for="{{ field.id_for_label }}" class="form-label">{{ form.usuario.label }}</label>
-                        {{ form.usuario }}
-                    </div>
+                        <div class="flex-grow-1">
+                            <label for="{{ field.id_for_label }}" class="form-label">{{ form.usuario.label }}</label>
+                            {{ form.usuario }}
+                        </div>
                     {% endif %}
                     <div class="d-flex align-items-end align-self-end" style="height: 100%;">
                         <button type="submit" class="btn btn-primary d-flex align-items-center" style="height: 100%; padding: 10px 20px;">
@@ -135,20 +134,20 @@
                         </button>
                     </div>
                 </div>
-                
+    
             </form>
             <div>
                 <table id="solicitacoesTable" class="table table-bordered table-striped" data-toggle="table">
                     <thead>
                         <tr>
                             <th>Id</th>
-                            <!-- <th>Tipo</th> Tipo oculto, quando adicionar a solicitação de compras passar a exibir -->
                             <th>Solicitante</th>
                             <th>Produto</th>
                             <th>Quantidade</th>
                             <th>Data de Necessidade</th>
                             <th>Observações</th>
                             <th>Emissão</th>
+                            <!-- <th>Status</th> -->
                         </tr>
                     </thead>
                     <tbody>
@@ -156,13 +155,13 @@
                             {% for produto in solicitacao.produto_set.all %}
                                 <tr>
                                     <td>{{ produto.c1_num }}</td>
-                                    <!-- <td>{{ solicitacao.tipo }}</td>   Tipo oculto, quando adicionar a solicitação de compras passar a exibir -->
                                     <td>{{ solicitacao.user.nome }}</td>
                                     <td>{{ produto.c1_descri }}</td>
                                     <td>{{ produto.c1_quant }}</td>
                                     <td>{{ produto.c1_datprf|date:"d/m/Y" }}</td>
                                     <td>{{ produto.c1_obs }}</td>
                                     <td>{{ solicitacao.c1_emissao|date:"d/m/Y" }}</td>
+                                    <!-- <td>{{ solicitacao.status }}</td> -->
                                 </tr>
                             {% endfor %}
                         {% endfor %}
@@ -170,7 +169,7 @@
                 </table>
             </div>
         </div>
-    </main>
+    </div>
 
     <!-- Bootstrap JS -->
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>

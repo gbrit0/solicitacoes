@@ -161,15 +161,15 @@
         <div class="produtos-section">
             <div class="messages position-fixed top-0 start-50 translate-middle-x mt-3" style="z-index: 1050; width: 100%; max-width: 600px;">
                 {% for message in messages %}
-                    <div class="alert {% if message.tags %}alert-{{ message.tags }}{% else %}alert-dark{% endif %} alert-dismissible fade show" role="alert">
-                        <p class="mb-0">{{message}}</p>
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="close"></button>
-                    </div>
-                    {% endfor %}
+                <div class="alert {% if message.tags %}alert-{{ message.tags }}{% else %}alert-dark{% endif %} alert-dismissible fade show" role="alert">
+                    <p class="mb-0">{{message}}</p>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="close"></button>
                 </div>
+                {% endfor %}
+            </div>
             <div class="card" style="width: 100%">
+                <h2 class="card-title mb-4">Produtos</h2>
                 <div class="card-body d-flex flex-column">
-                    <h2 class="card-title mb-4">Produtos</h2>
                     {{ formset.management_form }}
                     
                     <form id="myForm" method="post" action="" class="table-scroll-container">

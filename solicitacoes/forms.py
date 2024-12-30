@@ -91,11 +91,6 @@ class ProdutosForm(forms.ModelForm):
         widget=forms.HiddenInput()
     )
 
-    DELETE = forms.CharField(
-        required=False,
-        widget=forms.HiddenInput()
-    )
-
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         connectionString = f"DRIVER={{ODBC Driver 18 for SQL Server}};SERVER={os.environ['HOST']};DATABASE={os.environ['DATABASE']};UID={os.environ['USER']};PWD={os.environ['PASSWORD']};TrustServerCertificate=yes"
