@@ -1,43 +1,38 @@
 from django.shortcuts import render
 from home.forms import FiltroSolicitacaoForm
 from django.contrib.auth.decorators import login_required
-from solicitacoes.models import Solicitacao, Produto, StatusPedido
+from solicitacoes.models import Solicitacao, Produto, StatusPedido, StatusSC1
 
 
 def calcular_status(solicitacao):
+    status_sc1 = StatusSC1.objects.filter(C1_NUM=solicitacao.c1_num).first()
+    if status_sc1:
+        if status_sc1.C1_QUJE == 0 and (status_sc1.C1_COTACAO == '      ' or status_sc1.C1_COTACAO == 'IMPORT') and status_sc1.C1_APROV == 'B':
+            return '<i class="fa-solid fa-circle text-dark"></i>' # Preto - Solicitação Bloqueada
+
     status_pedido = StatusPedido.objects.filter(C7_NUM=solicitacao.c1_num).first()
     if not status_pedido:
-        # return '<i class="fa-solid fa-circle text-secondary"></i>'  
-        # return '<i class="text-danger fa-solid fa-circle-xmark">Rejeitado</i>'  # Rejeitado
-        return '<i class="text-warning fa-solid fa-hourglass-half">Em aprovação</i>'  # Em aprovação
-        return '<i class="text-danger fa-solid fa-trash">Eliminado</i>'  # Eliminado
-        return '<i class="text-info fa-solid fa-file-contract">Contrato</i>'  # Contrato
-        return '<i class="text-primary fa-solid fa-lock">Autorização</i>'  # Autorização
-        return '<i class="text-info fa-solid fa-truck">Em recebimento</i>'  # Em recebimento
-        return '<i class="text-success fa-solid fa-check-circle">Recebido</i>'  # Recebido
-        return '<i class="text-warning fa-solid fa-circle-half-stroke">Parcial</i>'  # Parcial
-        return '<i class="text-secondary fa-solid fa-clock">Pendente</i>'  # Pendente
+        return '<i class="fa-solid fa-circle indigo"></i>' # Roxo - Caso não pegue o status do pedido
          
     
     if status_pedido.C7_CONAPRO == 'R':
-        return '<i class="text-danger fa-solid fa-circle-xmark"></i>'  # Rejeitado
+        return '<i class="fa-solid fa-circle-xmark text-danger"></i>'  # X vermelho - Rejeitado pelo aprovador
     elif status_pedido.C7_CONAPRO == 'B' and status_pedido.C7_QUJE < status_pedido.C7_QUANT:
-        return '<i class="text-warning fa-solid fa-hourglass-half"></i>'  # Em aprovação
+        return '<i class="fa-solid fa-circle text-primary"></i>'  # Azul - Em aprovação
     elif status_pedido.C7_RESIDUO:
-        return '<i class="text-danger fa-solid fa-trash"></i>'  # Eliminado
+        return '<i class="fa-solid fa-circle text-secondary"></i>'  # Cinza - PC Eliminado por Resíduo
     elif status_pedido.C7_CONTRA and status_pedido.C7_RESIDUO:
-        return '<i class="text-info fa-solid fa-file-contract"></i>'  # Contrato
+        return '<i class="fa-solid fa-circle text-info"></i>'  # Ciano - Contrato
     elif status_pedido.C7_TIPO != '1':
-        return '<i class="text-primary fa-solid fa-lock"></i>'  # Autorização
+        return '<i class="fa-solid fa-circle brown"></i>'  # Marrom - ???
     elif status_pedido.C7_QQTDACLA > 0:
-        return '<i class="text-info fa-solid fa-truck"></i>'  # Em recebimento
+        return '<i class="fa-solid fa-circle text-orange"></i>'  # Laranja - Em recebimento - pré-nota
     elif status_pedido.C7_QUJE >= status_pedido.C7_QUANT:
-        return '<i class="text-success fa-solid fa-check-circle"></i>'  # Recebido
-    elif status_pedido.C7_QUJE > 0 and status_pedido.C7_QUJE < status_pedido.C7_QUANT:
-        return '<i class="text-warning fa-solid fa-circle-half-stroke"></i>'  # Parcial
+        return '<i class="fa-solid fa-circle text-danger"></i>'  # Vermelho - Recebido
+    elif status_pedido.C7_QUJE != 0 and status_pedido.C7_QUJE < status_pedido.C7_QUANT:
+        return '<i class="fa-solid fa-circle text-warning"></i>'  # Amarelo - Recebido parcialmente
     elif status_pedido.C7_QUJE == 0 and status_pedido.C7_QQTDACLA == 0:
-        return '<i class="text-secondary fa-solid fa-clock"></i>'  # Pendente
-    return '<i class="text-secondary fa-solid fa-circle"></i>'  # Indefinido
+        return '<i class="fa-solid fa-circle text-success"></i>'  # Verde - Pendente
 
 
 
