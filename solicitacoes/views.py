@@ -66,7 +66,7 @@ def criar_solicitacao(request):
                             insert = (
                                 f"BEGIN TRY "
                                     f"BEGIN TRANSACTION; "
-                                    f"INSERT INTO SC1010 "
+                                    f"INSERT INTO SC1010 WITH (TABLOCKX)"
                                     f"(C1_FILIAL, C1_NUM, C1_ITEM, C1_DESCRI, C1_CC, C1_PRODUTO, "
                                     f"C1_LOCAL, C1_QUANT, C1_EMISSAO, C1_UM, C1_FILENT, "
                                     f"C1_DATPRF, C1_SOLICIT, C1_XOBMEMO, R_E_C_N_O_, C1_XSOLWEB)"
