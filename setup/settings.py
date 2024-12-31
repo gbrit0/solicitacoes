@@ -79,20 +79,34 @@ TEMPLATES = [
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
-    'handlers': {
-        'console': {
-            'class': 'logging.StreamHandler',
+    'formatters': {
+        'verbose': {
+            'format': '{levelname} {asctime} {module} {message}',
+            'style': '{',
+        },
+        'simple': {
+            'format': '{levelname} {message}',
+            'style': '{',
         },
     },
-    'root': {
-        'handlers': ['console'],
-        'level': 'INFO',
+    'handlers': {
+        'file': {
+            'level': 'ERROR',
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(BASE_DIR, 'logs/errors.log'),
+            'formatter': 'verbose',
+        },
+        'console': {
+            'level': 'ERROR',
+            'class': 'logging.StreamHandler',
+            'formatter': 'simple',
+        },
     },
     'loggers': {
         'django': {
-            'handlers': ['console'],
-            'level': 'INFO',
-            'propagate': False,
+            'handlers': ['file', 'console'],
+            'level': 'ERROR',
+            'propagate': True,
         },
     },
 }

@@ -39,12 +39,12 @@ class Produto(models.Model):
       connectionString = f"DRIVER={{ODBC Driver 18 for SQL Server}};SERVER={os.environ['HOST']};DATABASE={os.environ['DATABASE']};UID={os.environ['USER']};PWD={os.environ['PASSWORD']};TrustServerCertificate=yes"   
       with pyodbc.connect(connectionString) as conexao:
          with conexao.cursor() as cursor:
-            cursor.execute("""SELECT MAX(R_E_C_N_O_) + 1
+            cursor.execute("""SELECT MAX(R_E_C_N_O_)
                               FROM SC1010
                            """)
-            recno = cursor.fetchall()
+            recno = cursor.fetchone()
             
-            self.r_e_c_n_o = recno[0][0]
+            self.r_e_c_n_o = recno+1
 
       super().save(*args, **kwargs)
 
