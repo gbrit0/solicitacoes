@@ -45,8 +45,11 @@ def criar_solicitacao(request):
                     with conexao.cursor() as cursor:
                         erros = []
                         for num, instance in enumerate(instances):
-                            
                             try:
+                                
+                                cursor.execute("""SELECT MAX(R_E_C_N_O_) + 1FROM SC1010 """)
+                                instance.r_e_c_n_o = cursor.fetchone()[0] 
+
                                 instance.c1_num = solicitacao_form
 
                                 instance.c1_item = f"{num+1:04d}"
@@ -100,7 +103,7 @@ def criar_solicitacao(request):
                                 cursor.execute((
                                     # f"BEGIN TRY "
                                     #     f"BEGIN TRANSACTION; "
-                                        f"INSERT INTO SC1010 WITH (TABLOCKX)"
+                                        f"INSERT INTO SC1010"
                                         f"(C1_FILIAL, C1_NUM, C1_ITEM, C1_DESCRI, C1_CC, C1_PRODUTO, "
                                         f"C1_LOCAL, C1_QUANT, C1_EMISSAO, C1_UM, C1_FILENT, "
                                         f"C1_DATPRF, C1_SOLICIT, C1_XOBMEMO, R_E_C_N_O_, C1_XSOLWEB)"

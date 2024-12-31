@@ -34,19 +34,19 @@ class Produto(models.Model):
    def __str__(self):
       return self.c1_produto
    
-   def save(self, *args, **kwargs):
+   # def save(self, *args, **kwargs):
       
-      connectionString = f"DRIVER={{ODBC Driver 18 for SQL Server}};SERVER={os.environ['HOST']};DATABASE={os.environ['DATABASE']};UID={os.environ['USER']};PWD={os.environ['PASSWORD']};TrustServerCertificate=yes"   
-      with pyodbc.connect(connectionString) as conexao:
-         with conexao.cursor() as cursor:
-            cursor.execute("""SELECT MAX(R_E_C_N_O_)
-                              FROM SC1010
-                           """)
-            recno = cursor.fetchone()
+   #    connectionString = f"DRIVER={{ODBC Driver 18 for SQL Server}};SERVER={os.environ['HOST']};DATABASE={os.environ['DATABASE']};UID={os.environ['USER']};PWD={os.environ['PASSWORD']};TrustServerCertificate=yes"   
+   #    with pyodbc.connect(connectionString) as conexao:
+   #       with conexao.cursor() as cursor:
+   #          cursor.execute("""SELECT MAX(R_E_C_N_O_)
+   #                            FROM SC1010
+   #                         """)
+   #          recno = cursor.fetchone()
             
-            self.r_e_c_n_o = recno+1
+   #          self.r_e_c_n_o = recno + 1
 
-      super().save(*args, **kwargs)
+   #    super().save(*args, **kwargs)
 
 class StatusPedido(models.Model):
    recno = models.AutoField(db_column='R_E_C_N_O_', primary_key=True)  # Mapeia a coluna R_E_C_N_O_
