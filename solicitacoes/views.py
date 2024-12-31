@@ -43,84 +43,76 @@ def criar_solicitacao(request):
 
                 with pyodbc.connect(connectionString) as conexao:
                     with conexao.cursor() as cursor:
+                        erros = []
                         for num, instance in enumerate(instances):
-                            # Atualiza dados do produto
-                            instance.c1_num = solicitacao_form
-
-                            instance.c1_item = f"{num+1:04d}"
                             
-                            cursor.execute(f"select MAX(B1_DESC) from SB1010 WHERE B1_COD = '{instance.c1_produto}' AND D_E_L_E_T_ <> '*' AND B1_MSBLQL = '2' AND B1_FILIAL = '01'")
-                            instance.c1_descri = cursor.fetchall()[0][0]
-                            produto = str(instance.c1_descri).replace("\n", " ").replace("\r", " ")[:30]
+                            try:
+                                instance.c1_num = solicitacao_form
 
-                            cursor.execute(f"select MAX(B1_UM) from SB1010 WHERE B1_COD = '{instance.c1_produto}' AND D_E_L_E_T_ <> '*' AND B1_MSBLQL = '2' AND B1_FILIAL = '01'")
-                            instance.c1_um =  cursor.fetchall()[0][0]
+                                instance.c1_item = f"{num+1:04d}"
+                                
+                                cursor.execute(f"select MAX(B1_DESC) from SB1010 WHERE B1_COD = '{instance.c1_produto}' AND D_E_L_E_T_ <> '*' AND B1_MSBLQL = '2' AND B1_FILIAL = '01'")
+                                instance.c1_descri = cursor.fetchall()[0][0]
+                                produto = str(instance.c1_descri).replace("\n", " ").replace("\r", " ")[:30]
 
-                            cursor.execute(f"select MAX(B1_LOCPAD) from SB1010 WHERE B1_COD = '{instance.c1_produto}' AND D_E_L_E_T_ <> '*' AND B1_MSBLQL = '2' AND B1_FILIAL = '01'")
-                            instance.c1_local =  cursor.fetchall()[0][0]
-                            
-                            instance.c1_filent = '0101'
+                                cursor.execute(f"select MAX(B1_UM) from SB1010 WHERE B1_COD = '{instance.c1_produto}' AND D_E_L_E_T_ <> '*' AND B1_MSBLQL = '2' AND B1_FILIAL = '01'")
+                                instance.c1_um =  cursor.fetchall()[0][0]
 
-                            instance.save()
-                            
-                            insert = (
-                                f"BEGIN TRY "
-                                    f"BEGIN TRANSACTION; "
-                                    f"INSERT INTO SC1010 WITH (TABLOCKX)"
-                                    f"(C1_FILIAL, C1_NUM, C1_ITEM, C1_DESCRI, C1_CC, C1_PRODUTO, "
-                                    f"C1_LOCAL, C1_QUANT, C1_EMISSAO, C1_UM, C1_FILENT, "
-                                    f"C1_DATPRF, C1_SOLICIT, C1_XOBMEMO, R_E_C_N_O_, C1_XSOLWEB)"
-                                    f"VALUES ( "
-                                        f"'{solicitacao_form.c1_filial}', "
-                                        f"'{solicitacao_form.c1_num}', "
-                                        f"'{instance.c1_item}', "
-                                        f"'{produto}', "
-                                        f"'{instance.c1_cc}', "
-                                        f"'{instance.c1_produto}', "
-                                        f"'{instance.c1_local}', "
-                                        f"'{instance.c1_quant}', "
-                                        f"'{str(solicitacao_form.c1_emissao).replace('-', '')[:8]}', "
-                                        f"'{instance.c1_um}', "
-                                        f"'{instance.c1_filent}', "
-                                        f"'{str(instance.c1_datprf).replace('-', '')}', "
-                                        f"'{solicitacao_form.c1_solicit}', "
-                                        f"CONVERT(VARBINARY(MAX), '{instance.c1_obs}'), "
-                                        f"'{instance.r_e_c_n_o}', "
-                                        f"'{solicitacao_form.user.cpf}'); "
-                                    
-                                    f"COMMIT; "
-                                f"END TRY "
-                                f"BEGIN CATCH "
-                                    f"ROLLBACK;"
-                                    f"THROW; "
-                                f"END CATCH; "
-                            )
-                            
-                            # f"INSERT INTO SC1010 "
-                            #     f"(C1_FILIAL, C1_NUM, C1_ITEM, C1_DESCRI, C1_CC, C1_PRODUTO, "
-                            #     f"C1_LOCAL, C1_QUANT, C1_EMISSAO, C1_UM, C1_FILENT, "
-                            #     f"C1_DATPRF, C1_SOLICIT, C1_XOBMEMO, R_E_C_N_O_, C1_XSOLWEB) "
-                            #     f"VALUES ('{solicitacao_form.c1_filial}', "
-                            #     f"'{solicitacao_form.c1_num}', "
-                            #     f"'{instance.c1_item}', "
-                            #     f"'{produto}', "
-                            #     f"'{instance.c1_cc}', "
-                            #     f"'{instance.c1_produto}', "
-                            #     f"'{instance.c1_local}', "
-                            #     f"'{instance.c1_quant}', "
-                            #     f"'{str(solicitacao_form.c1_emissao).replace('-', '')[:8]}', "
-                            #     f"'{instance.c1_um}',"
-                            #     f"'{instance.c1_filent}',"
-                            #     f"'{str(instance.c1_datprf).replace('-', '')}', "
-                            #     f"'{solicitacao_form.c1_solicit}', "
-                            #     f"CONVERT(VARBINARY(MAX), '{instance.c1_obs}'), "
-                            #     f"'{instance.r_e_c_n_o}', "
-                            #     f"'{solicitacao_form.user.cpf}')"
+                                cursor.execute(f"select MAX(B1_LOCPAD) from SB1010 WHERE B1_COD = '{instance.c1_produto}' AND D_E_L_E_T_ <> '*' AND B1_MSBLQL = '2' AND B1_FILIAL = '01'")
+                                instance.c1_local =  cursor.fetchall()[0][0]
+                                
+                                instance.c1_filent = '0101'
+                                
+                                insert = (
+                                    f"BEGIN TRY "
+                                        f"BEGIN TRANSACTION; "
+                                        f"INSERT INTO SC1010 WITH (TABLOCKX)"
+                                        f"(C1_FILIAL, C1_NUM, C1_ITEM, C1_DESCRI, C1_CC, C1_PRODUTO, "
+                                        f"C1_LOCAL, C1_QUANT, C1_EMISSAO, C1_UM, C1_FILENT, "
+                                        f"C1_DATPRF, C1_SOLICIT, C1_XOBMEMO, R_E_C_N_O_, C1_XSOLWEB)"
+                                        f"VALUES ( "
+                                            f"'{solicitacao_form.c1_filial}', "
+                                            f"'{solicitacao_form.c1_num}', "
+                                            f"'{instance.c1_item}', "
+                                            f"'{produto}', "
+                                            f"'{instance.c1_cc}', "
+                                            f"'{instance.c1_produto}', "
+                                            f"'{instance.c1_local}', "
+                                            f"'{instance.c1_quant}', "
+                                            f"'{str(solicitacao_form.c1_emissao).replace('-', '')[:8]}', "
+                                            f"'{instance.c1_um}', "
+                                            f"'{instance.c1_filent}', "
+                                            f"'{str(instance.c1_datprf).replace('-', '')}', "
+                                            f"'{solicitacao_form.c1_solicit}', "
+                                            f"CONVERT(VARBINARY(MAX), '{instance.c1_obs}'), "
+                                            f"'{instance.r_e_c_n_o}', "
+                                            f"'{solicitacao_form.user.cpf}'); "
+                                        
+                                        f"COMMIT; "
+                                    f"END TRY "
+                                    f"BEGIN CATCH "
+                                        f"ROLLBACK;"
+                                        f"THROW; "
+                                    f"END CATCH; "
+                                )
+                                
+                                cursor.execute(insert)
 
+                                # conexao.commit() # no sql já tem o commit, testar se insere normalmente
+                            except pyodbc.Error as e:
+                                erros.append({
+                                    'produto': produto,
+                                    'erro': e
+                                })
+                                continue
+                            else:
+                                instance.save()
 
-
-                            cursor.execute(insert)
-                            conexao.commit()
+                            finally:
+                                if erros:
+                                    for erro in erros:
+                                        messages.error(request, f"Não foi possível cadastrar a solicitação para o produto {erro['produto']}. Tente novamente mais tarde. ERRO: {erro['erro']}")
+                                    return redirect('lista_solicitacoes')
                             
                 messages.success(request, "Solicitação cadastrada com sucesso!")
                 return redirect('lista_solicitacoes')  
