@@ -6,41 +6,43 @@
       <meta charset="UTF-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <title>Sistema de Solicitações</title>
-      <!-- Bootstrap CSS -->
       <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
    </head>
    <body class="bg-light">
-      <div class="container d-flex justify-content-center align-items-center vh-100">
-         <div class="messages position-fixed start-50 translate-middle" style="z-index: 1050; width: 100%; max-width: 600px;">
-            {% for message in messages %}
-               <div class="alert {% if message.tags %}alert-{{ message.tags }}{% else %}alert-dark{% endif %} alert-dismissible fade show position-fixed top-0" style="max-width: 600px;"" role="alert">
-                    <p class="mb-0">{{message}}</p>
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="close"></button>
-                </div>
-            {% endfor %}
-                
-            {% if form.errors %}
-            <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                {% for field in form %}
-                {% if field.errors %}
-                    <strong>{{ field.label }}:</strong>
-                    {% for error in field.errors %}
-                    {{ error }}<br>
-                    {% endfor %}
-                {% endif %}
-                {% endfor %}
-                
-                {% if form.non_field_errors %}
-                {% for error in form.non_field_errors %}
-                    {{ error }}
-                {% endfor %}
-                {% endif %}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      <!-- Messages container -->
+      <div class="messages position-fixed top-0 start-50 translate-middle-x mt-3" style="z-index: 1050; width: 100%; max-width: 600px;">
+         {% for message in messages %}
+            <div class="alert {% if message.tags %}alert-{{ message.tags }}{% else %}alert-dark{% endif %} alert-dismissible fade show" role="alert">
+               <p class="mb-0">{{message}}</p>
+               <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="close"></button>
             </div>
+         {% endfor %}
+            
+         {% if form.errors %}
+         <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            {% for field in form %}
+            {% if field.errors %}
+               <strong>{{ field.label }}:</strong>
+               {% for error in field.errors %}
+               {{ error }}<br>
+               {% endfor %}
             {% endif %}
-        </div>
+            {% endfor %}
+            
+            {% if form.non_field_errors %}
+            {% for error in form.non_field_errors %}
+               {{ error }}
+            {% endfor %}
+            {% endif %}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+         </div>
+         {% endif %}
+      </div>
+      <!-- Login container -->
+      <div class="container d-flex justify-content-center align-items-center vh-100">
          <div class="card shadow-lg p-4" style="width: 100%; max-width: 400px;">
-            <h3 class="text-center mb-4">Entrar</h3>
+            <h3 class="text-center mb-4">Sistema de Solicitações</h3>
+            <!-- <h4 class="text-center mb-4">Entrar</h4> -->
             <form action="{% url 'login' %}" method="POST">
                {% csrf_token %}
                   <div class="row">
@@ -53,16 +55,15 @@
                   </div>
                   <button type="submit" class="btn btn-primary w-100">Entrar</button>
             </form>
-            <div class="text-center mt-3">
+            <!-- <div class="text-center mt-3">
                <a href="#">Esqueceu sua senha?</a>
             </div>
             <div class="text-center mt-2">
                <small>Não tem uma conta? <a href="#">Cadastre-se</a></small>
-            </div>
+            </div> -->
          </div>
       </div>
 
-      <!-- Bootstrap JS -->
       <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
       <script>
          function mascararCPF(input) {
@@ -75,63 +76,3 @@
       </script>
    </body>
 </html>
-<!-- {% load static %}
-
-<!DOCTYPE html>
-<html lang="pt-BR">
-   <head>
-      <meta charset="UTF-8">
-      <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>Sistema de Cadastro</title> -->
-      <!-- Bootstrap CSS -->
-      <!-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-   </head>
-   <body class="bg-light">
-      <div class="container d-flex justify-content-center align-items-center vh-100">
-         {% for message in messages %}
-         <div class="alert alert-dark alert-dismissible fade show position-fixed top-0" style="max-width: 600px; margin-top: 10px;" role="alert">
-               {{ message }}
-               <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-         </div>
-         {% endfor %}
-         <div class="card shadow-lg p-4" style="width: 100%; max-width: 400px;">
-            <h3 class="text-center mb-4">Cadastrar</h3>
-            <form action="{% url 'cadastro' %}" method="POST">
-               {% csrf_token %}
-               <div class="mb-3">
-                  <label for="id_nome" class="form-label">Nome</label>
-                  <input type="text" class="form-control" id="id_nome" name="nome" required>
-               </div>
-               <div class="mb-3">
-                  <label for="id_email" class="form-label">E-mail</label>
-                  <input type="email" class="form-control" id="id_email" name="email" required>
-               </div>
-               <div class="mb-3">
-                  <label for="id_cpf" class="form-label">CPF</label>
-                  <input type="text" class="form-control" id="id_cpf" name="cpf" maxlength="14" oninput="mascararCPF(this)" required>
-               </div>
-               <div class="mb-3">
-                  <label for="id_senha" class="form-label">Senha</label>
-                  <input type="password" class="form-control" id="id_senha" name="senha" required>
-               </div>
-               <button type="submit" class="btn btn-primary w-100">Cadastrar</button>
-            </form>
-            <div class="text-center mt-3">
-               <small>Já tem uma conta? <a href="{% url 'login' %}">Entre aqui</a></small>
-            </div>
-         </div>
-      </div> -->
-
-      <!-- Bootstrap JS -->
-      <!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-      <script>
-         function mascararCPF(input) {
-            let valor = input.value.replace(/\D/g, '');
-            valor = valor.replace(/(\d{3})(\d)/, '$1.$2');
-            valor = valor.replace(/(\d{3})(\d)/, '$1.$2');
-            valor = valor.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
-            input.value = valor;
-         }
-      </script>
-   </body>
-</html> -->

@@ -2,18 +2,27 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-    <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- Required meta tags for bootstrap-select-->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>Sistema de Solicitações</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{% static '/styles/style.css' %}">
+    <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.1.3/dist/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous"> -->
+
+    <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
     <style>
         body {
-            padding-top: 60px; /* Espaço para o header fixo */
             height: 100vh;
             overflow: auto;
         }
@@ -102,9 +111,9 @@
 </head>
 
 <body>
-    <header class="header-fixed bg-primary text-white py-3">
+    <header class="bg-primary text-white py-3">
         <div class="container d-flex justify-content-between align-items-center">
-            <a href="#" class="text-white text-decoration-none h4">Sistema de Solicitações</a>
+            <a href="{% url 'lista_solicitacoes' %}" class="text-white text-decoration-none h4">Sistema de Solicitações</a>
             <nav class="d-flex align-items-center">
                 <ul class="nav">
                     <li class="nav-item">
@@ -113,63 +122,128 @@
                     <li class="nav-item">
                         <a class="nav-link text-white" href="{% url 'criar_solicitacao' %}">Nova Solicitação de Compras</a>
                     </li>
+                    {% if user.role == 'admin' %}
                     <li class="nav-item">
                         <a class="nav-link text-white" href="{% url 'cadastro' %}">Cadastrar Usuário</a>
                     </li>
+                    {% endif %}
                 </ul>
-                <a class="btn btn-outline-light ms-3" href="{% url 'logout' %}">Sair</a>
-                <button class="btn btn-light ms-2">Perfil</button>
+                <a class="btn btn-light ms-3" href="{% url 'logout' %}">Sair</a>
+                <!-- <button class="btn btn-light ms-2">Perfil</button> -->
             </nav>
         </div>
     </header>
-
     <form class="page-container" method="POST">
         {% csrf_token %}
-        <div class="solicitacao-section">
-            <div class="messages position-fixed start-50 translate-middle" style="z-index: 1050; width: 100%; max-width: 600px;">
+        
+
+        <div class="produtos-section">
+            <div class="messages position-fixed top-0 start-50 translate-middle-x mt-3" style="z-index: 1050; width: 100%; max-width: 600px;">
                 {% for message in messages %}
-                   <div class="alert {% if message.tags %}alert-{{ message.tags }}{% else %}alert-dark{% endif %} alert-dismissible fade show position-fixed top-0" style="max-width: 600px;"" role="alert">
-                        <p class="mb-0">{{message}}</p>
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="close"></button>
-                    </div>
-                {% endfor %}
-                    
-                {% if form.errors %}
-                <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                    {% for field in form %}
-                    {% if field.errors %}
-                        <strong>{{ field.label }}:</strong>
-                        {% for error in field.errors %}
-                        {{ error }}<br>
-                        {% endfor %}
-                    {% endif %}
-                    {% endfor %}
-                    
-                    {% if form.non_field_errors %}
-                    {% for error in form.non_field_errors %}
-                        {{ error }}
-                    {% endfor %}
-                    {% endif %}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                <div class="alert {% if message.tags %}alert-{{ message.tags }}{% else %}alert-dark{% endif %} alert-dismissible fade show" role="alert">
+                    <p class="mb-0">{{message}}</p>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="close"></button>
                 </div>
-                {% endif %}
+                {% endfor %}
             </div>
-            <div class="card">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-start">
-                        <div class="flex-grow-1">
-                            <h2 class="card-title mb-4">Dados da Solicitação</h2>
-                            <div class="row">
-                                {% for field in solicitacao_form %}
-                                <div class="col-md-4 mb-3">
-                                    <label for="{{ field.id_for_label }}" class="form-label">
-                                        {{ field.label }}
-                                    </label>
-                                    {{ field }}
-                                </div>
+            <div class="card" style="width: 100%">
+                <h2 class="card-title mb-4">Produtos</h2>
+                <div class="card-body d-flex flex-column">
+                    {{ formset.management_form }}
+                    
+                    <form id="myForm" method="post" action="" class="table-scroll-container">
+                        <table class="table table-hover" id="produtos-table">
+                            <thead>
+                                <tr>
+                                    <th>Centro de Custo</th>
+                                    <th>Produto</th>
+                                    <th>Quantidade</th>
+                                    <th>Data de Necessidade</th>
+                                    <th>Observações</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="produtos-formset">
+                                {% for form in formset %}
+                                <tr class="produto-form">
+                                    <td>
+                                        {{ form.c1_cc }}
+                                        {% if form.c1_cc.errors %}
+                                            {% for error in form.c1_cc.errors %}
+                                                <div class="invalid-feedback d-block">{{ error }}</div>
+                                            {% endfor %}
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {{ form.c1_produto }}
+                                        {% if form.c1_produto.errors %}
+                                            {% for error in form.c1_produto.errors %}
+                                                <div class="invalid-feedback d-block">{{ error }}</div>
+                                            {% endfor %}
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {{ form.c1_quant }}
+                                        {% if form.c1_quant.errors %}
+                                            {% for error in form.c1_quant.errors %}
+                                                <div class="invalid-feedback d-block">{{ error }}</div>
+                                            {% endfor %}
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {{ form.c1_datprf }}
+                                        {% if form.c1_datprf.errors %}
+                                            {% for error in form.c1_datprf.errors %}
+                                                <div class="invalid-feedback d-block">{{ error }}</div>
+                                            {% endfor %}
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {{ form.c1_obs }}
+                                        {% if form.c1_obs.errors %}
+                                            {% for error in form.c1_obs.errors %}
+                                                <div class="invalid-feedback d-block">{{ error }}</div>
+                                            {% endfor %}
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <button type="button" class="btn btn-danger btn-sm remove-produto">
+                                            <i class="fas fa-trash">{% if form.instance.pk %}{{ form.DELETE }}{% endif %}</i>
+                                        </button>
+                                    </td>
+                                </tr>
                                 {% endfor %}
-                            </div>
-                        </div>
+                            </tbody>
+                            <table style="display: none;">
+                                <tr id="empty-form-template" class="produto-form">
+                                    <td>
+                                        {{ formset.empty_form.c1_cc }}
+                                    </td>
+                                    <td>
+                                        {{ formset.empty_form.c1_produto }}
+                                    </td>
+                                    <td>
+                                        {{ formset.empty_form.c1_quant }}
+                                    </td>
+                                    <td>
+                                        {{ formset.empty_form.c1_datprf }}
+                                    </td>
+                                    <td>
+                                        {{ formset.empty_form.c1_obs }}
+                                    </td>
+                                    <td>
+                                        <button type="button" class="btn btn-danger btn-sm remove-produto">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            </table>
+                        </table>
+                    </div>
+                    <div class="add-produto-container text-end">
+                        <button type="button" id="adicionar-produto" class="btn btn-secondary">
+                            <i class="fas fa-plus me-2"></i> Adicionar Produto
+                        </button>
                         <button type="submit" class="btn btn-primary">
                             <i class="fas fa-save me-2"></i> Salvar Solicitação
                         </button>
@@ -177,68 +251,73 @@
                 </div>
             </div>
         </div>
-
-        <div class="produtos-section">
-            <div class="card">
-                <div class="card-body d-flex flex-column">
-                    <h2 class="card-title mb-4">Produtos</h2>
-                    {{ formset.management_form }}
-                    
-                    <div class="table-scroll-container">
-                        <table class="table table-hover" id="produtos-table">
-                            <thead>
-                                <tr>
-                                    <th>Produto</th>
-                                    <th>Quantidade</th>
-                                    <th>Ações</th>
-                                </tr>
-                            </thead>
-                            <tbody id="produtos-formset">
-                                {% for form in formset %}
-                                <tr class="produto-form">
-                                    <td>{{ form.c1_produto }}</td>
-                                    <td>{{ form.c1_quant }}</td>
-                                    <td>
-                                        <button type="button" class="btn btn-danger btn-sm remove-produto">
-                                            <i class="fas fa-trash"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-                <div class="add-produto-container text-end">
-                    <button type="button" id="adicionar-produto" class="btn btn-secondary">
-                        <i class="fas fa-plus me-2"></i> Adicionar Produto
-                    </button>
-                </div>
-            </div>
-        </div>
     </form>
+    
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.3/dist/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.1.3/dist/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+    
+    <!-- <script src="{% static 'js/jquery.formset.js' %}"></script> -->
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js"></script>
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/css/bootstrap-select.min.css">
+
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/js/bootstrap-select.min.js"></script>
+
+    <!-- (Optional) Latest compiled and minified JavaScript translation files -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/js/i18n/defaults-*.min.js"></script>
+
+    
+
+    <!-- <script type="text/javascript">
+        $(function() {
+            $('#myForm tbody tr').formset({
+                prefix: '{{ formset.prefix }}'
+            });
+        })
+    </script> -->
+
     <script>
+        $(document).ready(function() {
+            $('.selectsearch').selectpicker({
+                liveSearch: true,
+                size: 10
+            });
+        });
+        
         document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('adicionar-produto').addEventListener('click', function() {
                 // Pegar o total atual de forms
                 const totalForms = document.querySelector('[name$="-TOTAL_FORMS"]');
                 const currentFormCount = parseInt(totalForms.value);
                 
-                // Clonar a primeira linha
-                const emptyForm = document.querySelector('.produto-form').cloneNode(true);
+                const emptyFormTemplate = document.getElementById('empty-form-template');
+                const newForm = emptyFormTemplate.cloneNode(true);
                 
-                // Atualizar apenas os atributos do novo form com o índice correto
-                emptyForm.querySelectorAll('input, select').forEach(element => {
-                    element.id = element.id.replace(/\d+/, currentFormCount);
-                    element.name = element.name.replace(/\d+/, currentFormCount);
-                    element.value = '';
+                // Atualizar os atributos do novo formulário
+                newForm.id = `form-${currentFormCount}`;
+                newForm.classList.remove('d-none');
+                newForm.querySelectorAll('input, select, textarea').forEach(element => {
+                    element.id = element.id.replace('__prefix__', currentFormCount);
+                    element.name = element.name.replace('__prefix__', currentFormCount);
+                    element.value = ''; 
                 });
                 
-                // Adicionar o novo form e atualizar o contador
-                document.getElementById('produtos-formset').appendChild(emptyForm);
+                newForm.querySelectorAll('[data-id*="__prefix__"]').forEach(element => {    //  o elemento duplicado do select-picker parece ter algo a ver com o
+                                                                                            // __prefix__, ao invés de assumir o id ele insere o texto "__prefix__"
+                                                                                            // então o que fiz foi remover esse elemento depois da cópia
+                    element.remove();
+                });
+
+                // Inicializar selectpicker nos novos selects
+                $(newForm).find('.selectsearch').selectpicker('refresh');
+
+                // Adicionar o novo formulário ao formset
+                document.getElementById('produtos-formset').appendChild(newForm);
+
+
+                // Atualizar o total de formulários
                 totalForms.value = currentFormCount + 1;
             });
 

@@ -1,6 +1,5 @@
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.db import models
-from django.core.validators import RegexValidator
 from django.utils.translation import gettext_lazy as _
 from utils.cpf_funcs import cpf_validate
 from django.utils import timezone
@@ -31,28 +30,38 @@ class CustomUserManager(BaseUserManager):
 
 
 class CustomUser(AbstractBaseUser, PermissionsMixin):
-   cpf = models.CharField(
-      max_length=14, 
-      unique=True, 
-      validators=[cpf_validate],
-      primary_key=True
-   )
-   email = models.EmailField(unique=True)
-   nome = models.CharField(max_length=255)
-   is_active = models.BooleanField(default=True)
-   is_staff = models.BooleanField(default=False)
+    ROLES = (
+        ('admin', 'Administrador'),
+        ('default', 'Padrão')
+    )
 
-   date_joined = models.DateTimeField(default=timezone.now)
-   
-   objects = CustomUserManager()
+    cpf = models.CharField(
+        max_length=14, 
+        unique=True, 
+        validators=[cpf_validate],
+        primary_key=True
+    )
+    email = models.EmailField(unique=True)
+    nome = models.CharField(max_length=255)
+    is_active = models.BooleanField(default=True)
+    is_staff = models.BooleanField(default=False)
+    date_joined = models.DateTimeField(default=timezone.now)
+    
+    objects = CustomUserManager()
+    role = models.CharField(max_length=20, choices=ROLES, default='default')
+    USERNAME_FIELD = 'cpf'
+    REQUIRED_FIELDS = ['email', 'nome']
 
-   USERNAME_FIELD = 'cpf'
-   REQUIRED_FIELDS = ['email', 'nome']
+    class Meta:
+        permissions = [
+            {"ver_todas_solicitacoes", "Pode ver todas as solicitações"},
+            {"criar_novos_usuários", "Pode criar novos usuários"}
+        ]
 
-   def __str__(self):
-      return f"{self.nome} ({self.cpf})"
-   
-   def save(self, *args, **kwargs):
-        # Remove caracteres não numéricos antes de salvar
-        self.cpf = re.sub(r'\D', '', self.cpf)
-        super().save(*args, **kwargs)
+    def __str__(self):
+        return f"{self.nome}"
+    
+    def save(self, *args, **kwargs):
+            # Remove caracteres não numéricos antes de salvar
+            self.cpf = re.sub(r'\D', '', self.cpf)
+            super().save(*args, **kwargs)

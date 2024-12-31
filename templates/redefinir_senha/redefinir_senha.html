@@ -1,0 +1,105 @@
+<!-- Formulário de Reset de Senha -->
+<div class="container">
+   <div class="row justify-content-center">
+     <div class="col-md-6">
+       <div class="card mt-5">
+         <div class="card-body">
+           <h3 class="card-title text-center">Redefinir Senha</h3>
+           
+           <form action="/reset-password" method="POST" id="resetPasswordForm">
+             <!-- Campo de Email -->
+             <div class="mb-3">
+               <label for="email" class="form-label">Email</label>
+               <input type="email" 
+                      class="form-control" 
+                      id="email" 
+                      name="email" 
+                      required>
+               <div class="invalid-feedback">
+                 Por favor, insira um email válido.
+               </div>
+             </div>
+ 
+             <!-- Nova Senha -->
+             <div class="mb-3">
+               <label for="password" class="form-label">Nova Senha</label>
+               <input type="password" 
+                      class="form-control" 
+                      id="password" 
+                      name="password"
+                      required
+                      minlength="8">
+               <div class="invalid-feedback">
+                 A senha deve ter no mínimo 8 caracteres.
+               </div>
+             </div>
+ 
+             <!-- Confirmação da Senha -->
+             <div class="mb-3">
+               <label for="confirmPassword" class="form-label">Confirmar Senha</label>
+               <input type="password" 
+                      class="form-control" 
+                      id="confirmPassword" 
+                      name="confirmPassword"
+                      required>
+               <div class="invalid-feedback">
+                 As senhas não coincidem.
+               </div>
+             </div>
+ 
+             <!-- Token de Reset (hidden) -->
+             <input type="hidden" name="token" id="resetToken">
+ 
+             <div class="d-grid">
+               <button type="submit" class="btn btn-primary">
+                 Redefinir Senha
+               </button>
+             </div>
+           </form>
+         </div>
+       </div>
+     </div>
+   </div>
+ </div>
+ 
+ <!-- JavaScript para validação -->
+ <script>
+ document.getElementById('resetPasswordForm').addEventListener('submit', function(event) {
+   event.preventDefault();
+   
+   const password = document.getElementById('password');
+   const confirmPassword = document.getElementById('confirmPassword');
+   const email = document.getElementById('email');
+   
+   // Validar email
+   if (!email.checkValidity()) {
+     email.classList.add('is-invalid');
+     return;
+   }
+   
+   // Validar senha
+   if (password.value.length < 8) {
+     password.classList.add('is-invalid');
+     return;
+   }
+   
+   // Confirmar se as senhas coincidem
+   if (password.value !== confirmPassword.value) {
+     confirmPassword.classList.add('is-invalid');
+     return;
+   }
+   
+   // Se chegou aqui, o formulário é válido
+   // Aqui você implementaria a lógica de envio para seu backend
+   console.log('Formulário válido, enviando...');
+   this.submit();
+ });
+ 
+ // Limpar mensagens de erro quando o usuário começa a digitar
+ const inputs = document.querySelectorAll('input');
+ inputs.forEach(input => {
+   input.addEventListener('input', function() {
+     this.classList.remove('is-invalid');
+   });
+ });
+ </script>

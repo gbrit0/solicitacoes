@@ -41,7 +41,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'home.apps.HomeConfig',
     'usuarios.apps.UsuariosConfig',
-    'solicitacoes.apps.SolicitacoesConfig'
+    'solicitacoes.apps.SolicitacoesConfig',
+    'widget_tweaks',
 ]
 
 MIDDLEWARE = [
@@ -52,7 +53,10 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'usuarios.middleware.RoleMiddleware',
+    'usuarios.middleware.SessionTimeoutMiddleware',
 ]
+
 
 ROOT_URLCONF = 'setup.urls'
 
@@ -75,20 +79,34 @@ TEMPLATES = [
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
-    'handlers': {
-        'console': {
-            'class': 'logging.StreamHandler',
+    'formatters': {
+        'verbose': {
+            'format': '{levelname} {asctime} {module} {message}',
+            'style': '{',
+        },
+        'simple': {
+            'format': '{levelname} {message}',
+            'style': '{',
         },
     },
-    'root': {
-        'handlers': ['console'],
-        'level': 'INFO',
+    'handlers': {
+        'file': {
+            'level': 'ERROR',
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(BASE_DIR, 'logs/errors.log'),
+            'formatter': 'verbose',
+        },
+        'console': {
+            'level': 'ERROR',
+            'class': 'logging.StreamHandler',
+            'formatter': 'simple',
+        },
     },
     'loggers': {
         'django': {
-            'handlers': ['console'],
-            'level': 'INFO',
-            'propagate': False,
+            'handlers': ['file', 'console'],
+            'level': 'ERROR',
+            'propagate': True,
         },
     },
 }
@@ -156,7 +174,34 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# MESSAGES
+
+from django.contrib.messages import constants as messages
+
+MESSAGE_TAGS = {
+    messages.ERROR: 'danger',
+    messages.SUCCESS: 'success',
+    messages.WARNING: 'warning',
+}
+
+
+# Limite de tempo de conexão
+
+SESSION_COOKIE_AGE = 900  # 15 minutos
+
+SESSION_SAVE_EVERY_REQUEST = True
+
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+
+SESSION_ENGINE = 'django.contrib.sessions.backends.db'
+
+MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
+
+MEDIA_ROOT = os.path.join(BASE_DIR, "media")
