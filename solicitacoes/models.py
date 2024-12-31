@@ -34,9 +34,6 @@ class Produto(models.Model):
       return self.c1_produto
    
    def save(self, *args, **kwargs):
-      print(f"SERVER={os.environ['HOST']}")
-      print(f"DATABASE={os.environ['DATABASE']}")
-      print(f"UID={os.environ['USER']}")
       connectionString = f"DRIVER={{ODBC Driver 18 for SQL Server}};SERVER={os.environ['HOST']};DATABASE={os.environ['DATABASE']};UID={os.environ['USER']};PWD={os.environ['PASSWORD']};TrustServerCertificate=yes"
       with pyodbc.connect(connectionString) as conexao:
          with conexao.cursor() as cursor:
