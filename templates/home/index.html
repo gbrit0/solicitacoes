@@ -147,7 +147,7 @@
                             <th>Data de Necessidade</th>
                             <th>Observações</th>
                             <th>Emissão</th>
-                            <!-- <th>Status</th> -->
+                            <th>Status</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -161,7 +161,7 @@
                                     <td>{{ produto.c1_datprf|date:"d/m/Y" }}</td>
                                     <td>{{ produto.c1_obs }}</td>
                                     <td>{{ solicitacao.c1_emissao|date:"d/m/Y" }}</td>
-                                    <!-- <td>{{ solicitacao.status }}</td> -->
+                                    <td>{{ solicitacao.status }}</td>
                                 </tr>
                             {% endfor %}
                         {% endfor %}
