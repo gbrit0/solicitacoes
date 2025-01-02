@@ -32,7 +32,12 @@ ALLOWED_HOSTS = [
    '10.1.1.4', 
    '0.0.0.0', 
    'api.brggeradores.com.br', 
-   '192.168.4.53'
+   '192.168.4.53',
+   'https://api.brggeradores.com.br',
+]
+
+CSRF_TRUSTED_ORIGINS = [
+    'https://api.brggeradores.com.br',  # Substitua pelo seu domínio real
 ]
 
 AUTH_USER_MODEL = 'usuarios.CustomUser'
@@ -178,7 +183,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
@@ -211,3 +216,4 @@ SESSION_ENGINE = 'django.contrib.sessions.backends.db'
 MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
 
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+

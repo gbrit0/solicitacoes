@@ -9,6 +9,10 @@ from django.db import IntegrityError
 
 User = get_user_model()
 
+# Teste dpara validação do encaminhamento da requisição pelo Augusto
+# def teste(request):
+#     print(f"Entrou em 'teste'")
+#     return render(request, 'usuarios/teste.html')
 
 def login(request):
     form = LoginForms()
@@ -46,8 +50,9 @@ def login(request):
 
 
 @role_required(['admin',])
-@login_required(login_url='/login')
+@login_required(login_url='login')
 def cadastro(request):
+    
     if request.method == 'POST':
         form = CadastroForms(request.POST)
         if form.is_valid():
