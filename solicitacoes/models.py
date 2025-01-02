@@ -50,7 +50,7 @@ class Produto(models.Model):
 
 class StatusPedido(models.Model):
    recno = models.AutoField(db_column='R_E_C_N_O_', primary_key=True)  # Mapeia a coluna R_E_C_N_O_
-   C7_NUM = models.CharField(max_length=6)
+   C7_NUMSC = models.CharField(max_length=6)
    C7_QUJE = models.FloatField()
    C7_QTDACLA = models.FloatField()
    C7_CONAPRO = models.CharField(max_length=1)

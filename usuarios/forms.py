@@ -5,6 +5,7 @@ from .models import CustomUser
 from django.forms import ValidationError, inlineformset_factory
 import pyodbc
 import os
+from datetime import date, timedelta
 
 
 class LoginForms(forms.Form):
@@ -163,7 +164,8 @@ class SolicitacaoForms(forms.Form):
             "class": "form-control",
             "type": "date"
          }
-      )
+      ),
+      initial=date.today() + timedelta(days=15)
    ) 
 
    def __init__(self, *args, **kwargs):
