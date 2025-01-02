@@ -64,6 +64,7 @@ def cadastro(request):
                 email = form.cleaned_data['email']
                 senha = form.cleaned_data['password1']
                 role = form.cleaned_data['role']
+                id = str(int(User.objects.latest('id').id) + 1).zfill(6)
                 
                 # Verifique se o CPF já existe
                 if User.objects.filter(cpf=cpf).exists():
@@ -76,7 +77,8 @@ def cadastro(request):
                         email=email,
                         password=senha,
                         nome=nome,
-                        role=role
+                        role=role,
+                        id=id
                     )
                 except IntegrityError:
                     messages.error(request, "Erro: Este CPF já está cadastrado no sistema.")

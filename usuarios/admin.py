@@ -4,9 +4,9 @@ from .models import CustomUser
 
 class CustomUserAdmin(UserAdmin):
     # Campos que serão exibidos no admin
-    list_display = ('cpf', 'email', 'nome', 'role')
-    list_display_links = ('cpf', 'email', 'nome')
-    search_fields = ('cpf', 'email', 'nome')
+    list_display = ('id', 'cpf', 'email', 'nome', 'role')
+    list_display_links = ('id', 'cpf', 'email', 'nome')
+    search_fields = ('id', 'cpf', 'email', 'nome')
     ordering = ('nome',)
 
     # Configurações dos formulários de adição e edição

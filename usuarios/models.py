@@ -35,6 +35,13 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         ('default', 'Padrão')
     )
 
+    id = models.CharField(
+        max_length=6,
+        unique=True,
+        editable=False,
+        default=None
+    )
+
     cpf = models.CharField(
         max_length=14, 
         unique=True, 
@@ -62,6 +69,8 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         return f"{self.nome}"
     
     def save(self, *args, **kwargs):
-            # Remove caracteres não numéricos antes de salvar
-            self.cpf = re.sub(r'\D', '', self.cpf)
-            super().save(*args, **kwargs)
+        if not self.id:
+            self.id = '000001'    
+        # Remove caracteres não numéricos antes de salvar
+        self.cpf = re.sub(r'\D', '', self.cpf)
+        super().save(*args, **kwargs)
