@@ -22,7 +22,7 @@ def criar_solicitacao(request):
                 solicitacao_form.tipo = 'Compra'
         
                 # Busca próximo número
-                connectionString = f"DRIVER={{ODBC Driver 18 for SQL Server}};SERVER={os.environ['HOST']};DATABASE={os.environ['DATABASE']};UID={os.environ['USER']};PWD={os.environ['PASSWORD']};TrustServerCertificate=yes"
+                connectionString = f"DRIVER={{ODBC Driver 17 for SQL Server}};SERVER={os.environ['HOST']};DATABASE={os.environ['DATABASE']};UID={os.environ['USER']};PWD={os.environ['PASSWORD']};TrustServerCertificate=yes"
                 with pyodbc.connect(connectionString) as conexao:
                     with conexao.cursor() as cursor:
                         cursor.execute("""

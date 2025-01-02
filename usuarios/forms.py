@@ -107,7 +107,7 @@ class ProdutoForm(forms.Form):
    def __init__(self, *args, **kwargs):
       super().__init__(*args, **kwargs)
 
-      connectionString = f"DRIVER={{ODBC Driver 18 for SQL Server}};SERVER={os.environ['HOST']};DATABASE={os.environ['DATABASE']};UID={os.environ['USER']};PWD={os.environ['PASSWORD']};TrustServerCertificate=yes"
+      connectionString = f"DRIVER={{ODBC Driver 17 for SQL Server}};SERVER={os.environ['HOST']};DATABASE={os.environ['DATABASE']};UID={os.environ['USER']};PWD={os.environ['PASSWORD']};TrustServerCertificate=yes"
       
       
       with pyodbc.connect(connectionString) as conexao:
@@ -169,7 +169,7 @@ class SolicitacaoForms(forms.Form):
    def __init__(self, *args, **kwargs):
       super().__init__(*args, **kwargs)
 
-      connectionString = f"DRIVER={{ODBC Driver 18 for SQL Server}};SERVER={os.environ['HOST']};DATABASE={os.environ['DATABASE']};UID={os.environ['USER']};PWD={os.environ['PASSWORD']};TrustServerCertificate=yes"
+      connectionString = f"DRIVER={{ODBC Driver 17 for SQL Server}};SERVER={os.environ['HOST']};DATABASE={os.environ['DATABASE']};UID={os.environ['USER']};PWD={os.environ['PASSWORD']};TrustServerCertificate=yes"
       
       
       with pyodbc.connect(connectionString) as conexao:
