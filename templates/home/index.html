@@ -50,7 +50,29 @@
         .messages {
             z-index: 1030;
         }
+        .text-orange {
+            color: #FF6600; 
+        }
+        .text-grey {
+            color: #adb5bd 
+        }
+        .text-black {
+            color: #111111 
+        }
+        .indigo {
+            color: #6610f2
+        }
+        .brown {
+            color: #75410e
+        }
+        /* .table-striped>tbody>tr:nth-child(even)>td {
+            background-color: rgb(58, 58, 58);
+        }
+        .table-striped>tbody>tr:nth-child(odd)>td {
+            background-color: rgb(96, 96, 96);
+        } */
     </style>
+    
 
     <!-- FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -140,6 +162,7 @@
                 <table id="solicitacoesTable" class="table table-bordered table-striped" data-toggle="table">
                     <thead>
                         <tr>
+                            <th>Status</th>
                             <th>Id</th>
                             <th>Solicitante</th>
                             <th>Produto</th>
@@ -147,21 +170,20 @@
                             <th>Data de Necessidade</th>
                             <th>Observações</th>
                             <th>Emissão</th>
-                            <th>Status</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for solicitacao in solicitacoes %}
-                            {% for produto in solicitacao.produto_set.all %}
+                            {% for produto in solicitacao.solicitacao.produto_set.all %}
                                 <tr>
+                                    <td class="text-center">{{ solicitacao.status|safe }}</td>
                                     <td>{{ produto.c1_num }}</td>
-                                    <td>{{ solicitacao.user.nome }}</td>
+                                    <td>{{ solicitacao.solicitacao.user.nome }}</td>
                                     <td>{{ produto.c1_descri }}</td>
                                     <td>{{ produto.c1_quant }}</td>
                                     <td>{{ produto.c1_datprf|date:"d/m/Y" }}</td>
                                     <td>{{ produto.c1_obs }}</td>
-                                    <td>{{ solicitacao.c1_emissao|date:"d/m/Y" }}</td>
-                                    <td>{{ solicitacao.status }}</td>
+                                    <td>{{ solicitacao.solicitacao.c1_emissao|date:"d/m/Y" }}</td>
                                 </tr>
                             {% endfor %}
                         {% endfor %}

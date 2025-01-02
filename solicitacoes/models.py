@@ -64,3 +64,16 @@ class StatusPedido(models.Model):
       db_table = 'SC7010'
 
    objects = models.Manager().db_manager('protheus')
+
+class StatusSC1(models.Model):
+   recno = models.AutoField(db_column='R_E_C_N_O_', primary_key=True)
+   C1_NUM = models.CharField(max_length=6)
+   C1_COTACAO = models.CharField(max_length=6)
+   C1_QUJE = models.FloatField()
+   C1_APROV = models.CharField(max_length=1)
+
+   class Meta:
+      managed: False
+      db_table = 'SC1010'
+
+   objects = models.Manager().db_manager('protheus')
