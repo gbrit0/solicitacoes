@@ -39,6 +39,13 @@ Aplicação django para gerar solicitações de compra ao Protheus. Permite visu
    python3 manage.py migrate
    ```
 
+3. Crie um superuser (para acesso ao /admin):
+   ```bash
+   python3 manage.py createsuperuser
+   ```
+   
+   Insira os dados requisitados.
+
 ## Uso
 
 1. [Configure o serviço de arquivos estáticos](servir_arquivos_estaticos.md)
@@ -59,6 +66,8 @@ Aplicação django para gerar solicitações de compra ao Protheus. Permite visu
    ```
 
 5. Acesse a url e o endpoint designado no servidor principal e teste a aplicação.
+
+6. Para visualizar a página de administrador do sistema, acesse <endereço>/admin e logue com as credenciais de superuser criadas [aqui](#configuração).
 
 6. Uma vez que a aplicação esteja funcionando é interessante configurar um crontab para que o serviço seja iniciado sempre que o servidor der reboot:
    ```bash
