@@ -10,7 +10,7 @@ Aplicação django para gerar solicitações de compra ao Protheus. Permite visu
    ```
 2. Crie um ambiente virtual:
    ```bash
-   python -m venv venv
+   python3 -m venv venv
    ```
 3. Ative o ambiente virtual:
    ```bash
