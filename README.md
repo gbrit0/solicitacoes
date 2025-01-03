@@ -59,3 +59,13 @@ Aplicação django para gerar solicitações de compra ao Protheus. Permite visu
    ```
 
 5. Acesse a url e o endpoint designado no servidor principal e teste a aplicação.
+
+6. Uma vez que a aplicação esteja funcionando é interessante configurar um crontab para que o serviço seja iniciado sempre que o servidor der reboot:
+   ```bash
+   crontab -e # acessa o crontab
+   ```
+
+   ```bash
+   # reboot do servidor de solicitacoes
+   @reboot sleep 90 && /bin/bash /caminho/da/aplicacao/scripts/screen_solicitacao.bash >> /caminho/da/aplicacao/logs gunicorn_log.log 2>&1
+   ``` 
