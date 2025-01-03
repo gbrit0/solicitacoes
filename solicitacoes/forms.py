@@ -3,7 +3,7 @@ import pyodbc
 import os
 from django.forms import inlineformset_factory
 from solicitacoes.models import Produto, Solicitacao
-
+from datetime import datetime, timedelta
 class SolicitacaoForm(forms.ModelForm):
     class Meta:
         model = Solicitacao
@@ -61,18 +61,18 @@ class ProdutosForm(forms.ModelForm):
         required=True,
         label="Data de Necessidade",
         widget=forms.DateInput(attrs={
-            'class': 'form-control',
+            'class': 'form-control data-necessidade',
             'type':'date',
-            'placeholder': 'Data de Necessidade',
         }),
     )
 
     c1_obs = forms.CharField(
         required=True,
         label="Observação",
-        widget=forms.TextInput(attrs={
+        widget=forms.Textarea(attrs={
             'class':'form-control',
-            'placeholder':'Observação'
+            'placeholder':'Digite sua observação aqui...',
+            'rows':2
         })
     )
     
@@ -98,6 +98,9 @@ class ProdutosForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        # if not self.instance.pk:
+        self.fields['c1_datprf'].initial = datetime.now().date() + timedelta(days=15) # inicializa com data de necessidade 15 dias adiante
+
         connectionString = f"DRIVER={{ODBC Driver 17 for SQL Server}};SERVER={os.environ['HOST']};DATABASE={os.environ['DATABASE']};UID={os.environ['USER']};PWD={os.environ['PASSWORD']};TrustServerCertificate=yes"
         with pyodbc.connect(connectionString) as conexao:
             with conexao.cursor() as cursor:
