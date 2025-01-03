@@ -24,13 +24,13 @@ urlpatterns = [
     path('solicitacoes/admin/', admin.site.urls),
     path('solicitacoes/', include('home.urls')),
     path('solicitacoes/', include('usuarios.urls')),
-    path('solicitacoes/', include('solicitacoes.urls'))
+    path('solicitacoes/', include('solicitacoes.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
 
-if settings.DEBUG:
-    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+# if settings.DEBUG:
+#     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+#     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 
 urlpatterns += staticfiles_urlpatterns()
