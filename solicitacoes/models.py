@@ -1,7 +1,5 @@
 from django.db import models
-from django.utils import timezone
 from django.contrib.auth import get_user_model 
-import pyodbc, os
 
 User = get_user_model()
 
