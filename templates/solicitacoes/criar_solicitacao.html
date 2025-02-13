@@ -248,6 +248,9 @@
                                         {% endif %}
                                     </td>
                                     <td>
+                                        <button type="button" class="btn btn-warning btn-sm adicionar_rateio">
+                                            <i class="fa-solid fa-arrows-split-up-and-left"></i>
+                                        </button>
                                         <button type="button" class="btn btn-danger btn-sm remove-produto">
                                             <i class="fas fa-trash">{% if form.instance.pk %}{{ form.DELETE }}{% endif %}</i>
                                         </button>
@@ -273,6 +276,9 @@
                                         {{ formset.empty_form.c1_obs }}
                                     </td>
                                     <td>
+                                        <button type="button" class="btn btn-warning btn-sm adicionar_rateio">
+                                            <i class="fa-solid fa-arrows-split-up-and-left"></i>
+                                        </button>
                                         <button type="button" class="btn btn-danger btn-sm remove-produto">
                                             <i class="fas fa-trash"></i>
                                         </button>
