@@ -1,0 +1,15 @@
+<!-- rateio_popup.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Adicionar Rateio</title>
+</head>
+<body>
+    <h2>Adicionar Rateio para {{ produto.c1_descri }}</h2>
+    <form method="post" action="{% url 'adicionar_rateio' produto %}">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Salvar</button>
+    </form>
+</body>
+</html>
