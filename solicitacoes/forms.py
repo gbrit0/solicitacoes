@@ -57,12 +57,25 @@ class ProdutosForm(forms.ModelForm):
             'Title': 'Selecione um centro de custo',
         }),
     )
+
     c1_datprf = forms.DateField(
         required=True,
         label="Data de Necessidade",
         widget=forms.DateInput(attrs={
             'class': 'form-control data-necessidade',
             'type':'date',
+        }),
+    )
+
+    ctj_desc = forms.ChoiceField(
+        required=False,
+        label="Rateio",
+        choices=[],
+        widget=forms.Select(attrs={
+            'class': 'selectsearch form-control',
+            "data-live-search":"True",
+            "data-size": '5',
+            'Title': 'Sem Rateio',
         }),
     )
 
@@ -121,13 +134,23 @@ class ProdutosForm(forms.ModelForm):
                                 FROM CTT010 
                                 WHERE D_E_L_E_T_ <> '*'
                                 AND CTT_BLOQ = '2'
-                                AND CTT_FILIAL = '0101'
+                                -- AND CTT_FILIAL = '0101'
                                 AND CTT_CLASSE = '2'""")
                 
                 # <=========== DESCOMENTAR O CTT_FILIAL QUANDO COLOCAR EM PRODUÇÃO ==================>
 
                 centros_de_custo = cursor.fetchall()
                 self.fields['c1_cc'].choices = centros_de_custo
+
+                cursor.execute("""SELECT DISTINCT 
+                                    CTJ_RATEIO, 
+                                    CTJ_DESC 
+                                FROM CTJ010 
+                                WHERE D_E_L_E_T_ <> '*' 
+                                    AND CTJ_FILIAL = '0101'""")
+                
+                rateios = cursor.fetchall()
+                self.fields['ctj_desc'].choices = [(r[0], r[1]) for r in rateios]
 
 
 ProductFormset = inlineformset_factory(

@@ -200,6 +200,7 @@
                                     <th>Produto</th>
                                     <th>Quantidade</th>
                                     <th>Data de Necessidade</th>
+                                    <th>Rateios</th>
                                     <th>Observações</th>
                                     <th>Ações</th>
                                 </tr>
@@ -240,6 +241,14 @@
                                         {% endif %}
                                     </td>
                                     <td>
+                                        {{ form.ctj_desc }}
+                                        {% if form.ctj_desc.errors %}
+                                            {% for error in form.ctj_desc.errors %}
+                                                <div class="invalid-feedback d-block">{{ error }}</div>
+                                            {% endfor %}
+                                        {% endif %}
+                                    </td>
+                                    <td>
                                         {{ form.c1_obs }}
                                         {% if form.c1_obs.errors %}
                                             {% for error in form.c1_obs.errors %}
@@ -248,10 +257,10 @@
                                         {% endif %}
                                     </td>
                                     <td>
-                                        <button type="button" class="btn btn-warning btn-sm adicionar_rateio">
+                                        <!-- <button data-bs-toggle="tooltip" data-bs-placement="top" title="Rateio de Custos" type="button" class="btn btn-warning btn-sm adicionar_rateio">
                                             <i class="fa-solid fa-arrows-split-up-and-left"></i>
-                                        </button>
-                                        <button type="button" class="btn btn-danger btn-sm remove-produto">
+                                        </button> -->
+                                        <button data-bs-toggle="tooltip" data-bs-placement="top" title="Remover item" type="button" class="btn btn-danger btn-sm remove-produto">
                                             <i class="fas fa-trash">{% if form.instance.pk %}{{ form.DELETE }}{% endif %}</i>
                                         </button>
                                     </td>
@@ -273,13 +282,16 @@
                                         {{ formset.empty_form.c1_datprf }}
                                     </td>
                                     <td>
+                                        {{ formset.empty_form.ctj_desc }}
+                                    </td>
+                                    <td>
                                         {{ formset.empty_form.c1_obs }}
                                     </td>
                                     <td>
-                                        <button type="button" class="btn btn-warning btn-sm adicionar_rateio">
+                                        <!-- <button data-bs-toggle="tooltip" data-bs-placement="top" title="Rateio de Custos" type="button" class="btn btn-warning btn-sm adicionar_rateio">
                                             <i class="fa-solid fa-arrows-split-up-and-left"></i>
-                                        </button>
-                                        <button type="button" class="btn btn-danger btn-sm remove-produto">
+                                        </button> -->
+                                        <button data-bs-toggle="tooltip" data-bs-placement="top" title="Remover item" type="button" class="btn btn-danger btn-sm remove-produto">
                                             <i class="fas fa-trash"></i>
                                         </button>
                                     </td>
@@ -324,7 +336,13 @@
             });
         })
     </script> -->
-
+    <!-- Ativação do tooltip via JavaScript -->
+    <script>
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+    </script>
     <script>
         $(document).ready(function() {
             $('.selectsearch').selectpicker({

@@ -25,7 +25,8 @@ class Produto(models.Model):
    c1_local = models.CharField(max_length=2, null=False) # b1_locpad
    c1_quant = models.DecimalField(max_digits=12, decimal_places=2)
    c1_cc = models.CharField(max_length=60, null=False, default='')
-   c1_datprf = models.DateField(blank=False, default='2025-01-01')   
+   c1_datprf = models.DateField(blank=False, default='2025-01-01')
+   ctj_desc = models.CharField(max_length=40, default='')
    c1_obs = models.CharField(max_length=30, default="")
    r_e_c_n_o = models.BigIntegerField(primary_key=True, default=0)
 

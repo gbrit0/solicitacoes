@@ -66,6 +66,8 @@ def criar_solicitacao(request):
                                 instance.c1_local =  cursor.fetchall()[0][0]
                                 
                                 instance.c1_filent = '0101'
+
+                                print(f"instance.ctj_desc '{instance.ctj_desc}'")
                                 
                                 # insert = (
                                 #     f"BEGIN TRY "
@@ -100,27 +102,27 @@ def criar_solicitacao(request):
                                 #     f"END CATCH; "
                                 # )
                                 
-                                cursor.execute((
-                                    # f"BEGIN TRY "
-                                    #     f"BEGIN TRANSACTION; "
-                                        f"INSERT INTO SC1010"
-                                        f"(C1_FILIAL, C1_NUM, C1_ITEM, C1_DESCRI, C1_CC, C1_PRODUTO, "
-                                        f"C1_LOCAL, C1_QUANT, C1_EMISSAO, C1_UM, C1_FILENT, "
-                                        f"C1_DATPRF, C1_SOLICIT, C1_XOBMEMO, R_E_C_N_O_, C1_XSOLWEB)"
-                                        f"VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CONVERT(VARBINARY(MAX), ?), ?, ? ); "
-                                    #     f"COMMIT; "
-                                    # f"END TRY "
-                                    # f"BEGIN CATCH "
-                                    #     f"ROLLBACK;"
-                                    #     f"THROW; "
-                                    # f"END CATCH; "
-                                ), (solicitacao_form.c1_filial, solicitacao_form.c1_num, instance.c1_item, produto, instance.c1_cc,
-                                    instance.c1_produto, instance.c1_local, instance.c1_quant, str(solicitacao_form.c1_emissao).replace('-', '')[:8],
-                                    instance.c1_um, instance.c1_filent, str(instance.c1_datprf).replace('-', ''), solicitacao_form.c1_solicit,
-                                    instance.c1_obs, instance.r_e_c_n_o, solicitacao_form.user.id))
+                                # cursor.execute((
+                                #     # f"BEGIN TRY "
+                                #     #     f"BEGIN TRANSACTION; "
+                                #         f"INSERT INTO SC1010"
+                                #         f"(C1_FILIAL, C1_NUM, C1_ITEM, C1_DESCRI, C1_CC, C1_PRODUTO, "
+                                #         f"C1_LOCAL, C1_QUANT, C1_EMISSAO, C1_UM, C1_FILENT, "
+                                #         f"C1_DATPRF, C1_SOLICIT, C1_XOBMEMO, R_E_C_N_O_, C1_XSOLWEB)"
+                                #         f"VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CONVERT(VARBINARY(MAX), ?), ?, ? ); "
+                                #     #     f"COMMIT; "
+                                #     # f"END TRY "
+                                #     # f"BEGIN CATCH "
+                                #     #     f"ROLLBACK;"
+                                #     #     f"THROW; "
+                                #     # f"END CATCH; "
+                                # ), (solicitacao_form.c1_filial, solicitacao_form.c1_num, instance.c1_item, produto, instance.c1_cc,
+                                #     instance.c1_produto, instance.c1_local, instance.c1_quant, str(solicitacao_form.c1_emissao).replace('-', '')[:8],
+                                #     instance.c1_um, instance.c1_filent, str(instance.c1_datprf).replace('-', ''), solicitacao_form.c1_solicit,
+                                #     instance.c1_obs, instance.r_e_c_n_o, solicitacao_form.user.id))
 
                                 instance.save()
-                                conexao.commit() # no sql já tem o commit, testar se insere normalmente
+                                # conexao.commit() # no sql já tem o commit, testar se insere normalmente
                             except pyodbc.Error as e:
                                 erros.append({
                                     'produto': produto,
