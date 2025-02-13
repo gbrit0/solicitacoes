@@ -30,6 +30,7 @@ DEBUG = False
 ALLOWED_HOSTS = [
    '192.168.15.60', 
    '10.1.1.4', 
+   '127.0.0.1', 
    '0.0.0.0', 
    'api.brggeradores.com.br', 
    '192.168.4.53',
