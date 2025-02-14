@@ -2,8 +2,9 @@ from django import forms
 import pyodbc
 import os
 from django.forms import inlineformset_factory
-from solicitacoes.models import Produto, Solicitacao
+from solicitacoes.models import Produto, Solicitacao, RateioProduto, ConfiguracaoRateio
 from datetime import datetime, timedelta
+
 class SolicitacaoForm(forms.ModelForm):
     class Meta:
         model = Solicitacao
@@ -18,11 +19,21 @@ class SolicitacaoForm(forms.ModelForm):
         'tipo':forms.HiddenInput(),
     }
     
-
+class RateioProdutoForm(forms.ModelForm):
+    class Meta:
+        model = RateioProduto
+        fields = ['centro_custo', 'percentual']
+        
+    def clean_percentual(self):
+        percentual = self.cleaned_data['percentual']
+        if percentual <= 0 or percentual > 100:
+            raise forms.ValidationError("O percentual deve estar entre 0 e 100.")
+        return percentual
+    
 class ProdutosForm(forms.ModelForm):
     class Meta:
         model = Produto
-        fields = ['c1_produto', 'c1_quant', 'c1_cc', 'c1_datprf', 'c1_obs']
+        fields = ['c1_produto', 'c1_quant', 'c1_cc', 'c1_datprf', 'c1_obs', 'usa_rateio']
 
 
     c1_produto = forms.ChoiceField(
@@ -47,7 +58,7 @@ class ProdutosForm(forms.ModelForm):
     )
     
     c1_cc = forms.ChoiceField(
-        required=True,
+        required=False,
         label="Centro de Custo",
         choices=[],
         widget=forms.Select(attrs={
@@ -162,3 +173,18 @@ ProductFormset = inlineformset_factory(
       can_delete=True,
       can_delete_extra=True
    )
+
+RateioProdutoFormSet = inlineformset_factory(
+    Produto, 
+    RateioProduto,
+    form=RateioProdutoForm,
+    extra=1,
+    can_delete=True
+)
+
+class SelecionarRateioForm(forms.Form):
+    configuracao_rateio = forms.ModelChoiceField(
+        queryset=ConfiguracaoRateio.objects.filter(ativo=True),
+        required=False,
+        empty_label="Selecione um rateio pré-configurado"
+    )

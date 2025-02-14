@@ -2,8 +2,114 @@ from django.utils import timezone
 import pyodbc, os
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from solicitacoes.forms import SolicitacaoForm, ProductFormset
-from django.shortcuts import render, redirect
+from solicitacoes.forms import SolicitacaoForm, ProductFormset, Solicitacao, ProdutosForm, Produto, RateioProdutoFormSet, SelecionarRateioForm
+from solicitacoes.models import ConfiguracaoRateio
+from django.shortcuts import render, redirect, get_object_or_404
+from django.forms import inlineformset_factory
+from django.db import transaction
+from django.http import JsonResponse
+from decimal import Decimal
+
+def editar_solicitacao(request, c1_num=None):
+    if c1_num:
+        solicitacao = get_object_or_404(Solicitacao, c1_num=c1_num)
+        is_new = False
+    else:
+        solicitacao = Solicitacao()
+        is_new = True
+    
+    # Configurar formsets
+    ProdutoFormSet = inlineformset_factory(
+        Solicitacao, Produto, form=ProdutosForm, extra=1, can_delete=True
+    )
+    
+    if request.method == 'POST':
+        form = SolicitacaoForm(request.POST, instance=solicitacao)
+        formset_produtos = ProdutoFormSet(request.POST, instance=solicitacao)
+        
+        if form.is_valid() and formset_produtos.is_valid():
+            with transaction.atomic():
+                # Salvar solicitação
+                solicitacao = form.save()
+                
+                # Salvar produtos
+                produtos = formset_produtos.save(commit=False)
+                for produto_form in formset_produtos:
+                    if produto_form.is_valid() and not produto_form.cleaned_data.get('DELETE', False):
+                        produto = produto_form.save(commit=False)
+                        produto.c1_num = solicitacao
+                        produto.save()
+                        
+                        # Processar formset de rateio para cada produto
+                        if 'rateio_formset' in request.POST and str(produto.pk) in request.POST['rateio_formset']:
+                            rateio_prefix = f"rateio_{produto.pk}"
+                            rateio_formset = RateioProdutoFormSet(
+                                request.POST,
+                                prefix=rateio_prefix,
+                                instance=produto
+                            )
+                            
+                            if rateio_formset.is_valid():
+                                # Verificar se o total de percentuais é 100%
+                                total_percentual = sum(form.cleaned_data['percentual'] 
+                                                      for form in rateio_formset 
+                                                      if form.cleaned_data and not form.cleaned_data.get('DELETE', False))
+                                
+                                if abs(total_percentual - Decimal('100.00')) > Decimal('0.01'):
+                                    # Tratar erro - os percentuais não somam 100%
+                                    pass
+                                else:
+                                    rateios = rateio_formset.save(commit=False)
+                                    for rateio in rateios:
+                                        rateio.produto = produto
+                                        rateio.save()
+                                    
+                                    # Processar exclusões
+                                    for obj in rateio_formset.deleted_objects:
+                                        obj.delete()
+                
+                # Remover produtos marcados para exclusão
+                for obj in formset_produtos.deleted_objects:
+                    obj.delete()
+                
+                return redirect('listar_solicitacoes')
+    else:
+        form = SolicitacaoForm(instance=solicitacao)
+        formset_produtos = ProdutoFormSet(instance=solicitacao)
+        selecionar_rateio_form = SelecionarRateioForm()
+    
+    # Preparar formsets de rateio para cada produto
+    produtos_rateio_formsets = {}
+    if not is_new:
+        for produto in solicitacao.produto_set.all():
+            rateio_formset = RateioProdutoFormSet(
+                instance=produto,
+                prefix=f"rateio_{produto.pk}"
+            )
+            produtos_rateio_formsets[produto.pk] = rateio_formset
+    
+    return render(request, 'editar_solicitacao.html', {
+        'form': form,
+        'formset_produtos': formset_produtos,
+        'produtos_rateio_formsets': produtos_rateio_formsets,
+        'selecionar_rateio_form': selecionar_rateio_form,
+    })
+
+# View para carregar configuração de rateio via AJAX
+def carregar_configuracao_rateio(request):
+    if request.method == 'POST' and request.is_ajax():
+        config_id = request.POST.get('configuracao_id')
+        produto_id = request.POST.get('produto_id')
+        
+        if config_id and produto_id:
+            try:
+                config = ConfiguracaoRateio.objects.get(id=config_id)
+                itens_rateio = list(config.itens.all().values('centro_custo', 'percentual'))
+                return JsonResponse({'status': 'success', 'itens': itens_rateio})
+            except ConfiguracaoRateio.DoesNotExist:
+                return JsonResponse({'status': 'error', 'message': 'Configuração não encontrada'})
+    
+    return JsonResponse({'status': 'error', 'message': 'Requisição inválida'})
 
 
 
@@ -66,7 +172,7 @@ def criar_solicitacao(request):
                                 instance.c1_local =  cursor.fetchall()[0][0]
                                 
                                 instance.c1_filent = '0101'
-
+                                
                                 print(f"instance.ctj_desc '{instance.ctj_desc}'")
                                 
                                 # insert = (

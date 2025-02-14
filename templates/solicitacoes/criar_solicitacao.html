@@ -1,4 +1,5 @@
 {% load static %}
+{% load custom_filters %}
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -241,12 +242,13 @@
                                         {% endif %}
                                     </td>
                                     <td>
-                                        {{ form.ctj_desc }}
-                                        {% if form.ctj_desc.errors %}
-                                            {% for error in form.ctj_desc.errors %}
+                                        {{ form.usa_rateio }}
+                                        {% if form.usa_rateio.errors %}
+                                            {% for error in form.usa_rateio.errors %}
                                                 <div class="invalid-feedback d-block">{{ error }}</div>
                                             {% endfor %}
                                         {% endif %}
+                                        <input type="hidden" name="rateio_formset" value="{{ produto_form.instance.pk|default:'' }}">
                                     </td>
                                     <td>
                                         {{ form.c1_obs }}
@@ -265,6 +267,48 @@
                                         </button>
                                     </td>
                                 </tr>
+                                {% if produto_form.instance.pk %}
+                                <tr class="rateio-row" style="display: {% if produto_form.instance.usa_rateio %}table-row{% else %}none{% endif %};">
+                                    <td colspan="11">
+                                        <div class="rateio-container">
+                                            <h4>Rateio de Centro de Custos</h4>
+                                            <div class="rateio-actions">
+                                                <select class="configuracao-rateio" data-produto-id="{{ produto_form.instance.pk }}">
+                                                    <option value="">Selecione um rateio pré-configurado</option>
+                                                    {% for config in configuracoes_rateio %}
+                                                    <option value="{{ config.id }}">{{ config.nome }}</option>
+                                                    {% endfor %}
+                                                </select>
+                                                <button type="button" class="aplicar-rateio-btn">Aplicar</button>
+                                            </div>
+                                            
+                                            {% with rateio_formset=produtos_rateio_formsets|get_item:produto_form.instance.pk %}
+                                            {{ rateio_formset.management_form }}
+                                            <table class="rateio-table">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Centro de Custo</th>
+                                                        <th>Percentual (%)</th>
+                                                        <th></th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {% for rateio_form in rateio_formset %}
+                                                    <tr>
+                                                        {{ rateio_form.id }}
+                                                        <td>{{ rateio_form.centro_custo }}</td>
+                                                        <td>{{ rateio_form.percentual }}</td>
+                                                        <td>{{ rateio_form.DELETE }}</td>
+                                                    </tr>
+                                                    {% endfor %}
+                                                </tbody>
+                                            </table>
+                                            <button type="button" class="adicionar-rateio-btn" data-prefix="{{ rateio_formset.prefix }}">Adicionar linha</button>
+                                            {% endwith %}
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endif %}
                                 {% endfor %}
                             </tbody>
                             <table style="display: none;">
@@ -282,7 +326,7 @@
                                         {{ formset.empty_form.c1_datprf }}
                                     </td>
                                     <td>
-                                        {{ formset.empty_form.ctj_desc }}
+                                        {{ formset.empty_form.usa_rateio }}
                                     </td>
                                     <td>
                                         {{ formset.empty_form.c1_obs }}
@@ -327,7 +371,90 @@
     <!-- (Optional) Latest compiled and minified JavaScript translation files -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/js/i18n/defaults-*.min.js"></script>
 
-    
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+    $(document).ready(function() {
+        // Mostrar/esconder seção de rateio quando o checkbox for alterado
+        $(document).on('change', '[name$="-usa_rateio"]', function() {
+            let row = $(this).closest('.produto-row');
+            let rateioRow = row.next('.rateio-row');
+            
+            if ($(this).is(':checked')) {
+                rateioRow.show();
+            } else {
+                rateioRow.hide();
+            }
+        });
+        
+        // Adicionar nova linha de rateio
+        $(document).on('click', '.adicionar-rateio-btn', function() {
+            let prefix = $(this).data('prefix');
+            let table = $(this).prev('table');
+            let formIdx = parseInt($('#id_' + prefix + '-TOTAL_FORMS').val());
+            
+            let newRow = `
+                <tr>
+                    <td><input type="text" name="${prefix}-${formIdx}-centro_custo" id="id_${prefix}-${formIdx}-centro_custo"></td>
+                    <td><input type="number" name="${prefix}-${formIdx}-percentual" id="id_${prefix}-${formIdx}-percentual" step="0.01"></td>
+                    <td><input type="checkbox" name="${prefix}-${formIdx}-DELETE" id="id_${prefix}-${formIdx}-DELETE"></td>
+                </tr>
+            `;
+            
+            table.find('tbody').append(newRow);
+            $('#id_' + prefix + '-TOTAL_FORMS').val(formIdx + 1);
+        });
+        
+        // Carregar e aplicar configuração de rateio
+        $(document).on('click', '.aplicar-rateio-btn', function() {
+            let container = $(this).closest('.rateio-container');
+            let select = container.find('.configuracao-rateio');
+            let configId = select.val();
+            let produtoId = select.data('produto-id');
+            
+            if (configId) {
+                $.ajax({
+                    url: '{% url "carregar_configuracao_rateio" %}',
+                    type: 'POST',
+                    data: {
+                        'configuracao_id': configId,
+                        'produto_id': produtoId,
+                        'csrfmiddlewaretoken': '{{ csrf_token }}'
+                    },
+                    success: function(response) {
+                        if (response.status === 'success') {
+                            // Limpar rateios existentes
+                            container.find('.rateio-table tbody tr').not(':first').remove();
+                            
+                            // Aplicar novos rateios
+                            let prefix = container.find('.adicionar-rateio-btn').data('prefix');
+                            let formCount = 0;
+                            
+                            $.each(response.itens, function(i, item) {
+                                if (i === 0) {
+                                    // Preencher primeira linha
+                                    let firstRow = container.find('.rateio-table tbody tr:first');
+                                    firstRow.find('[name$="-centro_custo"]').val(item.centro_custo);
+                                    firstRow.find('[name$="-percentual"]').val(item.percentual);
+                                } else {
+                                    // Adicionar novas linhas
+                                    container.find('.adicionar-rateio-btn').click();
+                                    let newRow = container.find('.rateio-table tbody tr:last');
+                                    newRow.find('[name$="-centro_custo"]').val(item.centro_custo);
+                                    newRow.find('[name$="-percentual"]').val(item.percentual);
+                                }
+                                formCount++;
+                            });
+                            
+                            $('#id_' + prefix + '-TOTAL_FORMS').val(formCount);
+                        } else {
+                            alert('Erro ao carregar configuração: ' + response.message);
+                        }
+                    }
+                });
+            }
+        });
+    });
+    </script>
 
     <!-- <script type="text/javascript">
         $(function() {

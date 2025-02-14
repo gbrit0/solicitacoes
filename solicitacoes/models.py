@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth import get_user_model 
+from decimal import Decimal
 
 User = get_user_model()
 
@@ -29,6 +30,21 @@ class Produto(models.Model):
    ctj_desc = models.CharField(max_length=40, default='')
    c1_obs = models.CharField(max_length=30, default="")
    r_e_c_n_o = models.BigIntegerField(primary_key=True, default=0)
+   usa_rateio = models.BooleanField(default=False)
+    
+   def total_percentual_rateio(self):
+      if not self.usa_rateio:
+         return Decimal('100.00')
+      return sum(rateio.percentual for rateio in self.rateios.all())
+   
+   def save(self, *args, **kwargs):
+      is_new = self.pk is None
+      super().save(*args, **kwargs)
+      
+      # Se não usa rateio, não grava no banco
+      if not self.usa_rateio and is_new:
+         RateioProduto.objects.filter(produto=self).delete()
+         
 
    def __str__(self):
       return self.c1_produto
@@ -76,3 +92,39 @@ class StatusSC1(models.Model):
       db_table = 'SC1010'
 
    objects = models.Manager().db_manager('protheus')
+
+
+
+class ConfiguracaoRateio(models.Model):
+    nome = models.CharField(max_length=50, unique=True)
+    descricao = models.TextField(blank=True)
+    ativo = models.BooleanField(default=True)
+    
+    def __str__(self):
+        return self.nome
+
+class ItemRateio(models.Model):
+    configuracao = models.ForeignKey(ConfiguracaoRateio, on_delete=models.CASCADE, related_name='itens')
+    centro_custo = models.CharField(max_length=60)
+    percentual = models.DecimalField(max_digits=5, decimal_places=2)
+    
+    def __str__(self):
+        return f"{self.centro_custo} - {self.percentual}%"
+    
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['configuracao', 'centro_custo'], name='unique_centro_custo_por_config')
+        ]
+
+class RateioProduto(models.Model):
+    produto = models.ForeignKey(Produto, on_delete=models.CASCADE, related_name='rateios')
+    centro_custo = models.CharField(max_length=60)
+    percentual = models.DecimalField(max_digits=5, decimal_places=2)
+    
+    def __str__(self):
+        return f"{self.centro_custo} - {self.percentual}%"
+    
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['produto', 'centro_custo'], name='unique_centro_custo_por_produto')
+        ]

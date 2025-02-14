@@ -1,8 +1,9 @@
 from django.urls import path
-from solicitacoes.views import criar_solicitacao
+from solicitacoes.views import criar_solicitacao, carregar_configuracao_rateio
 
 
 
 urlpatterns = [
    path('cadastrar_solicitacao', criar_solicitacao, name='criar_solicitacao'),
+   path('carregar_configuracao_rateio', criar_solicitacao, name='carregar_configuracao_rateio'),
 ]
