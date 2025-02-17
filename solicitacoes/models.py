@@ -30,6 +30,11 @@ class Produto(models.Model):
    c1_obs = models.CharField(max_length=30, default="")
    r_e_c_n_o = models.BigIntegerField(primary_key=True, default=0)
 
+   def get_ctj_rateio_display(self):
+        # Busca a descrição baseada no ctj_rateio
+        item = Produto.objects.filter(ctj_desc=self.ctj_desc).first()
+        return item.ctj_desc if item else self.ctj_rateio
+
    def __str__(self):
       return self.c1_produto
    

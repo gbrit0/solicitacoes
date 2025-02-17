@@ -8,8 +8,8 @@ class SolicitacaoAdmin(admin.ModelAdmin):
    ordering = ('c1_num',)
 
 class ProdutoAdmin(admin.ModelAdmin):
-   list_display = ('c1_num', 'c1_item', 'c1_descri', 'c1_quant', 'c1_datprf')
-   list_display_link = ('c1_num', 'c1_item', 'c1_descri', 'c1_quant', 'c1_datprf')
+   list_display = ('c1_num', 'c1_item', 'c1_descri', 'c1_quant', 'c1_datprf', 'ctj_desc')
+   list_display_link = ('c1_num', 'c1_item', 'c1_descri', 'c1_quant', 'c1_datprf', 'ctj_desc')
    search_fields = ('c1_num', 'c1_descri')
    ordering = ('c1_num',)
    

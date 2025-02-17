@@ -4,6 +4,7 @@ import os
 from django.forms import inlineformset_factory
 from solicitacoes.models import Produto, Solicitacao
 from datetime import datetime, timedelta
+
 class SolicitacaoForm(forms.ModelForm):
     class Meta:
         model = Solicitacao
@@ -150,14 +151,14 @@ class ProdutosForm(forms.ModelForm):
                                     AND CTJ_FILIAL = '0101'""")
                 
                 rateios = cursor.fetchall()
-                self.fields['ctj_desc'].choices = [(r[0], r[1]) for r in rateios]
+                self.fields['ctj_desc'].choices = rateios
 
 
 ProductFormset = inlineformset_factory(
       Solicitacao,
       Produto,
       form=ProdutosForm,
-      fields=('c1_cc', 'c1_produto', 'c1_datprf', 'c1_quant', 'c1_obs'),
+      fields=('c1_cc', 'c1_produto', 'c1_datprf', 'c1_quant', 'c1_obs', 'ctj_desc'),
       extra=1,
       can_delete=True,
       can_delete_extra=True

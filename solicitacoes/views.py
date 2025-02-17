@@ -40,14 +40,14 @@ def criar_solicitacao(request):
                 solicitacao_form.save()
 
                 instances = formset.save(commit=False)
-
+                
                 with pyodbc.connect(connectionString) as conexao:
                     with conexao.cursor() as cursor:
                         erros = []
                         for num, instance in enumerate(instances):
                             try:
                                 
-                                cursor.execute("""SELECT MAX(R_E_C_N_O_) + 1FROM SC1010 """)
+                                cursor.execute("""SELECT MAX(R_E_C_N_O_) + 1 FROM SC1010 """)
                                 instance.r_e_c_n_o = cursor.fetchone()[0] 
 
                                 instance.c1_num = solicitacao_form

@@ -204,6 +204,7 @@
                             <th>Produto</th>
                             <th>Quantidade</th>
                             <th>Data de Necessidade</th>
+                            <th>Rateio</th>
                             <th>Observações</th>
                             <th>Emissão</th>
                         </tr>
@@ -218,6 +219,7 @@
                                     <td>{{ produto.c1_descri }}</td>
                                     <td>{{ produto.c1_quant }}</td>
                                     <td>{{ produto.c1_datprf|date:"d/m/Y" }}</td>
+                                    <td>{{ produto.get_ctj_rateio_display }}</td>
                                     <td>{{ produto.c1_obs }}</td>
                                     <td>{{ solicitacao.solicitacao.c1_emissao|date:"d/m/Y" }}</td>
                                 </tr>
