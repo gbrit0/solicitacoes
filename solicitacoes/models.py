@@ -23,6 +23,7 @@ class Produto(models.Model):
    c1_um = models.CharField(max_length=2, null=False) # b1_um
    c1_filent = models.CharField(max_length=4, null=False, default='0101')
    c1_local = models.CharField(max_length=2, null=False) # b1_locpad
+   b1_conta = models.CharField(max_length=20, null=False)
    c1_quant = models.DecimalField(max_digits=12, decimal_places=2)
    c1_cc = models.CharField(max_length=60, null=False, default='')
    c1_datprf = models.DateField(blank=False, default='2025-01-01')
@@ -81,3 +82,19 @@ class StatusSC1(models.Model):
       db_table = 'SC1010'
 
    objects = models.Manager().db_manager('protheus')
+
+
+class RateioSC(models.Model):
+   cx_filial = models.CharField(max_length=4, null=False, default='0101') # '0101'
+   cx_solicit = models.ForeignKey(Solicitacao, to_field='c1_num', default='', on_delete=models.DO_NOTHING)
+   cx_itemsol = models.CharField(max_length=4, null=False)
+   cx_item = models.CharField(max_length=2, null=False)
+   cx_perc = models.DecimalField(max_digits=6, decimal_places=2)
+   cx_cc = models.CharField(max_length=9, null=False, default='')
+   cx_conta = models.CharField(max_length=20, null=False, default='')
+   cx_itemcta = models.CharField(max_length=9, null=False, default='')
+   cx_clvl = models.CharField(max_length=9, null=False, default='')
+   r_e_c_n_o = models.BigIntegerField(primary_key=True, default=0)
+
+   def __str__(self):
+      return self.c1_num

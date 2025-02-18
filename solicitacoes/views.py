@@ -65,9 +65,41 @@ def criar_solicitacao(request):
                                 cursor.execute(f"select MAX(B1_LOCPAD) from SB1010 WHERE B1_COD = '{instance.c1_produto}' AND D_E_L_E_T_ <> '*' AND B1_MSBLQL = '2' AND B1_FILIAL = '01'")
                                 instance.c1_local =  cursor.fetchall()[0][0]
                                 
+                                cursor.execute(f"SELECT MAX(B1_CONTA) from SB1010 WHERE B1_COD = '{instance.c1_produto}' AND D_E_L_E_T_ <> '*' AND B1_MSBLQL = '2' AND B1_FILIAL = '01'")
+                                instance.b1_conta =  cursor.fetchall()[0][0]
+                                
                                 instance.c1_filent = '0101'
 
-                                print(f"instance.ctj_desc '{instance.ctj_desc}'")
+                                if instance.ctj_desc != '':
+                                    instance.c1_cc = '                '
+                                    cursor.execute(
+                                        f"SELECT "
+                                            f"CTJ_SEQUEN, "
+                                            f"CTJ_PERCEN, "
+                                            f"CTJ_CCD "
+                                        f"FROM CTJ010 "
+                                        f"WHERE CTJ_RATEIO = '{instance.ctj_desc}'"
+                                    )
+
+                                    rateios = cursor.fetchall()
+                                    recno_rateio = -99999
+                                    for rateio in rateios:
+                                        if recno_rateio < 0:
+                                            cursor.execute("""SELECT MAX(R_E_C_N_O_) + 1 FROM SCX010 """)
+                                            recno_rateio = cursor.fetchone()[0]
+                                        else:
+                                            recno_rateio += 1
+
+                                        cursor.execute(
+                                            (
+                                                f"INSERT INTO SCX010 "
+                                                f"(CX_FILIAL, CX_SOLICIT, CX_ITEMSOL, CX_ITEM, CX_PERC, CX_CC, CX_CONTA, R_E_C_N_O_)"
+                                                    f"VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
+                                            ), (str(instance.c1_filent), str(solicitacao_form.c1_num), str(instance.c1_item), str(rateio[0][1:]), str(rateio[1])[1:], str(rateio[2]), str(instance.b1_conta), str(recno_rateio))
+                                        )
+                                        conexao.commit()
+
+                                # print(f"instance.ctj_desc '{instance.ctj_desc}'")
                                 
                                 # insert = (
                                 #     f"BEGIN TRY "
@@ -102,41 +134,43 @@ def criar_solicitacao(request):
                                 #     f"END CATCH; "
                                 # )
                                 
-                                # cursor.execute((
-                                #     # f"BEGIN TRY "
-                                #     #     f"BEGIN TRANSACTION; "
-                                #         f"INSERT INTO SC1010"
-                                #         f"(C1_FILIAL, C1_NUM, C1_ITEM, C1_DESCRI, C1_CC, C1_PRODUTO, "
-                                #         f"C1_LOCAL, C1_QUANT, C1_EMISSAO, C1_UM, C1_FILENT, "
-                                #         f"C1_DATPRF, C1_SOLICIT, C1_XOBMEMO, R_E_C_N_O_, C1_XSOLWEB)"
-                                #         f"VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CONVERT(VARBINARY(MAX), ?), ?, ? ); "
-                                #     #     f"COMMIT; "
-                                #     # f"END TRY "
-                                #     # f"BEGIN CATCH "
-                                #     #     f"ROLLBACK;"
-                                #     #     f"THROW; "
-                                #     # f"END CATCH; "
-                                # ), (solicitacao_form.c1_filial, solicitacao_form.c1_num, instance.c1_item, produto, instance.c1_cc,
-                                #     instance.c1_produto, instance.c1_local, instance.c1_quant, str(solicitacao_form.c1_emissao).replace('-', '')[:8],
-                                #     instance.c1_um, instance.c1_filent, str(instance.c1_datprf).replace('-', ''), solicitacao_form.c1_solicit,
-                                #     instance.c1_obs, instance.r_e_c_n_o, solicitacao_form.user.id))
+                                cursor.execute((
+                                    # f"BEGIN TRY "
+                                    #     f"BEGIN TRANSACTION; "
+                                        f"INSERT INTO SC1010"
+                                        f"(C1_FILIAL, C1_NUM, C1_ITEM, C1_DESCRI, C1_CC, C1_PRODUTO, "
+                                        f"C1_LOCAL, C1_QUANT, C1_EMISSAO, C1_UM, C1_FILENT, "
+                                        f"C1_DATPRF, C1_SOLICIT, C1_XOBMEMO, R_E_C_N_O_, C1_XSOLWEB)"
+                                        f"VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CONVERT(VARBINARY(MAX), ?), ?, ? ); "
+                                    #     f"COMMIT; "
+                                    # f"END TRY "
+                                    # f"BEGIN CATCH "
+                                    #     f"ROLLBACK;"
+                                    #     f"THROW; "
+                                    # f"END CATCH; "
+                                ), (solicitacao_form.c1_filial, solicitacao_form.c1_num, instance.c1_item, produto, instance.c1_cc,
+                                    instance.c1_produto, instance.c1_local, instance.c1_quant, str(solicitacao_form.c1_emissao).replace('-', '')[:8],
+                                    instance.c1_um, instance.c1_filent, str(instance.c1_datprf).replace('-', ''), solicitacao_form.c1_solicit,
+                                    instance.c1_obs, instance.r_e_c_n_o, solicitacao_form.user.id))
 
-                                instance.save()
-                                # conexao.commit() # no sql já tem o commit, testar se insere normalmente
                             except pyodbc.Error as e:
                                 erros.append({
                                     'produto': produto,
                                     'erro': e
                                 })
+                            else:
+                                instance.save()
+                                conexao.commit() # no sql já tem o commit, testar se insere normalmente
 
-                            
+
+
                 if erros:
                     for erro in erros:
                         messages.error(request, f"Não foi possível cadastrar a solicitação para o produto {erro['produto']}. Tente novamente mais tarde. ERRO: {erro['erro']}")
                 else:
                     messages.success(request, "Solicitação cadastrada com sucesso!")
                             
-                return redirect('lista_solicitacoes')  
+                return redirect('lista_solicitacoes')
                 
             except Exception as e:
                 messages.error(request, f"Erro ao criar solicitação, por favor contate o admnistrador. ERRO: {e}")
@@ -147,7 +181,7 @@ def criar_solicitacao(request):
             return render(request, 'solicitacoes/criar_solicitacao.html', {
                 'solicitacao_form': solicitacao_form,
                 'formset': formset,
-                'errors': formset.errors  
+                'errors': formset.errors
             })
     
 

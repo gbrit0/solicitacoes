@@ -48,7 +48,7 @@ class ProdutosForm(forms.ModelForm):
     )
     
     c1_cc = forms.ChoiceField(
-        required=True,
+        required=False,
         label="Centro de Custo",
         choices=[],
         widget=forms.Select(attrs={
@@ -96,6 +96,11 @@ class ProdutosForm(forms.ModelForm):
     )
 
     b1_um = forms.CharField(
+        required=False,
+        widget=forms.HiddenInput()
+    )
+    
+    b1_conta = forms.CharField(
         required=False,
         widget=forms.HiddenInput()
     )
