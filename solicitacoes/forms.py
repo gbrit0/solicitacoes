@@ -159,6 +159,21 @@ class ProdutosForm(forms.ModelForm):
                 self.fields['ctj_desc'].choices = rateios
 
 
+    def clean(self):
+        cleaned_data = super().clean()
+        cc = cleaned_data.get('c1_cc')
+        rateio = cleaned_data.get('ctj_desc')
+        
+        if not cc and not rateio:
+            # Adiciona o erro aos campos específicos
+
+            self.add_error('c1_cc', 'Preencha Centro de Custo ou Rateio')
+            self.add_error('ctj_desc', 'Preencha Centro de Custo ou Rateio')
+            
+            raise forms.ValidationError("Você deve preencher pelo menos um dos campos: Centro de Custo ou Rateio")
+            
+        return cleaned_data
+
 ProductFormset = inlineformset_factory(
       Solicitacao,
       Produto,
