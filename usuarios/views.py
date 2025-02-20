@@ -97,7 +97,7 @@ def cadastro(request):
 
 def logout(request):
    auth.logout(request)
-   messages.success(request, f"Você será redirecionado para a página de login!")
-   time.sleep(3)
+#    messages.success(request, f"Você será redirecionado para a página de login!")
+#    time.sleep(2)
    return redirect('login')
 
