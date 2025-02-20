@@ -125,7 +125,7 @@ class ProdutosForm(forms.ModelForm):
             with conexao.cursor() as cursor:
                 cursor.execute("""SELECT 
                                      TRIM(B1_COD) AS cod_produto,
-                                     TRIM(B1_DESC) as produto
+                                     TRIM(B1_COD) + ' - ' + TRIM(B1_DESC) as produto
                                   FROM SB1010
                                   WHERE D_E_L_E_T_ <> '*'
                                   AND B1_MSBLQL = '2'
@@ -135,8 +135,8 @@ class ProdutosForm(forms.ModelForm):
                 self.fields['c1_produto'].choices = [(p[0], p[1]) for p in produtos]
                 
                 cursor.execute("""SELECT 
-                                    CTT_CUSTO, 
-                                    CTT_DESC01 
+                                    TRIM(CTT_CUSTO) AS cod_cc, 
+                                    TRIM(CTT_CUSTO) + ' - ' + TRIM(CTT_DESC01) AS centro_de_custo 
                                 FROM CTT010 
                                 WHERE D_E_L_E_T_ <> '*'
                                 AND CTT_BLOQ = '2'
@@ -149,8 +149,8 @@ class ProdutosForm(forms.ModelForm):
                 self.fields['c1_cc'].choices = centros_de_custo
 
                 cursor.execute("""SELECT DISTINCT 
-                                    CTJ_RATEIO, 
-                                    CTJ_DESC 
+                                    TRIM(CTJ_RATEIO) AS cod_rateio, 
+                                    TRIM(CTJ_RATEIO) + ' - ' + TRIM(CTJ_DESC) AS rateio 
                                 FROM CTJ010 
                                 WHERE D_E_L_E_T_ <> '*' 
                                     AND CTJ_FILIAL = '0101'""")

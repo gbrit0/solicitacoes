@@ -137,6 +137,45 @@
             transition: opacity 0.3s ease;
          }
     </style>
+    <style>
+        /* Animação para entrada do alerta */
+        .alert {
+           animation: slideInDown 0.5s ease-out, fadeIn 0.5s ease-out;
+        }
+        
+        /* Animação para saída do alerta */
+        .alert.fade {
+           transition: all 0.5s ease-out;
+        }
+        
+        .alert.fade.show {
+           opacity: 1;
+           transform: translateY(0);
+        }
+        
+        .alert.fade:not(.show) {
+           opacity: 0;
+           transform: translateY(-20px);
+        }
+        
+        @keyframes slideInDown {
+           from {
+              transform: translateY(-100%);
+           }
+           to {
+              transform: translateY(0);
+           }
+        }
+        
+        @keyframes fadeIn {
+           from {
+              opacity: 0;
+           }
+           to {
+              opacity: 1;
+           }
+        }
+     </style> 
 
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
@@ -196,10 +235,10 @@
                         <table class="table table-hover" id="produtos-table">
                             <thead>
                                 <tr>
-                                    <th>Centro de Custo</th>
                                     <th>Produto</th>
                                     <th>Quantidade</th>
                                     <th>Data de Necessidade</th>
+                                    <th>Centro de Custo</th>
                                     <th>Rateios</th>
                                     <th>Observações</th>
                                     <th>Ações</th>
@@ -208,14 +247,6 @@
                             <tbody id="produtos-formset">
                                 {% for form in formset %}
                                 <tr class="produto-form">
-                                    <td>
-                                        {{ form.c1_cc }}
-                                        {% if form.c1_cc.errors %}
-                                            {% for error in form.c1_cc.errors %}
-                                                <div class="invalid-feedback d-block">{{ error }}</div>
-                                            {% endfor %}
-                                        {% endif %}
-                                    </td>
                                     <td>
                                         {{ form.c1_produto }}
                                         {% if form.c1_produto.errors %}
@@ -236,6 +267,14 @@
                                         {{ form.c1_datprf }}
                                         {% if form.c1_datprf.errors %}
                                             {% for error in form.c1_datprf.errors %}
+                                                <div class="invalid-feedback d-block">{{ error }}</div>
+                                            {% endfor %}
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {{ form.c1_cc }}
+                                        {% if form.c1_cc.errors %}
+                                            {% for error in form.c1_cc.errors %}
                                                 <div class="invalid-feedback d-block">{{ error }}</div>
                                             {% endfor %}
                                         {% endif %}
@@ -270,9 +309,6 @@
                             <table style="display: none;">
                                 <tr id="empty-form-template" class="produto-form">
                                     <td>
-                                        {{ formset.empty_form.c1_cc }}
-                                    </td>
-                                    <td>
                                         {{ formset.empty_form.c1_produto }}
                                     </td>
                                     <td>
@@ -280,6 +316,9 @@
                                     </td>
                                     <td>
                                         {{ formset.empty_form.c1_datprf }}
+                                    </td>
+                                    <td>
+                                        {{ formset.empty_form.c1_cc }}
                                     </td>
                                     <td>
                                         {{ formset.empty_form.ctj_desc }}
@@ -342,6 +381,28 @@
         var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
         return new bootstrap.Tooltip(tooltipTriggerEl);
         });
+    </script>
+    <script>
+    // Espera o documento carregar completamente
+    document.addEventListener('DOMContentLoaded', function() {
+        const alerts = document.querySelectorAll('.alert');
+        
+        alerts.forEach(function(alert) {
+            let timeout = 2500; // tempo padrão
+            
+            // Define tempos diferentes baseado no tipo de alerta
+            if (alert.classList.contains('alert-success')) {
+                timeout = 2500; // 3 segundos para mensagens de sucesso
+            } else if (alert.classList.contains('alert-danger')) {
+                timeout = 5000; // 7 segundos para mensagens de erro
+            }
+            
+            setTimeout(function() {
+                const bsAlert = new bootstrap.Alert(alert);
+                bsAlert.close();
+            }, timeout);
+        });
+    });
     </script>
     <script>
         $(document).ready(function() {
