@@ -96,7 +96,45 @@
         }
 
     </style>
-    
+    <style>
+        /* Animação para entrada do alerta */
+        .alert {
+            animation: slideInDown 0.5s ease-out, fadeIn 0.5s ease-out;
+        }
+        
+        /* Animação para saída do alerta */
+        .alert.fade {
+            transition: all 0.5s ease-out;
+        }
+        
+        .alert.fade.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .alert.fade:not(.show) {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+        
+        @keyframes slideInDown {
+            from {
+                transform: translateY(-100%);
+            }
+            to {
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+    </style>
 
     <!-- FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -323,6 +361,28 @@
                 document.head.appendChild(style);
 
             });
+        </script>
+        <script>
+        // Espera o documento carregar completamente
+        document.addEventListener('DOMContentLoaded', function() {
+            const alerts = document.querySelectorAll('.alert');
+            
+            alerts.forEach(function(alert) {
+                let timeout = 2500; // tempo padrão
+                
+                // Define tempos diferentes baseado no tipo de alerta
+                if (alert.classList.contains('alert-success')) {
+                    timeout = 2500; // 3 segundos para mensagens de sucesso
+                } else if (alert.classList.contains('alert-danger')) {
+                    timeout = 5000; // 7 segundos para mensagens de erro
+                }
+                
+                setTimeout(function() {
+                    const bsAlert = new bootstrap.Alert(alert);
+                    bsAlert.close();
+                }, timeout);
+            });
+        });
         </script>
     </body>
 </html>

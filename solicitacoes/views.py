@@ -40,14 +40,14 @@ def criar_solicitacao(request):
                 solicitacao_form.save()
 
                 instances = formset.save(commit=False)
-
+                
                 with pyodbc.connect(connectionString) as conexao:
                     with conexao.cursor() as cursor:
                         erros = []
                         for num, instance in enumerate(instances):
                             try:
                                 
-                                cursor.execute("""SELECT MAX(R_E_C_N_O_) + 1FROM SC1010 """)
+                                cursor.execute("""SELECT MAX(R_E_C_N_O_) + 1 FROM SC1010 """)
                                 instance.r_e_c_n_o = cursor.fetchone()[0] 
 
                                 instance.c1_num = solicitacao_form
@@ -65,7 +65,41 @@ def criar_solicitacao(request):
                                 cursor.execute(f"select MAX(B1_LOCPAD) from SB1010 WHERE B1_COD = '{instance.c1_produto}' AND D_E_L_E_T_ <> '*' AND B1_MSBLQL = '2' AND B1_FILIAL = '01'")
                                 instance.c1_local =  cursor.fetchall()[0][0]
                                 
+                                cursor.execute(f"SELECT MAX(B1_CONTA) from SB1010 WHERE B1_COD = '{instance.c1_produto}' AND D_E_L_E_T_ <> '*' AND B1_MSBLQL = '2' AND B1_FILIAL = '01'")
+                                instance.b1_conta =  cursor.fetchall()[0][0]
+                                
                                 instance.c1_filent = '0101'
+
+                                if instance.ctj_desc != '':
+                                    instance.c1_cc = '                '
+                                    cursor.execute(
+                                        f"SELECT "
+                                            f"CTJ_SEQUEN, "
+                                            f"CTJ_PERCEN, "
+                                            f"CTJ_CCD "
+                                        f"FROM CTJ010 "
+                                        f"WHERE CTJ_RATEIO = '{instance.ctj_desc}'"
+                                    )
+
+                                    rateios = cursor.fetchall()
+                                    recno_rateio = -99999
+                                    for rateio in rateios:
+                                        if recno_rateio < 0:
+                                            cursor.execute("""SELECT MAX(R_E_C_N_O_) + 1 FROM SCX010 """)
+                                            recno_rateio = cursor.fetchone()[0]
+                                        else:
+                                            recno_rateio += 1
+
+                                        cursor.execute(
+                                            (
+                                                f"INSERT INTO SCX010 "
+                                                f"(CX_FILIAL, CX_SOLICIT, CX_ITEMSOL, CX_ITEM, CX_PERC, CX_CC, CX_CONTA, R_E_C_N_O_)"
+                                                    f"VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
+                                            ), (str(instance.c1_filent), str(solicitacao_form.c1_num), str(instance.c1_item), str(rateio[0][1:]), str(rateio[1])[1:], str(rateio[2]), str(instance.b1_conta), str(recno_rateio))
+                                        )
+                                        conexao.commit()
+
+                                # print(f"instance.ctj_desc '{instance.ctj_desc}'")
                                 
                                 # insert = (
                                 #     f"BEGIN TRY "
@@ -119,22 +153,24 @@ def criar_solicitacao(request):
                                     instance.c1_um, instance.c1_filent, str(instance.c1_datprf).replace('-', ''), solicitacao_form.c1_solicit,
                                     instance.c1_obs, instance.r_e_c_n_o, solicitacao_form.user.id))
 
-                                instance.save()
-                                conexao.commit() # no sql já tem o commit, testar se insere normalmente
                             except pyodbc.Error as e:
                                 erros.append({
                                     'produto': produto,
                                     'erro': e
                                 })
+                            else:
+                                instance.save()
+                                conexao.commit() # no sql já tem o commit, testar se insere normalmente
 
-                            
+
+
                 if erros:
                     for erro in erros:
                         messages.error(request, f"Não foi possível cadastrar a solicitação para o produto {erro['produto']}. Tente novamente mais tarde. ERRO: {erro['erro']}")
                 else:
                     messages.success(request, "Solicitação cadastrada com sucesso!")
                             
-                return redirect('lista_solicitacoes')  
+                return redirect('lista_solicitacoes')
                 
             except Exception as e:
                 messages.error(request, f"Erro ao criar solicitação, por favor contate o admnistrador. ERRO: {e}")
@@ -145,7 +181,7 @@ def criar_solicitacao(request):
             return render(request, 'solicitacoes/criar_solicitacao.html', {
                 'solicitacao_form': solicitacao_form,
                 'formset': formset,
-                'errors': formset.errors  
+                'errors': formset.errors
             })
     
 

@@ -25,13 +25,13 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = [
    '192.168.15.60', 
    '10.1.1.4', 
    '127.0.0.1', 
-   '0.0.0.0', 
+   '0.0.0.0', ''
    'api.brggeradores.com.br', 
    '192.168.4.53',
    'https://api.brggeradores.com.br',

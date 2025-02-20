@@ -4,6 +4,7 @@ import os
 from django.forms import inlineformset_factory
 from solicitacoes.models import Produto, Solicitacao
 from datetime import datetime, timedelta
+
 class SolicitacaoForm(forms.ModelForm):
     class Meta:
         model = Solicitacao
@@ -47,7 +48,7 @@ class ProdutosForm(forms.ModelForm):
     )
     
     c1_cc = forms.ChoiceField(
-        required=True,
+        required=False,
         label="Centro de Custo",
         choices=[],
         widget=forms.Select(attrs={
@@ -57,12 +58,25 @@ class ProdutosForm(forms.ModelForm):
             'Title': 'Selecione um centro de custo',
         }),
     )
+
     c1_datprf = forms.DateField(
         required=True,
         label="Data de Necessidade",
         widget=forms.DateInput(attrs={
             'class': 'form-control data-necessidade',
             'type':'date',
+        }),
+    )
+
+    ctj_desc = forms.ChoiceField(
+        required=False,
+        label="Rateio",
+        choices=[],
+        widget=forms.Select(attrs={
+            'class': 'selectsearch form-control',
+            "data-live-search":"True",
+            "data-size": '5',
+            'Title': 'Sem Rateio',
         }),
     )
 
@@ -82,6 +96,11 @@ class ProdutosForm(forms.ModelForm):
     )
 
     b1_um = forms.CharField(
+        required=False,
+        widget=forms.HiddenInput()
+    )
+    
+    b1_conta = forms.CharField(
         required=False,
         widget=forms.HiddenInput()
     )
@@ -106,7 +125,7 @@ class ProdutosForm(forms.ModelForm):
             with conexao.cursor() as cursor:
                 cursor.execute("""SELECT 
                                      TRIM(B1_COD) AS cod_produto,
-                                     TRIM(B1_DESC) as produto
+                                     TRIM(B1_COD) + ' - ' + TRIM(B1_DESC) as produto
                                   FROM SB1010
                                   WHERE D_E_L_E_T_ <> '*'
                                   AND B1_MSBLQL = '2'
@@ -116,12 +135,12 @@ class ProdutosForm(forms.ModelForm):
                 self.fields['c1_produto'].choices = [(p[0], p[1]) for p in produtos]
                 
                 cursor.execute("""SELECT 
-                                    CTT_CUSTO, 
-                                    CTT_DESC01 
+                                    TRIM(CTT_CUSTO) AS cod_cc, 
+                                    TRIM(CTT_CUSTO) + ' - ' + TRIM(CTT_DESC01) AS centro_de_custo 
                                 FROM CTT010 
                                 WHERE D_E_L_E_T_ <> '*'
                                 AND CTT_BLOQ = '2'
-                                AND CTT_FILIAL = '0101'
+                                -- AND CTT_FILIAL = '0101'
                                 AND CTT_CLASSE = '2'""")
                 
                 # <=========== DESCOMENTAR O CTT_FILIAL QUANDO COLOCAR EM PRODUÇÃO ==================>
@@ -129,12 +148,37 @@ class ProdutosForm(forms.ModelForm):
                 centros_de_custo = cursor.fetchall()
                 self.fields['c1_cc'].choices = centros_de_custo
 
+                cursor.execute("""SELECT DISTINCT 
+                                    TRIM(CTJ_RATEIO) AS cod_rateio, 
+                                    TRIM(CTJ_RATEIO) + ' - ' + TRIM(CTJ_DESC) AS rateio 
+                                FROM CTJ010 
+                                WHERE D_E_L_E_T_ <> '*' 
+                                    AND CTJ_FILIAL = '0101'""")
+                
+                rateios = cursor.fetchall()
+                self.fields['ctj_desc'].choices = rateios
+
+
+    def clean(self):
+        cleaned_data = super().clean()
+        cc = cleaned_data.get('c1_cc')
+        rateio = cleaned_data.get('ctj_desc')
+        
+        if not cc and not rateio:
+            # Adiciona o erro aos campos específicos
+
+            self.add_error('c1_cc', 'Preencha Centro de Custo ou Rateio')
+            self.add_error('ctj_desc', 'Preencha Centro de Custo ou Rateio')
+            
+            raise forms.ValidationError("Você deve preencher pelo menos um dos campos: Centro de Custo ou Rateio")
+            
+        return cleaned_data
 
 ProductFormset = inlineformset_factory(
       Solicitacao,
       Produto,
       form=ProdutosForm,
-      fields=('c1_cc', 'c1_produto', 'c1_datprf', 'c1_quant', 'c1_obs'),
+      fields=('c1_cc', 'c1_produto', 'c1_datprf', 'c1_quant', 'c1_obs', 'ctj_desc'),
       extra=1,
       can_delete=True,
       can_delete_extra=True
