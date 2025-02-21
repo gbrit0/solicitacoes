@@ -53,22 +53,22 @@ class Produto(models.Model):
 
    #    super().save(*args, **kwargs)
 
-class StatusPedido(models.Model):
-   recno = models.AutoField(db_column='R_E_C_N_O_', primary_key=True)  # Mapeia a coluna R_E_C_N_O_
-   C7_NUMSC = models.CharField(max_length=6)
-   C7_QUJE = models.FloatField()
-   C7_QTDACLA = models.FloatField()
-   C7_CONAPRO = models.CharField(max_length=1)
-   C7_TIPO = models.CharField(max_length=1)
-   C7_RESIDUO = models.CharField(max_length=1)
-   C7_QUANT = models.FloatField()
-   C7_CONTRA = models.CharField(max_length=1)
+# class StatusPedido(models.Model):
+#    recno = models.AutoField(db_column='R_E_C_N_O_', primary_key=True)  # Mapeia a coluna R_E_C_N_O_
+#    C7_NUMSC = models.CharField(max_length=6)
+#    C7_QUJE = models.FloatField()
+#    C7_QTDACLA = models.FloatField()
+#    C7_CONAPRO = models.CharField(max_length=1)
+#    C7_TIPO = models.CharField(max_length=1)
+#    C7_RESIDUO = models.CharField(max_length=1)
+#    C7_QUANT = models.FloatField()
+#    C7_CONTRA = models.CharField(max_length=1)
 
-   class Meta:
-      managed = False
-      db_table = 'SC7010'
+#    class Meta:
+#       managed = False
+#       db_table = 'SC7010'
 
-   objects = models.Manager().db_manager('protheus')
+#    objects = models.Manager().db_manager('protheus')
 
 class StatusSC1(models.Model):
    recno = models.AutoField(db_column='R_E_C_N_O_', primary_key=True)
@@ -76,6 +76,10 @@ class StatusSC1(models.Model):
    C1_COTACAO = models.CharField(max_length=6)
    C1_QUJE = models.FloatField()
    C1_APROV = models.CharField(max_length=1)
+   C1_QUANT = models.DecimalField(max_digits=12, decimal_places=2, default=0)
+   C1_RESIDUO = models.CharField(max_length=1, default='N')
+   C1_IMPORT = models.CharField(max_length=1, default='N')
+   C1_COMPRAC = models.CharField(max_length=1, default='2')
 
    class Meta:
       managed: False

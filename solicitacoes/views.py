@@ -102,54 +102,14 @@ def criar_solicitacao(request):
 
                                 # print(f"instance.ctj_desc '{instance.ctj_desc}'")
                                 
-                                # insert = (
-                                #     f"BEGIN TRY "
-                                #         f"BEGIN TRANSACTION; "
-                                #         f"INSERT INTO SC1010 WITH (TABLOCKX)"
-                                #         f"(C1_FILIAL, C1_NUM, C1_ITEM, C1_DESCRI, C1_CC, C1_PRODUTO, "
-                                #         f"C1_LOCAL, C1_QUANT, C1_EMISSAO, C1_UM, C1_FILENT, "
-                                #         f"C1_DATPRF, C1_SOLICIT, C1_XOBMEMO, R_E_C_N_O_, C1_XSOLWEB)"
-                                #         f"VALUES ( "
-                                #             f"'{solicitacao_form.c1_filial}', "
-                                #             f"'{solicitacao_form.c1_num}', "
-                                #             f"'{instance.c1_item}', "
-                                #             f"'{produto}', "
-                                #             f"'{instance.c1_cc}', "
-                                #             f"'{instance.c1_produto}', "
-                                #             f"'{instance.c1_local}', "
-                                #             f"'{instance.c1_quant}', "
-                                #             f"'{str(solicitacao_form.c1_emissao).replace('-', '')[:8]}', "
-                                #             f"'{instance.c1_um}', "
-                                #             f"'{instance.c1_filent}', "
-                                #             f"'{str(instance.c1_datprf).replace('-', '')}', "
-                                #             f"'{solicitacao_form.c1_solicit}', "
-                                #             f"CONVERT(VARBINARY(MAX), '{instance.c1_obs}'), "
-                                #             f"'{instance.r_e_c_n_o}', "
-                                #             f"'{solicitacao_form.user.cpf}'); "
-                                        
-                                #         f"COMMIT; "
-                                #     f"END TRY "
-                                #     f"BEGIN CATCH "
-                                #         f"ROLLBACK;"
-                                #         f"THROW; "
-                                #     f"END CATCH; "
-                                # )
-                                
                                 cursor.execute((
-                                    # f"BEGIN TRY "
-                                    #     f"BEGIN TRANSACTION; "
-                                        f"INSERT INTO SC1010"
-                                        f"(C1_FILIAL, C1_NUM, C1_ITEM, C1_DESCRI, C1_CC, C1_PRODUTO, "
-                                        f"C1_LOCAL, C1_QUANT, C1_EMISSAO, C1_UM, C1_FILENT, "
-                                        f"C1_DATPRF, C1_SOLICIT, C1_XOBMEMO, R_E_C_N_O_, C1_XSOLWEB, "
-                                        f"C1_QUJE, C1_COTACAO, C1_APROV)"
-                                        f"VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CONVERT(VARBINARY(MAX), ?), ?, ?, 0, '      ', 'B' ); "
-                                    #     f"COMMIT; "
-                                    # f"END TRY "
-                                    # f"BEGIN CATCH "
-                                    #     f"ROLLBACK;"
-                                    #     f"THROW; "
-                                    # f"END CATCH; "
+                                    f"INSERT INTO SC1010"
+                                    f"(C1_FILIAL, C1_NUM, C1_ITEM, C1_DESCRI, C1_CC, C1_PRODUTO, "
+                                    f"C1_LOCAL, C1_QUANT, C1_EMISSAO, C1_UM, C1_FILENT, "
+                                    f"C1_DATPRF, C1_SOLICIT, C1_XOBMEMO, R_E_C_N_O_, C1_XSOLWEB, "
+                                    f"C1_QUJE, C1_COTACAO, C1_APROV)"
+                                    f"VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CONVERT(VARBINARY(MAX), ?), ?, ?, 0, '      ', 'B' ); "
+                                    
                                 ), (solicitacao_form.c1_filial, solicitacao_form.c1_num, instance.c1_item, produto, instance.c1_cc,
                                     instance.c1_produto, instance.c1_local, instance.c1_quant, str(solicitacao_form.c1_emissao).replace('-', '')[:8],
                                     instance.c1_um, instance.c1_filent, str(instance.c1_datprf).replace('-', ''), solicitacao_form.c1_solicit,
@@ -162,9 +122,7 @@ def criar_solicitacao(request):
                                 })
                             else:
                                 instance.save()
-                                conexao.commit() # no sql já tem o commit, testar se insere normalmente
-
-
+                                conexao.commit() 
 
                 if erros:
                     for erro in erros:
@@ -178,7 +136,6 @@ def criar_solicitacao(request):
                 messages.error(request, f"Erro ao criar solicitação, por favor contate o admnistrador. ERRO: {e}")
                 return redirect('lista_solicitacoes')
             
-            
         else:
             return render(request, 'solicitacoes/criar_solicitacao.html', {
                 'solicitacao_form': solicitacao_form,
@@ -186,10 +143,69 @@ def criar_solicitacao(request):
                 'errors': formset.errors
             })
     
-
     solicitacao_form = SolicitacaoForm()
     formset = ProductFormset()
     return render(request, 'solicitacoes/criar_solicitacao.html', {
         'solicitacao_form': solicitacao_form,
         'formset': formset
+    })
+
+
+@login_required(login_url='login')
+def apagar_solicitacao(request, num_solicitacao):
+    if request.method == 'POST':
+        # Adicione no início da função
+        try:
+            connectionString = f"DRIVER={{ODBC Driver 17 for SQL Server}};SERVER={os.environ['HOST']};DATABASE={os.environ['DATABASE']};UID={os.environ['USER']};PWD={os.environ['PASSWORD']};TrustServerCertificate=yes"
+            
+            with pyodbc.connect(connectionString) as conexao:
+                with conexao.cursor() as cursor:
+                    # Verifica se a solicitação existe e pertence ao usuário
+                    cursor.execute("""
+                        SELECT C1_NUM, C1_XSOLWEB 
+                        FROM SC1010 
+                        WHERE C1_NUM = ? 
+                        AND D_E_L_E_T_ <> '*'
+                    """, (num_solicitacao,))
+                    
+                    solicitacao = cursor.fetchone()
+                
+                    if not solicitacao:
+                        messages.error(request, "Solicitação não encontrada.")
+                        return redirect('lista_solicitacoes')
+                    
+                    if solicitacao.c1_aprov != 'B':
+                        messages.error(request, "Solicitação já processada, não pode ser excluída")
+                        return redirect('lista_solicitacoes')
+                
+                    # Verifica se o usuário tem permissão (é o criador da solicitação)
+                    if str(solicitacao[1]) != str(request.user.id):
+                        messages.error(request, "Você não tem permissão para apagar esta solicitação.")
+                        return redirect('lista_solicitacoes')
+                    
+                    # Apaga os rateios relacionados
+                    cursor.execute("""
+                        DELETE FROM SCX010 
+                        WHERE CX_SOLICIT = ?
+                    """, (num_solicitacao,))
+                    
+                    # Apaga a solicitação principal e seus itens
+                    cursor.execute("""
+                        UPDATE SC1010 
+                        SET D_E_L_E_T_ = '*'
+                        WHERE C1_NUM = ?
+                    """, (num_solicitacao,))
+                    
+                    conexao.commit()
+                    
+                    messages.success(request, "Solicitação apagada com sucesso!")
+                    return redirect('lista_solicitacoes')
+                    
+        except pyodbc.Error as e:
+            messages.error(request, f"Erro ao apagar solicitação. Por favor, contate o administrador. ERRO: {e}")
+            return redirect('lista_solicitacoes')
+    
+    # Se for GET, mostra uma página de confirmação
+    return render(request, 'solicitacoes/confirmar_exclusao.html', {
+        'num_solicitacao': num_solicitacao
     })
