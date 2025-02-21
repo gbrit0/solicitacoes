@@ -28,7 +28,7 @@ class Produto(models.Model):
    c1_cc = models.CharField(max_length=60, null=False, default='')
    c1_datprf = models.DateField(blank=False, default='2025-01-01')
    ctj_desc = models.CharField(max_length=40, default='')
-   c1_obs = models.CharField(max_length=30, default="")
+   c1_obs = models.TextField(default="")
    r_e_c_n_o = models.BigIntegerField(primary_key=True, default=0)
 
    def get_ctj_rateio_display(self):

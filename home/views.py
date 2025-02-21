@@ -8,32 +8,32 @@ def calcular_status(solicitacao):
     status_sc1 = StatusSC1.objects.filter(C1_NUM=solicitacao.c1_num).first()
     if status_sc1:
         if status_sc1.C1_QUJE == 0 and (status_sc1.C1_COTACAO == '      ' or status_sc1.C1_COTACAO == 'IMPORT') and status_sc1.C1_APROV == 'B':
-            return '<i class="fa-solid fa-circle text-dark" title="Solicitação Bloqueada"></i>' # Preto - Solicitação Bloqueada
+            return '<i class="fa-solid fa-circle text-dark"  data-bs-toggle="tooltip" title="Solicitação Bloqueada"></i>' # Preto - Solicitação Bloqueada
 
     status_pedido = StatusPedido.objects.filter(C7_NUMSC=solicitacao.c1_num).first()
     
     if not status_pedido:
-        return '<i class="fa-solid fa-circle indigo"></i>' # Roxo - Caso não pegue o status do pedido
+        return '<i class="fa-solid fa-circle indigo"  data-bs-toggle="tooltip" title="Sem status"></i>' # Roxo - Caso não pegue o status do pedido
          
     
     if status_pedido.C7_CONAPRO == 'R':
-        return '<i class="fa-solid fa-circle-xmark text-danger" title="Rejeitado pelo aprovador"></i>'  # X vermelho - Rejeitado pelo aprovador
+        return '<i class="fa-solid fa-circle-xmark text-danger"  data-bs-toggle="tooltip" title="Rejeitado pelo aprovador"></i>'  # X vermelho - Rejeitado pelo aprovador
     elif status_pedido.C7_CONAPRO == 'B' and status_pedido.C7_QUJE < status_pedido.C7_QUANT:
-        return '<i class="fa-solid fa-circle text-primary" title="Em aprovação"></i>'  # Azul - Em aprovação
+        return '<i class="fa-solid fa-circle text-primary" data-bs-toggle="tooltip" title="Em aprovação"></i>'  # Azul - Em aprovação
     elif status_pedido.C7_RESIDUO:
-        return '<i class="fa-solid fa-circle text-secondary" title="PC Eliminado por Resíduo"></i>'  # Cinza - PC Eliminado por Resíduo
+        return '<i class="fa-solid fa-circle text-secondary" data-bs-toggle="tooltip" title="PC Eliminado por Resíduo"></i>'  # Cinza - PC Eliminado por Resíduo
     elif status_pedido.C7_CONTRA and status_pedido.C7_RESIDUO:
-        return '<i class="fa-solid fa-circle text-info" title="Contrato"></i>'  # Ciano - Contrato
+        return '<i class="fa-solid fa-circle text-info" data-bs-toggle="tooltip" title="Contrato"></i>'  # Ciano - Contrato
     elif status_pedido.C7_TIPO != '1':
         return '<i class="fa-solid fa-circle brown"></i>'  # Marrom - ???
     elif status_pedido.C7_QQTDACLA > 0:
-        return '<i class="fa-solid fa-circle text-orange" title="Em recebimento"></i>'  # Laranja - Em recebimento - pré-nota
+        return '<i class="fa-solid fa-circle text-orange" data-bs-toggle="tooltip" title="Em recebimento"></i>'  # Laranja - Em recebimento - pré-nota
     elif status_pedido.C7_QUJE >= status_pedido.C7_QUANT:
-        return '<i class="fa-solid fa-circle text-danger"></i>'  # Vermelho - Recebido
+        return '<i class="fa-solid fa-circle text-danger" data-bs-toggle="tooltip" title="Recebido"></i>'  # Vermelho - Recebido
     elif status_pedido.C7_QUJE != 0 and status_pedido.C7_QUJE < status_pedido.C7_QUANT:
-        return '<i class="fa-solid fa-circle text-warning"></i>'  # Amarelo - Recebido parcialmente
+        return '<i class="fa-solid fa-circle text-warning" data-bs-toggle="tooltip" title="Parcialmente Recebido"></i>'  # Amarelo - Recebido parcialmente
     elif status_pedido.C7_QUJE == 0 and status_pedido.C7_QTDACLA == 0:
-        return '<i class="fa-solid fa-circle text-success"></i>'  # Verde - Pendente
+        return '<i class="fa-solid fa-circle text-success" data-bs-toggle="tooltip" title="Pendente"></i>'  # Verde - Pendente
 
 
 

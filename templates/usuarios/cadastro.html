@@ -177,11 +177,11 @@
             const alerts = document.querySelectorAll('.alert');
             
             alerts.forEach(function(alert) {
-                  let timeout = 2500; // tempo padrão
+                  let timeout = 2000; // tempo padrão
                   
                   // Define tempos diferentes baseado no tipo de alerta
                   if (alert.classList.contains('alert-success')) {
-                     timeout = 2500; // 3 segundos para mensagens de sucesso
+                     timeout = 2000; // 3 segundos para mensagens de sucesso
                   } else if (alert.classList.contains('alert-danger')) {
                      timeout = 5000; // 7 segundos para mensagens de erro
                   }
