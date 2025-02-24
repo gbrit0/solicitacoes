@@ -2,6 +2,11 @@ from django.shortcuts import render
 from home.forms import FiltroSolicitacaoForm
 from django.contrib.auth.decorators import login_required
 from solicitacoes.models import Solicitacao, Produto, StatusSC1 # StatusPedido, 
+import pyodbc
+import os
+from django.shortcuts import get_object_or_404
+from django.shortcuts import render, redirect
+from django.contrib import messages
 
 def calcular_status(solicitacao):
     status = StatusSC1.objects.filter(C1_NUM=solicitacao.c1_num).first()
@@ -74,7 +79,7 @@ def lista_solicitacoes(request):
         solicitacoes = Solicitacao.objects.filter(user=request.user)
     
     solicitacoes = solicitacoes.prefetch_related('user').order_by('-c1_num')
-    produtos = Produto.objects.all().order_by('-c1_num')
+    produtos = Produto.objects.filter(is_deleted=False).order_by('-c1_num')
     
     if form.is_valid():
         data_inicio = form.cleaned_data.get('data_inicio')
@@ -108,3 +113,31 @@ def lista_solicitacoes(request):
     
     return render(request, 'home/index.html', context)
 
+def delete_produto(request, produto_id):
+    produto = get_object_or_404(Produto, r_e_c_n_o=produto_id)
+    
+    # Atualizar no Django
+    produto.is_deleted = True
+    produto.save()
+    
+    # atualizar no Protheus
+    connectionString = f"DRIVER={{ODBC Driver 17 for SQL Server}};SERVER={os.environ['HOST']};DATABASE={os.environ['DATABASE']};UID={os.environ['USER']};PWD={os.environ['PASSWORD']};TrustServerCertificate=yes"
+    conn = pyodbc.connect(connectionString)
+    erros = []
+
+    try:
+        cursor = conn.cursor()
+        cursor.execute(f"UPDATE SC1010 SET  D_E_L_E_T_ = '*' WHERE R_E_C_N_O_ = {produto_id}")
+    except pyodbc.Error as e:
+        erros.append({
+            'produto': produto,
+            'erro': e
+        })
+        conn.rollback()
+    else:
+        conn.commit()
+    finally:
+        cursor.close()
+        conn.close()
+        
+    return redirect('lista_solicitacoes')        

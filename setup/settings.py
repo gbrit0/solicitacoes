@@ -71,6 +71,7 @@ MIDDLEWARE = [
 ]
 
 
+
 ROOT_URLCONF = 'setup.urls'
 
 TEMPLATES = [
