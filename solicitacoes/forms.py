@@ -115,6 +115,11 @@ class ProdutosForm(forms.ModelForm):
         widget=forms.HiddenInput()
     )
 
+    is_deleted = forms.CharField(
+        required=False,
+        widget=forms.HiddenInput()
+    )
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         # if not self.instance.pk:

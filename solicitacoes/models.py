@@ -30,11 +30,9 @@ class Produto(models.Model):
    ctj_desc = models.CharField(max_length=40, default='')
    c1_obs = models.TextField(default="")
    r_e_c_n_o = models.BigIntegerField(primary_key=True, default=0)
+   is_deleted = models.BooleanField(blank= False, default=False)  # Campo para controle de deleção
 
-   def get_ctj_rateio_display(self):
-        # Busca a descrição baseada no ctj_rateio
-        item = Produto.objects.filter(ctj_desc=self.ctj_desc).first()
-        return item.ctj_desc if item else self.ctj_rateio
+   
 
    def __str__(self):
       return self.c1_produto
