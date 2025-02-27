@@ -83,7 +83,7 @@ def criar_solicitacao(request):
                                 ), (solicitacao_form.c1_filial, solicitacao_form.c1_num, instance.c1_item, produto, instance.c1_cc,
                                     instance.c1_produto, instance.c1_local, instance.c1_quant, str(solicitacao_form.c1_emissao).replace('-', '')[:8],
                                     instance.c1_um, instance.c1_filent, str(instance.c1_datprf).replace('-', ''), solicitacao_form.c1_solicit,
-                                    str(instance.c1_obs).encode('utf-8'), instance.r_e_c_n_o, solicitacao_form.user.id))
+                                    str(instance.c1_obs).encode('latin-1'), instance.r_e_c_n_o, solicitacao_form.user.id))
 
                                 if instance.ctj_desc != '':
                                     instance.c1_cc = '                '
