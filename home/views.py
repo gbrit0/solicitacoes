@@ -97,18 +97,37 @@ def lista_solicitacoes(request):
         if usuario and request.user.role == 'admin':
             solicitacoes = solicitacoes.filter(user=usuario)
 
-    solicitacoes_com_status = [
-            {
-                'solicitacao': s,
-                'status': calcular_status(s)
-            }
-            for s in solicitacoes
-        ]
+    # solicitacoes_com_status = [
+    #         {
+    #             'solicitacao': s,
+    #             'status': calcular_status(s)
+    #         }
+    #         for s in solicitacoes
+    #     ]
    
-    context = {
-        'solicitacoes': solicitacoes_com_status,
-        'form': form,
-        'produtos': produtos
-    }
+    # context = {
+    #     'solicitacoes': solicitacoes_com_status,
+    #     'form': form,
+    #     'produtos': produtos
+    # }
     
+    # return render(request, 'home/index.html', context)
+    solicitacoes_com_produtos = [
+        {
+            'solicitacao': s,
+            'produtos': [
+                {
+                    'produto': p,
+                    'status': calcular_status(p)
+                }
+                for p in Produto.objects.filter(c1_num=s, is_deleted=False)  # Filtrando produtos ativos
+            ]
+        }
+        for s in solicitacoes
+    ]
+
+    context = {
+        'solicitacoes': solicitacoes_com_produtos,
+        'form': form,
+    }
     return render(request, 'home/index.html', context)

@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
+    'django_celery_beat',
     'django.contrib.staticfiles',
     'home.apps.HomeConfig',
     'usuarios.apps.UsuariosConfig',
@@ -70,6 +71,9 @@ MIDDLEWARE = [
     'usuarios.middleware.SessionTimeoutMiddleware',
 ]
 
+CELERY_BROKER_URL = 'redis://localhost:6379/0'
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
 
 
 ROOT_URLCONF = 'setup.urls'

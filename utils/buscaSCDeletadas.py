@@ -25,3 +25,6 @@ def sincronizar_delecoes_protheus():
                 print(f"Erro ao atualizar produto {recno}: {e}")
     
     print(f"[{timezone.now()}] Sincronização concluída")
+
+def main():
+    sincronizar_delecoes_protheus
