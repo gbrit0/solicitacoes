@@ -70,6 +70,21 @@ def criar_solicitacao(request):
                                 
                                 instance.c1_filent = '0101'
 
+                                # print(f"instance.ctj_desc '{instance.ctj_desc}'")
+                                
+                                cursor.execute((
+                                    f"INSERT INTO SC1010"
+                                    f"(C1_FILIAL, C1_NUM, C1_ITEM, C1_DESCRI, C1_CC, C1_PRODUTO, "
+                                    f"C1_LOCAL, C1_QUANT, C1_EMISSAO, C1_UM, C1_FILENT, "
+                                    f"C1_DATPRF, C1_SOLICIT, C1_XOBMEMO, R_E_C_N_O_, C1_XSOLWEB, "
+                                    f"C1_QUJE, C1_COTACAO, C1_APROV)"
+                                    f"VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, '      ', 'B' ); "
+                                    
+                                ), (solicitacao_form.c1_filial, solicitacao_form.c1_num, instance.c1_item, produto, instance.c1_cc,
+                                    instance.c1_produto, instance.c1_local, instance.c1_quant, str(solicitacao_form.c1_emissao).replace('-', '')[:8],
+                                    instance.c1_um, instance.c1_filent, str(instance.c1_datprf).replace('-', ''), solicitacao_form.c1_solicit,
+                                    str(instance.c1_obs).encode('utf-8'), instance.r_e_c_n_o, solicitacao_form.user.id))
+
                                 if instance.ctj_desc != '':
                                     instance.c1_cc = '                '
                                     cursor.execute(
@@ -97,29 +112,13 @@ def criar_solicitacao(request):
                                                     f"VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
                                             ), (str(instance.c1_filent), str(solicitacao_form.c1_num), str(instance.c1_item), str(rateio[0][1:]), str(rateio[1])[1:], str(rateio[2]), str(instance.b1_conta), str(recno_rateio))
                                         )
-                                        
-                                        conexao.commit()
-
-                                # print(f"instance.ctj_desc '{instance.ctj_desc}'")
-                                
-                                cursor.execute((
-                                    f"INSERT INTO SC1010"
-                                    f"(C1_FILIAL, C1_NUM, C1_ITEM, C1_DESCRI, C1_CC, C1_PRODUTO, "
-                                    f"C1_LOCAL, C1_QUANT, C1_EMISSAO, C1_UM, C1_FILENT, "
-                                    f"C1_DATPRF, C1_SOLICIT, C1_XOBMEMO, R_E_C_N_O_, C1_XSOLWEB, "
-                                    f"C1_QUJE, C1_COTACAO, C1_APROV)"
-                                    f"VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CONVERT(VARBINARY(MAX), ?), ?, ?, 0, '      ', 'B' ); "
-                                    
-                                ), (solicitacao_form.c1_filial, solicitacao_form.c1_num, instance.c1_item, produto, instance.c1_cc,
-                                    instance.c1_produto, instance.c1_local, instance.c1_quant, str(solicitacao_form.c1_emissao).replace('-', '')[:8],
-                                    instance.c1_um, instance.c1_filent, str(instance.c1_datprf).replace('-', ''), solicitacao_form.c1_solicit,
-                                    instance.c1_obs, instance.r_e_c_n_o, solicitacao_form.user.id))
 
                             except pyodbc.Error as e:
                                 erros.append({
                                     'produto': produto,
                                     'erro': e
                                 })
+                                print(e)
                             else:
                                 instance.save()
                                 conexao.commit() 
