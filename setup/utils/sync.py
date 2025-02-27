@@ -11,7 +11,7 @@ def sincronizar_itens_deletados():
    cursor = conexao.cursor()
 
    query = """
-   SELECT TOP 50 C1_NUM, C1_ITEM
+   SELECT TOP 100 C1_NUM, C1_ITEM
    FROM SC1010
    WHERE D_E_L_E_T_ = '*'
    ORDER BY R_E_C_N_O_ DESC
@@ -21,14 +21,14 @@ def sincronizar_itens_deletados():
    itens_deletados = cursor.fetchall()
 
    if not itens_deletados:
-      print("Nenhum item deletado encontrado no Protheus.")
+      # print("Nenhum item deletado encontrado no Protheus.")
       return
 
    with transaction.atomic():
       for c1_num, c1_item in itens_deletados:
          Produto.objects.filter(c1_num=c1_num, c1_item=c1_item).update(is_deleted=True)
 
-   print(f"{len(itens_deletados)} produtos marcados como deletados.")
+   # print(f"{len(itens_deletados)} produtos marcados como deletados.")
 
    cursor.close()
    conexao.close()

@@ -1,12 +1,9 @@
 from django.shortcuts import render
 from home.forms import FiltroSolicitacaoForm
 from django.contrib.auth.decorators import login_required
-from solicitacoes.models import Solicitacao, Produto, StatusSC1 # StatusPedido, 
-import pyodbc
-import os
-from django.shortcuts import get_object_or_404
-from django.shortcuts import render, redirect
-from django.contrib import messages
+from solicitacoes.models import Solicitacao, Produto, StatusSC1 
+from django.shortcuts import render
+from setup.utils.sync import sincronizar_itens_deletados
 
 def calcular_status(solicitacao):
     status = StatusSC1.objects.filter(C1_NUM=solicitacao.c1_num).first()
@@ -70,6 +67,7 @@ def calcular_status(solicitacao):
 
 @login_required(login_url='login')
 def lista_solicitacoes(request):
+    sincronizar_itens_deletados()
     form = FiltroSolicitacaoForm(request.GET or None)
         
     # Verifica se é admin
