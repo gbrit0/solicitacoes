@@ -19,12 +19,10 @@ class SolicitacaoForm(forms.ModelForm):
         'tipo':forms.HiddenInput(),
     }
     
-
 class ProdutosForm(forms.ModelForm):
     class Meta:
         model = Produto
         fields = ['c1_produto', 'c1_quant', 'c1_cc', 'c1_datprf', 'c1_obs']
-
 
     c1_produto = forms.ChoiceField(
         required=True,
@@ -50,12 +48,22 @@ class ProdutosForm(forms.ModelForm):
     c1_cc = forms.ChoiceField(
         required=False,
         label="Centro de Custo",
-        choices=[],
         widget=forms.Select(attrs={
             'class': 'selectsearch form-control',
             "data-live-search":"True",
             "data-size": '5',
             'Title': 'Selecione um centro de custo',
+        }),
+    )
+
+    ctj_desc = forms.ChoiceField(
+        required=False,
+        label="Rateio",
+        widget=forms.Select(attrs={
+            'class': 'selectsearch form-control',
+            "data-live-search":"True",
+            "data-size": '5',
+            'Title': 'Sem Rateio',
         }),
     )
 
@@ -65,18 +73,6 @@ class ProdutosForm(forms.ModelForm):
         widget=forms.DateInput(attrs={
             'class': 'form-control data-necessidade',
             'type':'date',
-        }),
-    )
-
-    ctj_desc = forms.ChoiceField(
-        required=False,
-        label="Rateio",
-        choices=[],
-        widget=forms.Select(attrs={
-            'class': 'selectsearch form-control',
-            "data-live-search":"True",
-            "data-size": '5',
-            'Title': 'Sem Rateio',
         }),
     )
 
@@ -125,6 +121,10 @@ class ProdutosForm(forms.ModelForm):
         # if not self.instance.pk:
         self.fields['c1_datprf'].initial = datetime.now().date() + timedelta(days=15) # inicializa com data de necessidade 15 dias adiante
 
+        self.fields['c1_cc'].choices = [(None, 'Selecione...')] + list(self.fields['c1_cc'].choices)
+        
+        self.fields['ctj_desc'].choices = [(None, 'Selecione...')] + list(self.fields['ctj_desc'].choices)
+
         connectionString = f"DRIVER={{ODBC Driver 17 for SQL Server}};SERVER={os.environ['HOST']};DATABASE={os.environ['DATABASE']};UID={os.environ['USER']};PWD={os.environ['PASSWORD']};TrustServerCertificate=yes"
         with pyodbc.connect(connectionString) as conexao:
             with conexao.cursor() as cursor:
@@ -137,7 +137,7 @@ class ProdutosForm(forms.ModelForm):
                                   AND B1_FILIAL = '01'""")
                 
                 produtos = cursor.fetchall()
-                self.fields['c1_produto'].choices = [(p[0], p[1]) for p in produtos]
+                self.fields['c1_produto'].choices += [(p[0], p[1]) for p in produtos]
                 
                 cursor.execute("""SELECT 
                                     TRIM(CTT_CUSTO) AS cod_cc, 
@@ -151,7 +151,7 @@ class ProdutosForm(forms.ModelForm):
                 # <=========== DESCOMENTAR O CTT_FILIAL QUANDO COLOCAR EM PRODUÇÃO ==================>
 
                 centros_de_custo = cursor.fetchall()
-                self.fields['c1_cc'].choices = centros_de_custo
+                self.fields['c1_cc'].choices += centros_de_custo
 
                 cursor.execute("""SELECT DISTINCT 
                                     TRIM(CTJ_RATEIO) AS cod_rateio, 
@@ -161,8 +161,7 @@ class ProdutosForm(forms.ModelForm):
                                     AND CTJ_FILIAL = '0101'""")
                 
                 rateios = cursor.fetchall()
-                self.fields['ctj_desc'].choices = rateios
-
+                self.fields['ctj_desc'].choices += rateios
 
     def clean(self):
         cleaned_data = super().clean()
@@ -173,6 +172,7 @@ class ProdutosForm(forms.ModelForm):
             # Adiciona o erro aos campos específicos
 
             self.add_error('c1_cc', 'Preencha Centro de Custo ou Rateio')
+
             self.add_error('ctj_desc', 'Preencha Centro de Custo ou Rateio')
             
             raise forms.ValidationError("Você deve preencher pelo menos um dos campos: Centro de Custo ou Rateio")

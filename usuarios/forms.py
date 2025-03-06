@@ -21,7 +21,6 @@ class LoginForms(forms.Form):
             "onkeyup": "mascararCPF(this)"
          }
       )
-
    )
 
    senha = forms.CharField(

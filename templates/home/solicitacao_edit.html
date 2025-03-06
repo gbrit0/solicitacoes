@@ -1,0 +1,350 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar Solicitação - Sistema de Solicitações</title>
+
+    <!-- CSS Externo -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/css/bootstrap-select.min.css">
+
+    <style>
+        body {
+            height: 100vh;
+            overflow: auto;
+        }
+
+        .header-fixed {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1030;
+            height: 60px;
+        }
+        
+        .page-container {
+            height: calc(100vh - 60px);
+            display: flex;
+            flex-direction: column;
+            overflow: auto;
+            margin-top: 60px;
+        }
+
+        .solicitacao-info {
+            padding: 20px;
+            background-color: #fff;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .produtos-section {
+            flex: 1;
+            padding: 20px;
+            background-color: #f8f9fa;
+        }
+
+        .table-scroll-container {
+            flex: 1;
+            overflow-y: auto;
+            border: 1px solid #dee2e6;
+            border-radius: 0.25rem;
+            background-color: #fff;
+        }
+
+        .add-produto-container {
+            background-color: #f8f9fa;
+            padding: 10px 0;
+            border-top: 1px solid #dee2e6;
+        }
+
+        /* Estilização da barra de rolagem */
+        .table-scroll-container::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        .table-scroll-container::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+        
+        .table-scroll-container::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 4px;
+        }
+        
+        .table-scroll-container::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+
+        .table-scroll-container thead th {
+            position: sticky;
+            top: 0;
+            background-color: #fff;
+            z-index: 1;
+            border-bottom: 2px solid #dee2e6;
+        }
+
+        .nav-link {
+            transition: all 0.3s ease;
+            height: 40px;
+            display: flex;
+            align-items: center;
+        }
+
+        .nav-link span {
+            transform-origin: left center;
+            transition: transform 0.3s ease;
+        }
+
+        .nav-link .bi {
+            transform-origin: center;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover span {
+            transform: scale(0.95);
+        }
+
+        .nav-link:hover .bi {
+            transform: scale(1.3);
+            opacity: 1 !important;
+        }
+
+        .alert {
+            animation: slideInDown 0.5s ease-out, fadeIn 0.5s ease-out;
+        }
+        
+        @keyframes slideInDown {
+            from { transform: translateY(-100%); }
+            to { transform: translateY(0); }
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Header -->
+    <header class="bg-primary text-white py-3 header-fixed">
+        <div class="container d-flex justify-content-between align-items-center">
+            <a href="{% url 'lista_solicitacoes' %}" class="text-white text-decoration-none h4">Sistema de Solicitações</a>
+            <nav class="d-flex align-items-center">
+                <ul class="nav">
+                    <li class="nav-item">
+                        <a class="nav-link text-white" href="{% url 'lista_solicitacoes' %}">
+                            <i class="bi bi-table me-2 opacity-0"></i>
+                            <span>Lista de Solicitações</span>
+                        </a>
+                    </li>
+                    <li class="nav-item"> 
+                        <a class="nav-link text-white d-flex align-items-center" href="{% url 'criar_solicitacao' %}">
+                            <i class="bi bi-plus-circle me-2 opacity-0"></i>
+                            <span>Nova Solicitação</span>
+                        </a> 
+                    </li>               
+                    {% if user.role == 'admin' %}
+                    <li class="nav-item">
+                        <a class="nav-link text-white d-flex align-items-center" href="{% url 'cadastro' %}">
+                            <i class="bi bi-person-fill-add me-2 opacity-0"></i>
+                            <span>Cadastrar Usuário</span>
+                        </a>
+                    </li>
+                    {% endif %}
+                </ul>
+                <a class="btn btn-light ms-3" href="{% url 'logout' %}">Sair</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="page-container">
+      
+      <form method="POST" class="produtos-section">
+          <div class="solicitacao-info">
+              <div class="container py-4 card mt-3">
+                  <div class="row">
+                      <h4>Editar Solicitação #{{ solicitacao.c1_num }}</h4>
+                      <div class="col-md-4">
+                          <strong>Emissão:</strong> {{ solicitacao.c1_emissao|date:"d/m/Y" }}
+                      </div>
+                  </div>
+              </div>
+          </div>
+            {% csrf_token %}
+            
+            <!-- Messages -->
+            <div class="messages position-fixed top-0 start-50 translate-middle-x mt-3" style="z-index: 1050; width: 100%; max-width: 600px;">
+                {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- Produtos Table -->
+            <div class="card">
+                <div class="card-body p-0">
+                    {{ formset.management_form }}
+                    <div class="table-scroll-container">
+                        <table class="table table-hover m-0">
+                            <thead>
+                                <tr>
+                                    <th>Produto</th>
+                                    <th>Quantidade</th>
+                                    <th>Data Necessidade</th>
+                                    <th>Centro de Custo</th>
+                                    <th>Rateios</th>
+                                    <th>Observações</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="produtos-formset">
+                                {% for form in formset %}
+                                <tr class="produto-form">
+                                    <td>
+                                        {{ form.c1_produto }}
+                                        {% for error in form.c1_produto.errors %}
+                                        <div class="invalid-feedback d-block">{{ error }}</div>
+                                        {% endfor %}
+                                    </td>
+                                    <td>
+                                        {{ form.c1_quant }}
+                                        {% for error in form.c1_quant.errors %}
+                                        <div class="invalid-feedback d-block">{{ error }}</div>
+                                        {% endfor %}
+                                    </td>
+                                    <td>
+                                        {{ form.c1_datprf }}
+                                        {% for error in form.c1_datprf.errors %}
+                                        <div class="invalid-feedback d-block">{{ error }}</div>
+                                        {% endfor %}
+                                    </td>
+                                    <td>
+                                        {{ form.c1_cc }}
+                                        {% for error in form.c1_cc.errors %}
+                                        <div class="invalid-feedback d-block">{{ error }}</div>
+                                        {% endfor %}
+                                    </td>
+                                    <td>
+                                        {{ form.ctj_desc }}
+                                        {% for error in form.ctj_desc.errors %}
+                                        <div class="invalid-feedback d-block">{{ error }}</div>
+                                        {% endfor %}
+                                    </td>
+                                    <td>
+                                        {{ form.c1_obs }}
+                                        {% for error in form.c1_obs.errors %}
+                                        <div class="invalid-feedback d-block">{{ error }}</div>
+                                        {% endfor %}
+                                    </td>
+                                    <td>
+                                        {% if form.instance.pk %}{{ form.DELETE }}{% endif %}
+                                        <button type="button" class="btn btn-danger btn-sm remove-produto">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Form Template -->
+                <template id="empty-form">
+                    <tr class="produto-form">
+                        <td>{{ formset.empty_form.c1_produto }}</td>
+                        <td>{{ formset.empty_form.c1_quant }}</td>
+                        <td>{{ formset.empty_form.c1_datprf }}</td>
+                        <td>{{ formset.empty_form.c1_cc }}</td>
+                        <td>{{ formset.empty_form.ctj_desc }}</td>
+                        <td>{{ formset.empty_form.c1_obs }}</td>
+                        <td>
+                            <button type="button" class="btn btn-danger btn-sm remove-produto">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                </template>
+
+                <!-- Form Actions -->
+                <div class="add-produto-container">
+                    <div class="container d-flex justify-content-between">
+                        <button type="button" id="adicionar-produto" class="btn btn-secondary">
+                            <i class="fas fa-plus me-2"></i>Adicionar Produto
+                        </button>
+                        <div>
+                            <a href="{% url 'lista_solicitacoes' %}" class="btn btn-outline-secondary">Cancelar</a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-2"></i>Salvar Alterações
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </main>
+
+    <!-- Scripts -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/js/bootstrap-select.min.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            // Initialize selects
+            $('.selectsearch').selectpicker({
+                liveSearch: true,
+                size: 10
+            });
+
+            // Add product
+            $('#adicionar-produto').click(function() {
+                const totalForms = $('#id_produto_set-TOTAL_FORMS');
+                const formIdx = parseInt(totalForms.val());
+                const newForm = $('#empty-form').html().replace(/__prefix__/g, formIdx);
+                
+                $('#produtos-formset').append(newForm);
+                totalForms.val(formIdx + 1);
+                
+                // Re-initialize selects
+                $('.selectsearch').selectpicker('refresh');
+                
+                // Set default date
+                const dateInput = $('input[name$="c1_datprf"]').last();
+                if (!dateInput.val()) {
+                    const futureDate = new Date();
+                    futureDate.setDate(futureDate.getDate() + 15);
+                    dateInput.val(futureDate.toISOString().split('T')[0]);
+                }
+            });
+
+            // Remove product
+            $(document).on('click', '.remove-produto', function() {
+                const row = $(this).closest('tr');
+                if ($('#produtos-formset tr').length > 1) {
+                    row.remove();
+                    $('#id_produto_set-TOTAL_FORMS').val($('#produtos-formset tr').length);
+                }
+            });
+        });
+
+        // Handle alerts
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.alert').forEach(alert => {
+                setTimeout(() => bootstrap.Alert.getOrCreateInstance(alert).close(), 
+                    alert.classList.contains('alert-danger') ? 5000 : 2000
+                );
+            });
+        });
+    </script>
+</body>
+</html>

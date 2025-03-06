@@ -1,6 +1,7 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -38,33 +39,42 @@
 
     <style>
         body {
-            overflow: auto; 
+            overflow: auto;
         }
+
         .table {
             border-collapse: separate;
-            border-spacing: 0 10px; 
+            border-spacing: 0 10px;
         }
+
         .table th {
             background-color: #f8f9fa;
         }
+
         .messages {
             z-index: 1030;
         }
+
         .text-orange {
-            color: #FF6600; 
+            color: #FF6600;
         }
+
         .text-grey {
-            color: #adb5bd 
+            color: #adb5bd
         }
+
         .text-black {
-            color: #111111 
+            color: #111111
         }
+
         .indigo {
             color: #6610f2
         }
+
         .brown {
             color: #75410e
         }
+
         .nav-link {
             transition: all 0.3s ease;
             height: 40px; /* altura fixa - ajuste conforme necessário */
@@ -94,42 +104,43 @@
         .transition-opacity {
             transition: opacity 0.3s ease;
         }
-
     </style>
     <style>
         /* Animação para entrada do alerta */
         .alert {
             animation: slideInDown 0.5s ease-out, fadeIn 0.5s ease-out;
         }
-        
+
         /* Animação para saída do alerta */
         .alert.fade {
             transition: all 0.5s ease-out;
         }
-        
+
         .alert.fade.show {
             opacity: 1;
             transform: translateY(0);
         }
-        
+
         .alert.fade:not(.show) {
             opacity: 0;
             transform: translateY(-20px);
         }
-        
+
         @keyframes slideInDown {
             from {
                 transform: translateY(-100%);
             }
+
             to {
                 transform: translateY(0);
             }
         }
-        
+
         @keyframes fadeIn {
             from {
                 opacity: 0;
             }
+
             to {
                 opacity: 1;
             }
@@ -142,11 +153,13 @@
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
 </head>
+
 <body class="bg-light">
-   <!-- Header -->
-   <header class="bg-primary text-white py-3">
+    <!-- Header -->
+    <header class="bg-primary text-white py-3">
         <div class="container d-flex justify-content-between align-items-center">
-            <a href="{% url 'lista_solicitacoes' %}" class="text-white text-decoration-none h4">Sistema de Solicitações</a>
+            <a href="{% url 'lista_solicitacoes' %}" class="text-white text-decoration-none h4">Sistema de
+                Solicitações</a>
             <nav class="d-flex align-items-center">
                 <ul class="nav">
                     <li class="nav-item">
@@ -155,12 +168,12 @@
                             <span> Lista de Solicitações</span>
                         </a>
                     </li>
-                    <li class="nav-item"> 
+                    <li class="nav-item">
                         <a class="nav-link text-white d-flex align-items-center" href="{% url 'criar_solicitacao' %}">
                             <i class="bi bi-plus-circle me-2 opacity-0"></i>
                             <span> Nova Solicitação de Compras</span>
-                        </a> 
-                    </li>               
+                        </a>
+                    </li>
                     {% if user.role == 'admin' %}
                     <li class="nav-item">
                         <a class="nav-link text-white d-flex align-items-center" href="{% url 'cadastro' %}">
@@ -179,36 +192,38 @@
     <!-- Corpo da página -->
     <div class="container py-4 card mt-3">
         <div class="table-responsive">
-            <div class="messages position-fixed top-0 start-50 translate-middle-x mt-3" style="z-index: 1050; width: 100%; max-width: 600px;">
+            <div class="messages position-fixed top-0 start-50 translate-middle-x mt-3"
+                style="z-index: 1050; width: 100%; max-width: 600px;">
                 {% for message in messages %}
-                    <div class="alert {% if message.tags %}alert-{{ message.tags }}{% else %}alert-dark{% endif %} alert-dismissible fade show" role="alert">
-                        <p class="mb-0">{{message}}</p>
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="close"></button>
-                    </div>
+                <div class="alert {% if message.tags %}alert-{{ message.tags }}{% else %}alert-dark{% endif %} alert-dismissible fade show"
+                    role="alert">
+                    <p class="mb-0">{{message}}</p>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="close"></button>
+                </div>
                 {% endfor %}
-    
+
                 {% if form.errors %}
-                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                        {% for field in form %}
-                            {% if field.errors %}
-                                <strong>{{ field.label }}:</strong>
-                                {% for error in field.errors %}
-                                    {{ error }}<br>
-                                {% endfor %}
-                            {% endif %}
-                        {% endfor %}
-    
-                        {% if form.non_field_errors %}
-                            {% for error in form.non_field_errors %}
-                                {{ error }}
-                            {% endfor %}
-                        {% endif %}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    {% for field in form %}
+                    {% if field.errors %}
+                    <strong>{{ field.label }}:</strong>
+                    {% for error in field.errors %}
+                    {{ error }}<br>
+                    {% endfor %}
+                    {% endif %}
+                    {% endfor %}
+
+                    {% if form.non_field_errors %}
+                    {% for error in form.non_field_errors %}
+                    {{ error }}
+                    {% endfor %}
+                    {% endif %}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
                 {% endif %}
             </div>
             <form method="get" class="form-group">
-    
+
                 <div class="d-flex align-items-center pb-5 gap-3 w-100">
                     <div class="flex-grow-1">
                         <label for="{{ field.id_for_label }}" class="form-label">{{ form.data_inicio.label }}</label>
@@ -219,18 +234,19 @@
                         {{ form.data_fim }}
                     </div>
                     {% if user.role == 'admin' %}
-                        <div class="flex-grow-1">
-                            <label for="{{ field.id_for_label }}" class="form-label">{{ form.usuario.label }}</label>
-                            {{ form.usuario }}
-                        </div>
+                    <div class="flex-grow-1">
+                        <label for="{{ field.id_for_label }}" class="form-label">{{ form.usuario.label }}</label>
+                        {{ form.usuario }}
+                    </div>
                     {% endif %}
                     <div class="d-flex align-items-end align-self-end" style="height: 100%;">
-                        <button type="submit" class="btn btn-primary d-flex align-items-center" style="height: 100%; padding: 10px 20px;">
+                        <button type="submit" class="btn btn-primary d-flex align-items-center"
+                            style="height: 100%; padding: 10px 20px;">
                             <i class="fa-solid fa-filter me-2"></i> Filtrar
                         </button>
                     </div>
                 </div>
-    
+
             </form>
             <div>
                 <table id="solicitacoesTable" class="table table-bordered table-striped" data-toggle="table">
@@ -249,26 +265,34 @@
                     </thead>
                     <tbody>
                         {% for solicitacao in solicitacoes %}
-                            {% for produto in solicitacao.produtos %}
-                                <tr>
-                                    <td class="text-center">{{ produto.status|safe }}</td>
-                                    <td>{{ solicitacao.solicitacao.c1_num }}</td>
-                                    <td>{{ solicitacao.solicitacao.user.nome }}</td>
-                                    <td>{{ produto.produto.c1_descri }}</td>
-                                    <td>{{ produto.produto.c1_quant }}</td>
-                                    <td>{{ produto.produto.c1_datprf|date:"d/m/Y" }}</td>
-                                    <td>{{ produto.produto.c1_obs }}</td>
-                                    <td>{{ solicitacao.solicitacao.c1_emissao|date:"d/m/Y" }}</td>
-                                    <td style="display: flex; gap: 5px;">
-                                        <button data-bs-toggle="tooltip" data-bs-placement="top" title="Editar Solicitação" type="button" class="btn btn-warning btn-sm edita-solicitacao">
-                                            <i class="fa-solid fa-pen"></i>
-                                        </button>
-                                        <button data-bs-toggle="tooltip" data-bs-placement="top" title="Remover Solicitação" type="button" class="btn btn-danger btn-sm remove-solicitacao">
-                                            <i class="fas fa-trash"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-                            {% endfor %}
+                        {% for produto in solicitacao.produtos %}
+                        <tr>
+                            <td class="text-center">{{ produto.status|safe }}</td>
+                            <td>{{ solicitacao.solicitacao.c1_num }}</td>
+                            <td>{{ solicitacao.solicitacao.user.nome }}</td>
+                            <td>{{ produto.produto.c1_descri }}</td>
+                            <td>{{ produto.produto.c1_quant }}</td>
+                            <td>{{ produto.produto.c1_datprf|date:"d/m/Y" }}</td>
+                            <td>{{ produto.produto.c1_obs }}</td>
+                            <td>{{ solicitacao.solicitacao.c1_emissao|date:"d/m/Y" }}</td>
+                            <td style="display: flex; gap: 5px;">
+
+                                <a type="button" class="btn btn-warning btn-sm edita-solicitacao" data-bs-toggle="modal"
+                                    data-bs-target="#editSolicit" data-num="{{ solicitacao.solicitacao.c1_num }}"
+                                    data-url="{% url 'editar_solicitacao' 0 %}" data-bs-placement="top"
+                                    title="Editar Solicitação">
+                                    <i class="fa-solid fa-pen"></i>
+                                </a>
+
+                                <button type="button" class="btn btn-danger btn-sm remove-solicitacao"
+                                    data-bs-toggle="modal" data-bs-target="#confirmDelete"
+                                    data-num="{{ solicitacao.solicitacao.c1_num }}" data-bs-placement="top"
+                                    title="Remover Solicitação">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                        {% endfor %}
                         {% endfor %}
 
                     </tbody>
@@ -277,133 +301,546 @@
         </div>
     </div>
 
-    <!-- Bootstrap JS -->
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Modal de exclusão de solicitação -->
+    <div class="modal fade" id="confirmDelete" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false"
+        tabindex="-1" aria-labelledby="confirmDeleteLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="confirmDeleteLabel">Tem certeza que deseja excluir esta solicitação?
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                </div>
+                <div class="modal-body">
+                    ⚠️ Isso excluirá <b>todos os itens</b> não processados da solicitação e <b>não</b> apenas um item.
+                    <br><br>
+                    ✏️ Para remover um item específico, <b>edite</b> a solicitação.
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-target="#editSolicit" data-bs-toggle="modal"
+                        data-bs-dismiss="modal">Editar Solicitação</button>
+                    <a method="post" id="confirmDeleteButton" href="#" class="btn btn-primary">Confirmar</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <!-- Modal de edição de solicitação -->
+    <div class="modal fade" id="editSolicit" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false"
+        tabindex="-1" aria-labelledby="editSolicitLabel" aria-hidden="true">
+        <div class="modal-dialog modal-fullscreen">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="editSolicitLabel">Editar Solicitação</h4>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                </div>
+                <div class="modal-body card">
+                    <div class="page-container">
+                        
+                        <div class="produtos-section card">
+                            <div class="messages position-fixed top-0 start-50 translate-middle-x mt-3"
+                            style="z-index: 1050; width: 100%; max-width: 600px;">
+                            {% for message in messages %}
+                            <div class="alert {% if message.tags %}alert-{{ message.tags }}{% else %}alert-dark{% endif %} alert-dismissible fade show"
+                            role="alert">
+                            <p class="mb-0">{{message}}</p>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"
+                            aria-label="close"></button>
+                        </div>
+                                {% endfor %}
+                            </div>
+                            <div class="card" style="width: 100%">
+                                <div class="card-body d-flex flex-column">
+                                    
+                                    <form id="myForm" method="POST" action="" class="table-scroll-container">
+                                        {% csrf_token %}
+                                        {{ formset.management_form }}
+                                        <table class="table table-hover" id="produtos-table">
+                                            <thead>
+                                                <tr>
+                                                    <th>Produto</th>
+                                                    <th>Quantidade</th>
+                                                    <th>Data de Necessidade</th>
+                                                    <th>Centro de Custo <i class="fas fa-info-circle ms-1"
+                                                            data-bs-toggle="tooltip" data-bs-placement="top"
+                                                            title="Se o rateio também for selecionado, ele terá prioridade sobre o centro de custo."></i>
+                                                    </th>
+                                                    <th>Rateios <i class="fas fa-info-circle ms-1"
+                                                            data-bs-toggle="tooltip" data-bs-placement="top"
+                                                            title="Se o rateio também for selecionado, ele terá prioridade sobre o centro de custo."></i>
+                                                    </th>
+                                                    <th>Observações</th>
+                                                    <th>Ações</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="produtos-formset">
+                                                {% for form in formset %}
+                                                <tr class="produto-form">
+                                                    <td>
+                                                        {{ form.c1_produto }}
+                                                        {% if form.c1_produto.errors %}
+                                                        {% for error in form.c1_produto.errors %}
+                                                        <div class="invalid-feedback d-block">{{ error }}</div>
+                                                        {% endfor %}
+                                                        {% endif %}
+                                                    </td>
+                                                    <td>
+                                                        {{ form.c1_quant }}
+                                                        {% if form.c1_quant.errors %}
+                                                        {% for error in form.c1_quant.errors %}
+                                                        <div class="invalid-feedback d-block">{{ error }}</div>
+                                                        {% endfor %}
+                                                        {% endif %}
+                                                    </td>
+                                                    <td>
+                                                        {{ form.c1_datprf }}
+                                                        {% if form.c1_datprf.errors %}
+                                                        {% for error in form.c1_datprf.errors %}
+                                                        <div class="invalid-feedback d-block">{{ error }}</div>
+                                                        {% endfor %}
+                                                        {% endif %}
+                                                    </td>
+                                                    <td>
+                                                        {{ form.c1_cc }}
+                                                        {% if form.c1_cc.errors %}
+                                                        {% for error in form.c1_cc.errors %}
+                                                        <div class="invalid-feedback d-block">{{ error }}</div>
+                                                        {% endfor %}
+                                                        {% endif %}
+                                                    </td>
+                                                    <td>
+                                                        {{ form.ctj_desc }}
+                                                        {% if form.ctj_desc.errors %}
+                                                        {% for error in form.ctj_desc.errors %}
+                                                        <div class="invalid-feedback d-block">{{ error }}</div>
+                                                        {% endfor %}
+                                                        {% endif %}
+                                                    </td>
+                                                    <td>
+                                                        {{ form.c1_obs }}
+                                                        {% if form.c1_obs.errors %}
+                                                        {% for error in form.c1_obs.errors %}
+                                                        <div class="invalid-feedback d-block">{{ error }}</div>
+                                                        {% endfor %}
+                                                        {% endif %}
+                                                    </td>
+                                                    <td>
+                                                        <!-- <button data-bs-toggle="tooltip" data-bs-placement="top" title="Rateio de Custos" type="button" class="btn btn-warning btn-sm adicionar_rateio">
+                                                                    <i class="fa-solid fa-arrows-split-up-and-left"></i>
+                                                                </button> -->
+                                                        <button data-bs-toggle="tooltip" data-bs-placement="top"
+                                                            title="Remover item" type="button"
+                                                            class="btn btn-danger btn-sm remove-produto">
+                                                            <i class="fas fa-trash"></i>
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                            <table style="display: none;">
+                                                <tr id="empty-form-template" class="produto-form">
+                                                    <td>
+                                                        {{ formset.empty_form.c1_produto }}
+                                                    </td>
+                                                    <td>
+                                                        {{ formset.empty_form.c1_quant }}
+                                                    </td>
+                                                    <td>
+                                                        {{ formset.empty_form.c1_datprf }}
+                                                    </td>
+                                                    <td>
+                                                        {{ formset.empty_form.c1_cc }}
+                                                    </td>
+                                                    <td>
+                                                        {{ formset.empty_form.ctj_desc }}
+                                                    </td>
+                                                    <td>
+                                                        {{ formset.empty_form.c1_obs }}
+                                                    </td>
+                                                    <td>
+                                                        <!-- <button data-bs-toggle="tooltip" data-bs-placement="top" title="Rateio de Custos" type="button" class="btn btn-warning btn-sm adicionar_rateio">
+                                                                    <i class="fa-solid fa-arrows-split-up-and-left"></i>
+                                                                </button> -->
+                                                        <button data-bs-toggle="tooltip" data-bs-placement="top"
+                                                            title="Remover item" type="button"
+                                                            class="btn btn-danger btn-sm remove-produto">
+                                                            <i class="fas fa-trash"></i>
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </table>
+                                        <div class="add-produto-container text-end">
+                                            <button type="button" id="adicionar-produto" class="btn btn-secondary">
+                                                <i class="fas fa-plus me-2"></i> Adicionar Produto
+                                            </button>
+                                            <button type="submit" class="btn btn-primary">
+                                                <i class="fas fa-save me-2"></i> Salvar Solicitação
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
         
-        <script>
-            $(document).ready(function() {
-                var table = $('#solicitacoesTable').DataTable({
-                    language: {
-                        url: '//cdn.datatables.net/plug-ins/1.11.5/i18n/pt-BR.json'
-                    },
-                    dom: 'Bfrtip', // Adiciona os botões
-                    
-                    buttons: [
-                        {
-                            extend: 'csv',
-                            text: '<i data-bs-toggle="tooltip" title="Exportar CSV" class="fas fa-file-csv btn btn-primary"></i>',
-                            filename: 'Solicitacoes',
-                            exportOptions: {
-                                columns: ':visible'
-                            }
-                        },
-                        {
-                            extend: 'excel',
-                            text: '<i data-bs-toggle="tooltip" title="Exportar Excel" class="fas fa-file-excel btn btn-success"></i>',
-                            filename: 'Solicitacoes',
-                            exportOptions: {
-                                columns: ':visible'
-                            }
-                        },
-                        {
-                            extend: 'pdf',
-                            text: '<i data-bs-toggle="tooltip" title="Exportar PDF" class="fas fa-file-pdf btn btn-danger"></i>',
-                            filename: 'Solicitacoes',
-                            exportOptions: {
-                                columns: ':visible'
-                            }
-                        },
-                        {
-                            extend: 'print',
-                            text: '<i data-bs-toggle="tooltip" title="Imprimir" class="fas fa-print btn btn-secondary"></i>',
-                            exportOptions: {
-                                columns: ':visible'
-                            }
+    <script>
+        $(document).ready(function() {
+            var table = $('#solicitacoesTable').DataTable({
+                language: {
+                    url: '//cdn.datatables.net/plug-ins/1.11.5/i18n/pt-BR.json'
+                },
+                dom: 'Bfrtip', // Adiciona os botões
+                
+                buttons: [
+                    {
+                        extend: 'csv',
+                        text: '<i data-bs-toggle="tooltip" title="Exportar CSV" class="fas fa-file-csv btn btn-primary"></i>',
+                        filename: 'Solicitacoes',
+                        exportOptions: {
+                            columns: ':visible'
                         }
-                    ],
-                    pageLength: 10,
-                    lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "Todos"]],
-                    order: [[0, 'desc']],
-                    
-                });
-
-                // Filtro por solicitante
-                $('#solicitanteFilter').on('change', function() {
-                    table.column(0).search(this.value).draw();
-                });
-
-                // Filtro por data de necessidade
-                $('#inicioDataFilter').on('change', function() {
-                    var formattedDate = this.value.split('-').reverse().join('/');
-                    table.column(3).search(formattedDate).draw();
-                });
+                    },
+                    {
+                        extend: 'excel',
+                        text: '<i data-bs-toggle="tooltip" title="Exportar Excel" class="fas fa-file-excel btn btn-success"></i>',
+                        filename: 'Solicitacoes',
+                        exportOptions: {
+                            columns: ':visible'
+                        }
+                    },
+                    {
+                        extend: 'pdf',
+                        text: '<i data-bs-toggle="tooltip" title="Exportar PDF" class="fas fa-file-pdf btn btn-danger"></i>',
+                        filename: 'Solicitacoes',
+                        exportOptions: {
+                            columns: ':visible'
+                        }
+                    },
+                    {
+                        extend: 'print',
+                        text: '<i data-bs-toggle="tooltip" title="Imprimir" class="fas fa-print btn btn-secondary"></i>',
+                        exportOptions: {
+                            columns: ':visible'
+                        }
+                    }
+                ],
+                pageLength: 10,
+                lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "Todos"]],
+                order: [[0, 'desc']],
                 
-                // Filtro por data de necessidade
-                $('#fimDataFilter').on('change', function() {
-                    var formattedDate = this.value.split('-').reverse().join('/');
-                    table.column(5).search(formattedDate).draw();
-                });
-
-                
-      
-                const style = document.createElement('style');
-                style.textContent = `
-                    .dt-buttons .dt-button {
-                        border: none !important;
-                        border-radius: 0 !important;
-                        display: inline-block !important;
-                        background-image: none !important;
-                        background-color: transparent !important;
-                        box-shadow: none !important;
-                        padding: 0 !important;
-                    }
-                    
-                    .dt-buttons {
-                        margin-bottom: 15px;
-                        display: flex;
-                        gap: 10px;
-                    }
-
-                    .dt-buttons .btn {
-                        padding: 8px 15px;
-                        margin: 0 5px;
-                    }
-                `;
-                document.head.appendChild(style);
-
             });
-        </script>
-        
-        <script>
-        // Espera o documento carregar completamente
-        document.addEventListener('DOMContentLoaded', function() {
-            const alerts = document.querySelectorAll('.alert');
+
+            // Filtro por solicitante
+            $('#solicitanteFilter').on('change', function() {
+                table.column(0).search(this.value).draw();
+            });
+
+            // Filtro por data de necessidade
+            $('#inicioDataFilter').on('change', function() {
+                var formattedDate = this.value.split('-').reverse().join('/');
+                table.column(3).search(formattedDate).draw();
+            });
             
-            alerts.forEach(function(alert) {
-                let timeout = 2000; // tempo padrão
-                
-                // Define tempos diferentes baseado no tipo de alerta
-                if (alert.classList.contains('alert-success')) {
-                    timeout = 2000; // 3 segundos para mensagens de sucesso
-                } else if (alert.classList.contains('alert-danger')) {
-                    timeout = 5000; // 7 segundos para mensagens de erro
+            // Filtro por data de necessidade
+            $('#fimDataFilter').on('change', function() {
+                var formattedDate = this.value.split('-').reverse().join('/');
+                table.column(5).search(formattedDate).draw();
+            });
+
+            
+    
+            const style = document.createElement('style');
+            style.textContent = `
+                .dt-buttons .dt-button {
+                    border: none !important;
+                    border-radius: 0 !important;
+                    display: inline-block !important;
+                    background-image: none !important;
+                    background-color: transparent !important;
+                    box-shadow: none !important;
+                    padding: 0 !important;
                 }
                 
-                setTimeout(function() {
+                .dt-buttons {
+                    margin-bottom: 15px;
+                    display: flex;
+                    gap: 10px;
+                }
+
+                .dt-buttons .btn {
+                    padding: 8px 15px;
+                    margin: 0 5px;
+                }
+            `;
+            document.head.appendChild(style);
+
+        });
+    </script>
+    
+    <script>
+    // Espera o documento carregar completamente
+    document.addEventListener('DOMContentLoaded', function() {
+        const alerts = document.querySelectorAll('.alert');
+        
+        alerts.forEach(function(alert) {
+            let timeout = 2000; // tempo padrão
+            
+            // Define tempos diferentes baseado no tipo de alerta
+            if (alert.classList.contains('alert-success')) {
+                timeout = 2000; // 2 segundos para mensagens de sucesso
+            } else if (alert.classList.contains('alert-danger')) {
+                timeout = 5000; // 5 segundos para mensagens de erro
+            }
+            
+            setTimeout(function() {
+                const bsAlert = new bootstrap.Alert(alert);
+                bsAlert.close();
+            }, timeout);
+        });
+    });
+    </script>
+
+    <script>
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl)
+        })
+        $(function () {
+            $('[data-toggle="tooltip"]').tooltip()
+        })
+    </script>
+
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.3/dist/umd/popper.min.js"
+        integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.1.3/dist/js/bootstrap.min.js"
+        integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy"
+        crossorigin="anonymous"></script>
+
+    <!-- <script src="{% static 'js/jquery.formset.js' %}"></script> -->
+
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/css/bootstrap-select.min.css">
+
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/js/bootstrap-select.min.js"></script>
+
+    <!-- (Optional) Latest compiled and minified JavaScript translation files -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/js/i18n/defaults-*.min.js"></script>
+
+    <!-- Bootstrap JS -->
+
+    <script>
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+    </script>
+
+    
+    <script>
+        $(document).ready(function () {
+            $('.selectsearch').selectpicker({
+                liveSearch: true,
+                size: 10
+            });
+        });
+
+        document.addEventListener('DOMContentLoaded', function () {
+            document.getElementById('adicionar-produto').addEventListener('click', function () {
+                // Pegar o total atual de forms
+                const totalForms = document.querySelector('[name$="-TOTAL_FORMS"]');
+                const currentFormCount = parseInt(totalForms.value);
+
+                const emptyFormTemplate = document.getElementById('empty-form-template');
+                const newForm = emptyFormTemplate.cloneNode(true);
+
+                // Atualizar os atributos do novo formulário
+                newForm.id = `form-${currentFormCount}`;
+                newForm.classList.remove('d-none');
+                newForm.querySelectorAll('input, select, textarea').forEach(element => {
+                    element.id = element.id.replace('__prefix__', currentFormCount);
+                    element.name = element.name.replace('__prefix__', currentFormCount);
+                    element.value = '';
+                });
+
+                newForm.querySelectorAll('[data-id*="__prefix__"]').forEach(element => {    //  o elemento duplicado do select-picker parece ter algo a ver com o
+                    // __prefix__, ao invés de assumir o id ele insere o texto "__prefix__"
+                    // então o que fiz foi remover esse elemento depois da cópia
+                    element.remove();
+                });
+
+                // Inicializar selectpicker nos novos selects
+                $(newForm).find('.selectsearch').selectpicker('refresh');
+
+                function getFutureDate() {
+                    let date = new Date();
+                    date.setDate(date.getDate() + 15);
+                    return date.toISOString().split('T')[0]; // Formato YYYY-MM-DD
+                }
+
+                function setDefaultDates() {
+                    const dateInputs = newForm.querySelectorAll('input[type="date"][name$="c1_datprf"]');
+                    dateInputs.forEach(input => {
+                        if (!input.value) {
+                            input.value = getFutureDate();
+                        }
+                    });
+                }
+
+                // Executa quando a página carrega
+                setDefaultDates();
+                // Adicionar o novo formulário ao formset
+                document.getElementById('produtos-formset').appendChild(newForm);
+
+
+                // Atualizar o total de formulários
+                totalForms.value = currentFormCount + 1;
+            });
+
+            // Handler para remover produtos
+            document.addEventListener('click', function (e) {
+                if (e.target.closest('.remove-produto')) {
+                    const row = e.target.closest('.produto-form');
+                    if (document.querySelectorAll('.produto-form').length > 1) {
+                        // Remover a linha
+                        row.remove();
+
+                        // Reindexar os forms restantes
+                        const forms = document.querySelectorAll('.produto-form');
+                        forms.forEach((form, index) => {
+                            form.querySelectorAll('input, select').forEach(element => {
+                                element.id = element.id.replace(/\d+/, index);
+                                element.name = element.name.replace(/\d+/, index);
+                            });
+                        });
+
+                        // Atualizar o total de forms
+                        const totalForms = document.querySelector('[name$="-TOTAL_FORMS"]');
+                        totalForms.value = forms.length;
+                    }
+                }
+            });
+        });
+    </script>
+    
+
+    <script>
+        // Espera o documento carregar completamente
+        document.addEventListener('DOMContentLoaded', function () {
+            const alerts = document.querySelectorAll('.alert');
+
+            alerts.forEach(function (alert) {
+                // let timeout = 2000; // tempo padrão
+
+                // Define tempos diferentes baseado no tipo de alerta
+                if (alert.classList.contains('alert-danger')) {
+                    timeout = 7000; // 7 segundos para mensagens de erro
+                } else {
+                    timeout = 2000; // 2 segundos para mensagens de sucesso
+                }
+
+                setTimeout(function () {
                     const bsAlert = new bootstrap.Alert(alert);
                     bsAlert.close();
                 }, timeout);
             });
         });
-        </script>
-        <script>
-            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
-            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-                return new bootstrap.Tooltip(tooltipTriggerEl)
-            })
-            $(function () {
-              $('[data-toggle="tooltip"]').tooltip()
-            })
-        </script>
-    </body>
+    </script>
+
+    <!-- Inicializar Tooltip -->
+    <script>
+        var button = document.querySelector('[data-bs-toggle="modal"]');
+        var tooltip = new bootstrap.Tooltip(button);
+
+        // Ou para todos os tooltips na página
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[title]'));
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        }); 
+    </script>
+
+    <!-- Due to how HTML5 defines its semantics, the autofocus HTML attribute has no effect in Bootstrap modals. To achieve the same effect, use some custom JavaScript: -->
+    <!-- https://getbootstrap.com/docs/5.0/components/modal/  -->
+    <script>
+        var modalDelete = document.getElementById('confirmDelete')
+        var inputDelete = document.getElementById('myInput')
+
+        modalDelete.addEventListener('shown.bs.modal', function () {
+            myInput.focus()
+        })
+    </script>
+
+    <script>
+        var modalEdit = document.getElementById('editSolicit')
+        var inputEdit = document.getElementById('myInput')
+
+        modalEdit.addEventListener('shown.bs.modal', function () {
+            myInput.focus()
+        })
+    </script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var confirmDeleteModal = document.getElementById("confirmDelete");
+            confirmDeleteModal.addEventListener("show.bs.modal", function (event) {
+                var button = event.relatedTarget;  // Botão que acionou o modal
+                var numSolicitacao = button.getAttribute("data-num");  // Pega o número da solicitação
+                var deleteUrl = `/solicitacoes/${numSolicitacao}/delete`;  // Monta a URL
+                document.getElementById("confirmDeleteButton").setAttribute("href", deleteUrl);
+            });
+        });
+    </script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var editSolicitModal = document.getElementById("myForm");
+            editSolicitModal.addEventListener("show.bs.modal", function (event) {
+                var button = event.relatedTarget;  // Botão que acionou o modal
+                var numSolicitacao = button.getAttribute("data-num");  // Pega o número da solicitação
+                var urlBase = button.getAttribute("data-url");  // Pega a URL base
+                var action = urlBase.replace("0", numSolicitacao);  // Substitui o placeholder pelo número da solicitação
+                document.getElementById("confirmEditButton").setAttribute("action", action);
+            });
+        });
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var editButtons = document.querySelectorAll('.edita-solicitacao');
+            var modalBody = document.querySelector('#editSolicit .modal-body');
+
+            editButtons.forEach(function (button) {
+                button.addEventListener('click', function () {
+                    var solicitacaoId = button.getAttribute('data-num');
+                    fetch(`/solicitacoes/editar_solicitacao/${solicitacaoId}/`)
+                        .then(response => response.text())
+                        .then(data => {
+                            modalBody.innerHTML = data;
+                        })
+                        .catch(error => console.error('Erro ao carregar o formulário:', error));
+                });
+            });
+        });
+    </script>
+
+</body>
+
 </html>

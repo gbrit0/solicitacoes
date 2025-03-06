@@ -25,9 +25,9 @@ class Produto(models.Model):
    c1_local = models.CharField(max_length=2, null=False) # b1_locpad
    b1_conta = models.CharField(max_length=20, null=False)
    c1_quant = models.DecimalField(max_digits=12, decimal_places=2)
-   c1_cc = models.CharField(max_length=60, null=False, default='')
+   c1_cc = models.CharField(max_length=60, blank=True, null=True, default='')
    c1_datprf = models.DateField(blank=False, default='2025-01-01')
-   ctj_desc = models.CharField(max_length=40, default='')
+   ctj_desc = models.CharField(max_length=40, blank=True, null=True, default='')
    c1_obs = models.TextField(default="")
    r_e_c_n_o = models.BigIntegerField(primary_key=True, default=0)
    is_deleted = models.BooleanField(blank= False, default=False)  # Campo para controle de deleção
@@ -78,10 +78,37 @@ class StatusSC1(models.Model):
    C1_RESIDUO = models.CharField(max_length=1, default='N')
    C1_IMPORT = models.CharField(max_length=1, default='N')
    C1_COMPRAC = models.CharField(max_length=1, default='2')
+   C1_ITEM = models.CharField(max_length=4, null=False, default='0001' ) 
+   C1_FILENT = models.CharField(max_length=4, null=False, default='0101')
 
    class Meta:
       managed: False
       db_table = 'SC1010'
+   
+   def get_status(self):
+      status_mapping = [
+         (self.C1_QUJE == 0 and self.C1_COTACAO in ['      ', 'IMPORT'] and self.C1_APROV == 'B', "Solicitação Bloqueada"),
+         (self.C1_QUJE == 0 and self.C1_COTACAO == '      ' and self.C1_APROV == 'L', "Solicitação Pendente"),
+         (self.C1_QUANT == self.C1_QUJE, "Solicitação Totalmente Atendida"),
+         (self.C1_QUJE > 0 and self.C1_QUJE < self.C1_QUANT and self.C1_COTACAO == 'XXXXXX', "Solicitação Parcialmente Atendida Utilizada em Cotação"),
+         (self.C1_QUJE > 0 and self.C1_QUJE < self.C1_QUANT, "Solicitação Parcialmente Atendida"),
+         (self.C1_COTACAO != '      ', "Solicitação em Processo de Cotação"),
+         (self.C1_RESIDUO == 'S', "Elim. por Resíduo"),
+         (self.C1_IMPORT == 'S', "Solicitação de Produto Importado"),
+         (self.C1_QUJE == 0 and self.C1_COTACAO in ['      ', 'IMPORT'] and self.C1_APROV == 'R', "Solicitação Rejeitada"),
+         (self.C1_RESIDUO == 'S' and self.C1_COMPRAC == '1', "Solicitação em Compra Centralizada")
+      ]
+
+      for condition, tooltip in status_mapping:
+        if condition:
+            return tooltip
+
+      return "Status Desconhecido"  
+
+
+
+   def __str__(self):
+      return self.get_status()
 
    objects = models.Manager().db_manager('protheus')
 

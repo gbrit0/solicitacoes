@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
+    'corsheaders',
     'django_extensions',
     'django.contrib.staticfiles',
     'home.apps.HomeConfig',
@@ -62,6 +63,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -69,6 +71,11 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'usuarios.middleware.RoleMiddleware',
     'usuarios.middleware.SessionTimeoutMiddleware',
+]
+
+CORS_ALLOWED_ORIGINS = [
+    'http://localhost:8000',
+    'http://127.0.0.1:8000',
 ]
 
 CELERY_BROKER_URL = 'redis://localhost:6379/0'

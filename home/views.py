@@ -5,29 +5,29 @@ from solicitacoes.models import Solicitacao, Produto, StatusSC1
 from django.shortcuts import render
 from setup.utils.sync import sincronizar_itens_deletados
 
-def calcular_status(solicitacao):
-    status = StatusSC1.objects.filter(C1_NUM=solicitacao.c1_num).first()
+def calcular_status(produto):
+    status = StatusSC1.objects.filter(C1_NUM=produto.c1_num, C1_ITEM=produto.c1_item).first()
     
     if not status:
         return '<i class="fa-solid fa-circle text-secondary" data-bs-toggle="tooltip" title="Status Indefinido"></i>'
 
     # Mapeamento de status com ícones e cores
     status_mapping = [
-        (status.C1_QUJE == 0 and status.C1_COTACAO in ['      ', 'IMPORT'] and status.C1_APROV == 'B', "#8A8A8A", "Solicitação Bloqueada", "fa-circle"),
-        (status.C1_QUJE == 0 and status.C1_COTACAO == '      ' and status.C1_APROV == 'L', "#98E45F", "Solicitação Pendente", "fa-circle"),
-        (status.C1_QUANT == status.C1_QUJE, "#D33434", "Solicitação Totalmente Atendida", "fa-circle"),
-        (status.C1_QUJE > 0 and status.C1_QUJE < status.C1_QUANT and status.C1_COTACAO == 'XXXXXX', "#FF0000", "Solicitação Parcialmente Atendida Utilizada em Cotação", "fa-triangle"),
-        (status.C1_QUJE > 0 and status.C1_QUJE < status.C1_QUANT, "#E7E720", "Solicitação Parcialmente Atendida", "fa-circle"),
-        (status.C1_COTACAO != '      ', "#4284C1", "Solicitação em Processo de Cotação", "fa-circle"),
-        (status.C1_RESIDUO == 'S', "#636363", "Elim. por Resíduo", "fa-circle"),
-        (status.C1_IMPORT == 'S', "#EB28DD", "Solicitação de Produto Importado", "fa-circle"),
-        (status.C1_QUJE == 0 and status.C1_COTACAO in ['      ', 'IMPORT'] and status.C1_APROV == 'R', "#ECA733", "Solicitação Rejeitada", "fa-circle"),
-        (status.C1_RESIDUO == 'S' and status.C1_COMPRAC == '1', "#6D1D6B", "Solicitação em Compra Centralizada", "fa-circle")
+        (status.C1_QUJE == 0 and status.C1_COTACAO in ['      ', 'IMPORT'] and status.C1_APROV == 'B', "#8A8A8A", "Solicitação Bloqueada", "fa-solid fa-circle"),
+        (status.C1_QUJE == 0 and status.C1_COTACAO == '      ' and status.C1_APROV == 'L', "#98E45F", "Solicitação Pendente", "fa-solid fa-circle"),
+        (status.C1_QUANT == status.C1_QUJE, "#D33434", "Solicitação Totalmente Atendida", "fa-solid fa-circle"),
+        (status.C1_QUJE > 0 and status.C1_QUJE < status.C1_QUANT and status.C1_COTACAO == 'XXXXXX', "#FF0000", "Solicitação Parcialmente Atendida Utilizada em Cotação", "bi bi-triangle-fill"),
+        (status.C1_QUJE > 0 and status.C1_QUJE < status.C1_QUANT, "#E7E720", "Solicitação Parcialmente Atendida", "fa-solid fa-circle"),
+        (status.C1_COTACAO != '      ', "#4284C1", "Solicitação em Processo de Cotação", "fa-solid fa-circle"),
+        (status.C1_RESIDUO == 'S', "#636363", "Elim. por Resíduo", "fa-solid fa-circle"),
+        (status.C1_IMPORT == 'S', "#EB28DD", "Solicitação de Produto Importado", "fa-solid fa-circle"),
+        (status.C1_QUJE == 0 and status.C1_COTACAO in ['      ', 'IMPORT'] and status.C1_APROV == 'R', "#ECA733", "Solicitação Rejeitada", "fa-solid fa-circle"),
+        (status.C1_RESIDUO == 'S' and status.C1_COMPRAC == '1', "#6D1D6B", "Solicitação em Compra Centralizada", "fa-solid fa-circle")
     ]
     
     for condition, color, tooltip, icon in status_mapping:
         if condition:
-            return f'<i class="fa-solid {icon if "icon" in locals() else "fa-circle"}" style="color: {color};" data-bs-toggle="tooltip" title="{tooltip}"></i>'
+            return f'<i class="{icon}" style="color: {color};" data-bs-toggle="tooltip" title="{tooltip}"></i>'
     
     return '<i class="fa-solid fa-circle text-secondary" data-bs-toggle="tooltip" title="Status Indefinido"></i>'
 
@@ -95,21 +95,7 @@ def lista_solicitacoes(request):
         if usuario and request.user.role == 'admin':
             solicitacoes = solicitacoes.filter(user=usuario)
 
-    # solicitacoes_com_status = [
-    #         {
-    #             'solicitacao': s,
-    #             'status': calcular_status(s)
-    #         }
-    #         for s in solicitacoes
-    #     ]
-   
-    # context = {
-    #     'solicitacoes': solicitacoes_com_status,
-    #     'form': form,
-    #     'produtos': produtos
-    # }
     
-    # return render(request, 'home/index.html', context)
     solicitacoes_com_produtos = [
         {
             'solicitacao': s,
