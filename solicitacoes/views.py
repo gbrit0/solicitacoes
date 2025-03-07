@@ -303,8 +303,8 @@ def editar_solicitacao(request, c1_num):
         formset = ProductFormset(request.POST, instance=solicitacao)
 
         if formset.is_valid():
-                print('formset.is_valid')
-            # try:
+            print('formset.is_valid')
+            try:
                 solicitacao_form.save()
                 instances = formset.save(commit=False)
 
@@ -384,7 +384,7 @@ def editar_solicitacao(request, c1_num):
                             else:
                                 instance.save()
                                 conexao.commit()
-
+            
                 if erros:
                     for erro in erros:
                         messages.error(request, f"Não foi possível atualizar a solicitação para o produto {erro['produto']}. Tente novamente mais tarde.<br>ERRO: {erro['erro']}")
@@ -393,17 +393,18 @@ def editar_solicitacao(request, c1_num):
                             
                 return redirect('lista_solicitacoes')   
 
-            # except Exception as e:
-            #     messages.error(request, f"Erro ao atualizar solicitação, por favor contate o administrador.<br>ERRO: {e}")
-            #     return redirect('lista_solicitacoes')
+            except Exception as e:
+                messages.error(request, f"Erro ao atualizar solicitação, por favor contate o administrador.<br>ERRO: {e}")
+                return redirect('lista_solicitacoes')
         else:
             # Form is invalid, render the template with errors
             print('Form is invalid')
-            return render(request, 'solicitacoes/editar_solicitacao_form.html', {
+            return render(request, 'solicitacoes/solicitacao_editada.html', {
                 'solicitacao_form': solicitacao_form,
                 'formset': formset,
                 'errors': formset.errors
             })
+        
     else:
         print('GET request - initialize the form and formset with existing data')
         solicitacao_form = SolicitacaoForm(instance=solicitacao)
