@@ -296,11 +296,18 @@ def apagar_solicitacao(request, num_solicitacao):
 @login_required(login_url='login')
 def editar_solicitacao(request, c1_num):
     solicitacao = get_object_or_404(Solicitacao, c1_num=c1_num)
+    # print(f'solicitacao: {solicitacao}')
     # produtos_solicitacao = Produto.objects.filter(c1_num=solicitacao.c1_num)
-    print(f'request.method: {request.method}')
+    # print(f'request.method: {request.method}')
     if request.method == 'POST':
-        solicitacao_form = SolicitacaoForm(request.POST, instance=solicitacao)
-        formset = ProductFormset(request.POST, instance=solicitacao)
+        solicitacao_form = SolicitacaoForm(instance=solicitacao)
+        # print(f'solicitacao_form: {solicitacao_form}')
+        formset = ProductFormset(instance=solicitacao)
+        # print(f'formset: {formset}')
+        print(f'request.POST: [{request.POST}]')
+
+        for form in formset:
+            print(f"Erros no formulário {form.prefix}: {form.errors}")
 
         if formset.is_valid():
             print('formset.is_valid')
@@ -399,18 +406,27 @@ def editar_solicitacao(request, c1_num):
         else:
             # Form is invalid, render the template with errors
             print('Form is invalid')
+            # print(formset.errors)
+            print(f'formset.non_form_errors: {formset.non_form_errors}')
+            print(f'formset.non_form_errors(): {formset.non_form_errors()}')
             return render(request, 'solicitacoes/solicitacao_editada.html', {
+                'solicitacao': solicitacao,
                 'solicitacao_form': solicitacao_form,
                 'formset': formset,
                 'errors': formset.errors
             })
         
     else:
-        print('GET request - initialize the form and formset with existing data')
+        # print('GET request - initialize the form and formset with existing data')
+        # print(f'solicitacao: {solicitacao}')
+        # print(f'solicitacao.produto_set.all(): {solicitacao.produto_set.all()}')
         solicitacao_form = SolicitacaoForm(instance=solicitacao)
         formset = ProductFormset(instance=solicitacao)
+        # for produto in solicitacao.produto_set.all():
+        #     print(produto.r_e_c_n_o, produto.c1_produto, produto.c1_datprf)
         
         return render(request, 'solicitacoes/editar_solicitacao_form.html', {
+            'solicitacao': solicitacao,
             'solicitacao_form': solicitacao_form,
             'formset': formset,
         })

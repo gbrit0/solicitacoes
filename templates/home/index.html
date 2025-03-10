@@ -282,9 +282,8 @@
                             <td>{{ solicitacao.solicitacao.c1_emissao|date:"d/m/Y" }}</td>
                             <td style="display: flex; gap: 5px;">
 
-                                <a type="button" class="btn btn-warning btn-sm edita-solicitacao" data-bs-toggle="modal"
-                                    data-bs-target="#editSolicit" data-num="{{ solicitacao.solicitacao.c1_num }}"
-                                    data-url="{% url 'editar_solicitacao' 0 %}" data-bs-placement="top"
+                                <a type="button" class="btn btn-warning btn-sm edita-solicitacao"
+                                    href="{% url 'editar_solicitacao' solicitacao.solicitacao.c1_num %}" data-bs-placement="top"
                                     title="Editar Solicitação">
                                     <i class="fa-solid fa-pen"></i>
                                 </a>
@@ -344,131 +343,7 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
                 </div>
                 <div class="modal-body card">
-                    <form id="myForm" method="POST" action="" class="table-scroll-container">
-                        {% csrf_token %}
-                        {{ formset.management_form }}
-                        <table class="table table-hover" id="produtos-table">
-                            <thead>
-                                <tr>
-                                    <th>Produto</th>
-                                    <th>Quantidade</th>
-                                    <th>Data de Necessidade</th>
-                                    <th>Centro de Custo <i class="fas fa-info-circle ms-1" data-bs-toggle="tooltip"
-                                            data-bs-placement="top"
-                                            title="Se o rateio também for selecionado, ele terá prioridade sobre o centro de custo."></i>
-                                    </th>
-                                    <th>Rateios <i class="fas fa-info-circle ms-1" data-bs-toggle="tooltip"
-                                            data-bs-placement="top"
-                                            title="Se o rateio também for selecionado, ele terá prioridade sobre o centro de custo."></i>
-                                    </th>
-                                    <th>Observações</th>
-                                    <th>Ações</th>
-                                </tr>
-                            </thead>
-                            <tbody id="produtos-formset">
-                                {% for form in formset %}
-                                <tr class="produto-form">
-                                    <td>
-                                        {{ form.c1_produto }}
-                                        {% if form.c1_produto.errors %}
-                                        {% for error in form.c1_produto.errors %}
-                                        <div class="invalid-feedback d-block">{{ error }}</div>
-                                        {% endfor %}
-                                        {% endif %}
-                                    </td>
-                                    <td>
-                                        {{ form.c1_quant }}
-                                        {% if form.c1_quant.errors %}
-                                        {% for error in form.c1_quant.errors %}
-                                        <div class="invalid-feedback d-block">{{ error }}</div>
-                                        {% endfor %}
-                                        {% endif %}
-                                    </td>
-                                    <td>
-                                        {{ form.c1_datprf }}
-                                        {% if form.c1_datprf.errors %}
-                                        {% for error in form.c1_datprf.errors %}
-                                        <div class="invalid-feedback d-block">{{ error }}</div>
-                                        {% endfor %}
-                                        {% endif %}
-                                    </td>
-                                    <td>
-                                        {{ form.c1_cc }}
-                                        {% if form.c1_cc.errors %}
-                                        {% for error in form.c1_cc.errors %}
-                                        <div class="invalid-feedback d-block">{{ error }}</div>
-                                        {% endfor %}
-                                        {% endif %}
-                                    </td>
-                                    <td>
-                                        {{ form.ctj_desc }}
-                                        {% if form.ctj_desc.errors %}
-                                        {% for error in form.ctj_desc.errors %}
-                                        <div class="invalid-feedback d-block">{{ error }}</div>
-                                        {% endfor %}
-                                        {% endif %}
-                                    </td>
-                                    <td>
-                                        {{ form.c1_obs }}
-                                        {% if form.c1_obs.errors %}
-                                        {% for error in form.c1_obs.errors %}
-                                        <div class="invalid-feedback d-block">{{ error }}</div>
-                                        {% endfor %}
-                                        {% endif %}
-                                    </td>
-                                    <td>
-                                        <!-- <button data-bs-toggle="tooltip" data-bs-placement="top" title="Rateio de Custos" type="button" class="btn btn-warning btn-sm adicionar_rateio">
-                                                    <i class="fa-solid fa-arrows-split-up-and-left"></i>
-                                                </button> -->
-                                        <button data-bs-toggle="tooltip" data-bs-placement="top" title="Remover item"
-                                            type="button" class="btn btn-danger btn-sm remove-produto">
-                                            <i class="fas fa-trash"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                            <table style="display: none;">
-                                <tr id="empty-form-template" class="produto-form">
-                                    <td>
-                                        {{ formset.empty_form.c1_produto }}
-                                    </td>
-                                    <td>
-                                        {{ formset.empty_form.c1_quant }}
-                                    </td>
-                                    <td>
-                                        {{ formset.empty_form.c1_datprf }}
-                                    </td>
-                                    <td>
-                                        {{ formset.empty_form.c1_cc }}
-                                    </td>
-                                    <td>
-                                        {{ formset.empty_form.ctj_desc }}
-                                    </td>
-                                    <td>
-                                        {{ formset.empty_form.c1_obs }}
-                                    </td>
-                                    <td>
-                                        <!-- <button data-bs-toggle="tooltip" data-bs-placement="top" title="Rateio de Custos" type="button" class="btn btn-warning btn-sm adicionar_rateio">
-                                                    <i class="fa-solid fa-arrows-split-up-and-left"></i>
-                                                </button> -->
-                                        <button data-bs-toggle="tooltip" data-bs-placement="top" title="Remover item"
-                                            type="button" class="btn btn-danger btn-sm remove-produto">
-                                            <i class="fas fa-trash"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-                            </table>
-                        </table>
-                        <div class="add-produto-container text-end">
-                            <button type="button" id="adicionar-produto" class="btn btn-secondary">
-                                <i class="fas fa-plus me-2"></i> Adicionar Produto
-                            </button>
-                            <button type="submit" class="btn btn-primary">
-                                <i class="fas fa-save me-2"></i> Salvar Solicitação
-                            </button>
-                        </div>
-                    </form>
+                    
                 </div>
             </div>
         </div>
@@ -773,7 +648,7 @@
         });
     </script>
 
-    <script>
+    <!-- <script>
         document.addEventListener('DOMContentLoaded', function () {
             var editButtons = document.querySelectorAll('.edita-solicitacao');
             var modalBody = document.querySelector('#editSolicit .modal-body');
@@ -790,7 +665,7 @@
                 });
             });
         });
-    </script>
+    </script> -->
 
 </body>
 

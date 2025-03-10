@@ -167,7 +167,9 @@ class ProdutosForm(forms.ModelForm):
         cleaned_data = super().clean()
         cc = cleaned_data.get('c1_cc')
         rateio = cleaned_data.get('ctj_desc')
-        
+        print(f'cleaned_data: {cleaned_data}')
+        print(f'cc: {cc}')
+        print(f'rateio: {rateio}')
         if not cc and not rateio:
             # Adiciona o erro aos campos específicos
 
@@ -183,8 +185,15 @@ ProductFormset = inlineformset_factory(
       Solicitacao,
       Produto,
       form=ProdutosForm,
-      fields=('c1_cc', 'c1_produto', 'c1_datprf', 'c1_quant', 'c1_obs', 'ctj_desc'),
-      extra=1,
+      fields=('r_e_c_n_o', 'c1_cc', 'c1_produto', 'c1_datprf', 'c1_quant', 'c1_obs', 'ctj_desc'),
+      extra=0,
       can_delete=True,
       can_delete_extra=True
    )
+
+# c1_cc
+# c1_produto
+# c1_datprf
+# c1_quant
+# c1_obs
+# ctj_desc
