@@ -245,6 +245,7 @@
                             <tbody id="produtos-formset">
                                 {% for form in formset %}
                                 <tr class="produto-form">
+                                    <input type="hidden" name="{{ form.r_e_c_n_o.html_name }}" value="{{ form.r_e_c_n_o.value|default_if_none:'' }}">
                                     <td>
                                         {{ form.c1_produto }}
                                         {% if form.c1_produto.errors %}
@@ -297,8 +298,9 @@
                                         <!-- <button data-bs-toggle="tooltip" data-bs-placement="top" title="Rateio de Custos" type="button" class="btn btn-warning btn-sm adicionar_rateio">
                                             <i class="fa-solid fa-arrows-split-up-and-left"></i>
                                         </button> -->
-                                        <button data-bs-toggle="tooltip" data-bs-placement="top" title="Remover item" type="button" class="btn btn-danger btn-sm remove-produto">
-                                            <i class="fas fa-trash">{% if form.instance.pk %}{{ form.is_deleted }}{% endif %}</i>
+                                        <button data-bs-toggle="tooltip" data-bs-placement="top" title="Remover item" type="button" class="btn btn-danger btn-sm remove-produto"
+                                        data-num="{{ solicitacao }}">
+                                            <i class="fas fa-trash"></i>
                                         </button>
                                     </td>
                                 </tr>
@@ -487,13 +489,27 @@
             });
         });
     </script>
+
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var editSolicitModal = document.getElementById("myForm");
+            editSolicitModal.addEventListener("show.bs.modal", function (event) {
+                var button = event.relatedTarget;  // Botão que acionou o modal
+                var numSolicitacao = button.getAttribute("data-num");  // Pega o número da solicitação
+                var urlBase = button.getAttribute("data-url");  // Pega a URL base
+                var action = urlBase.replace("0", numSolicitacao);  // Substitui o placeholder pelo número da solicitação
+                document.getElementById("confirmEditButton").setAttribute("action", action);
+            });
+        });
+    </script>
+
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Fadicionar 15 dias à data atual
             function getFutureDate() {
                 let date = new Date();
                 date.setDate(date.getDate() + 15);
-                return date.toISOString().split('T')[0]; // Formato YYYY-MM-DD
+                return date.toISOString().split('T')[0]; 
             }
 
             function setDefaultDates() {
@@ -505,25 +521,7 @@
                 });
             }
 
-            // Executa quando a página carrega
             setDefaultDates();
-
-            // Para formsets dinâmicos, observe quando novos forms são adicionados
-            // const divsComNecessidade = formsetContainer.querySelectorAll('div.data-necessidade');
-            // if (formsetContainer) {
-            //     const observer = new MutationObserver(function(mutations) {
-            //         mutations.forEach(function(mutation) {
-            //             if (mutation.addedNodes.length) {
-            //                 setDefaultDates();
-            //             }
-            //         });
-            //     });
-
-            //     observer.observe(formsetContainer, {
-            //         childList: true,
-            //         subtree: true
-            //     });
-            // }
         });
     </script>
 </body>

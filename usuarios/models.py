@@ -57,7 +57,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     objects = CustomUserManager()
     role = models.CharField(max_length=20, choices=ROLES, default='default')
     USERNAME_FIELD = 'cpf'
-    REQUIRED_FIELDS = ['email', 'nome']
+    REQUIRED_FIELDS = ['email', 'nome', 'role']
 
     class Meta:
         permissions = [
@@ -69,8 +69,8 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         return f"{self.nome}"
     
     def save(self, *args, **kwargs):
-        if not self.id:
-            self.id = '000001'    
+        # if not self.id:
+        #     self.id = '000001'    
         # Remove caracteres não numéricos antes de salvar
         self.cpf = re.sub(r'\D', '', self.cpf)
         super().save(*args, **kwargs)
