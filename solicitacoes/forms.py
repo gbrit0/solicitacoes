@@ -22,8 +22,30 @@ class SolicitacaoForm(forms.ModelForm):
 class ProdutosForm(forms.ModelForm):
     class Meta:
         model = Produto
-        fields = ['c1_produto', 'c1_quant', 'c1_cc', 'c1_datprf', 'c1_obs']
+        fields = ['r_e_c_n_o', 'c1_produto', 'c1_quant', 'c1_cc', 'c1_datprf', 'c1_obs']
+        widgets = {
+            'r_e_c_n_o': forms.HiddenInput(),
+        }
+    
+    def clean(self):
+        # print("Executando validação do formset")
+        cleaned_data = super().clean()
+        cc = self.cleaned_data.get('c1_cc')
+        rateio = self.cleaned_data.get('ctj_desc')
+        print(f'cleaned_data: {cleaned_data}')
+        # print(f'cc: {cc}')
+        # print(f'rateio: {rateio}')
+        if not cc and not rateio:
+            # Adiciona o erro aos campos específicos
 
+            self.add_error('c1_cc', 'Preencha Centro de Custo ou Rateio')
+
+            self.add_error('ctj_desc', 'Preencha Centro de Custo ou Rateio')
+            
+            raise forms.ValidationError("Você deve preencher pelo menos um dos campos: Centro de Custo ou Rateio")
+            
+        return cleaned_data
+    
     c1_produto = forms.ChoiceField(
         required=True,
         label="Produto",
@@ -128,6 +150,9 @@ class ProdutosForm(forms.ModelForm):
         connectionString = f"DRIVER={{ODBC Driver 17 for SQL Server}};SERVER={os.environ['HOST']};DATABASE={os.environ['DATABASE']};UID={os.environ['USER']};PWD={os.environ['PASSWORD']};TrustServerCertificate=yes"
         with pyodbc.connect(connectionString) as conexao:
             with conexao.cursor() as cursor:
+                cursor.execute("""SELECT MAX(R_E_C_N_O_) + 1 FROM SC1010 """)
+                self.fields['r_e_c_n_o'].initial = cursor.fetchone()[0] 
+
                 cursor.execute("""SELECT 
                                      TRIM(B1_COD) AS cod_produto,
                                      TRIM(B1_COD) + ' - ' + TRIM(B1_DESC) as produto
@@ -163,23 +188,7 @@ class ProdutosForm(forms.ModelForm):
                 rateios = cursor.fetchall()
                 self.fields['ctj_desc'].choices += rateios
 
-    def clean(self):
-        cleaned_data = super().clean()
-        cc = cleaned_data.get('c1_cc')
-        rateio = cleaned_data.get('ctj_desc')
-        print(f'cleaned_data: {cleaned_data}')
-        print(f'cc: {cc}')
-        print(f'rateio: {rateio}')
-        if not cc and not rateio:
-            # Adiciona o erro aos campos específicos
-
-            self.add_error('c1_cc', 'Preencha Centro de Custo ou Rateio')
-
-            self.add_error('ctj_desc', 'Preencha Centro de Custo ou Rateio')
-            
-            raise forms.ValidationError("Você deve preencher pelo menos um dos campos: Centro de Custo ou Rateio")
-            
-        return cleaned_data
+    
 
 ProductFormset = inlineformset_factory(
       Solicitacao,
@@ -190,10 +199,3 @@ ProductFormset = inlineformset_factory(
       can_delete=True,
       can_delete_extra=True
    )
-
-# c1_cc
-# c1_produto
-# c1_datprf
-# c1_quant
-# c1_obs
-# ctj_desc

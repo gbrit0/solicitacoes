@@ -12,6 +12,7 @@ from django.views.generic.edit import UpdateView
 @login_required(login_url='login')
 def criar_solicitacao(request):
     if request.method == 'POST':
+        # print(f'request.POST: [{request.POST}]\n')
         solicitacao_form = SolicitacaoForm()
         formset = ProductFormset(request.POST)
         if formset.is_valid():
@@ -49,8 +50,8 @@ def criar_solicitacao(request):
                         for num, instance in enumerate(instances):
                             try:
                                 
-                                cursor.execute("""SELECT MAX(R_E_C_N_O_) + 1 FROM SC1010 """)
-                                instance.r_e_c_n_o = cursor.fetchone()[0] 
+                                # cursor.execute("""SELECT MAX(R_E_C_N_O_) + 1 FROM SC1010 """)
+                                # instance.r_e_c_n_o = cursor.fetchone()[0] 
 
                                 instance.c1_num = solicitacao_form
 
@@ -138,6 +139,7 @@ def criar_solicitacao(request):
 
                 if erros:
                     for erro in erros:
+                        print(erro)
                         messages.error(request, f"Não foi possível cadastrar a solicitação para o produto {erro['produto']}. Tente novamente mais tarde. ERRO: {erro['erro']}")
                 else:
                     messages.success(request, "Solicitação cadastrada com sucesso!")
@@ -145,10 +147,14 @@ def criar_solicitacao(request):
                 return redirect('lista_solicitacoes')
                 
             except Exception as e:
+                print(e)
                 messages.error(request, f"Erro ao criar solicitação, por favor contate o admnistrador. ERRO: {e}")
                 return redirect('lista_solicitacoes')
             
         else:
+            # print('Form is invalid')
+            # print(f'formset.non_form_errors: {formset.non_form_errors}')
+            # print(f'formset.errors: {formset.errors}')
             return render(request, 'solicitacoes/criar_solicitacao.html', {
                 'solicitacao_form': solicitacao_form,
                 'formset': formset,
@@ -213,7 +219,6 @@ def verifica_solicitacao(cursor, request, num_solicitacao):
         messages.error(request, "Você não tem permissão para apagar esta solicitação.")
         return redirect('lista_solicitacoes')
     
-
 @login_required(login_url='login')
 def apagar_solicitacao(request, num_solicitacao):
         # print(f"Entrou em apagar_solicitacao")
@@ -248,26 +253,47 @@ def apagar_solicitacao(request, num_solicitacao):
                                 continue
                                 # messages.error(request, "Solicitação já processada, não pode ser excluída")
                                 # return redirect('lista_solicitacoes')
-                                
+
+                            cursor.execute((
+                                f"SELECT MAX(R_E_C_D_E_L_) + 1 "
+                                f"FROM SCX010 "
+                            ))
+                            recdel = cursor.fetchone()[0]
+
                             # Apaga os rateios relacionados
                             cursor.execute("""
                                 UPDATE SCX010
-                                SET D_E_L_E_T_ = ?
+                                SET D_E_L_E_T_ = ?,
+                                R_E_C_D_E_L_ = ?
                                 WHERE CX_SOLICIT = ?
                                 AND CX_ITEMSOL = ?
                                 AND CX_FILIAL = ?
-                            """, ('*', num_solicitacao, item, '0101'))
+                            """, ('*', num_solicitacao, recdel, item, '0101'))
                             
                             # Apaga a solicitação principal e seus itens
+                            cursor.execute((
+                                f"SELECT MAX(R_E_C_D_E_L_) + 1 "
+                                f"FROM SC1010 "
+                            ))
+                            recdel = cursor.fetchone()[0]
+
+                            # Apaga os rateios relacionados
                             cursor.execute("""
-                                UPDATE SC1010 
-                                SET D_E_L_E_T_ = '*'
-                                WHERE C1_NUM = ?
-                                AND C1_ITEM = ?
-                                AND C1_FILIAL = '0101'
-                            """, (num_solicitacao, item))
+                                UPDATE SCX010
+                                SET D_E_L_E_T_ = ?,
+                                R_E_C_D_E_L_ = ?
+                                WHERE CX_SOLICIT = ?
+                                AND CX_ITEMSOL = ?
+                                AND CX_FILIAL = ?
+                            """, ('*', num_solicitacao, recdel, item, '0101'))
                         except Exception as e:
                             print(e)
+                            messages.error(request, f"Erro ao apagar solicitação. Por favor, contate o administrador. ERRO: {e}")
+                            conexao.rollback()
+                            erros.append({
+                                'produto': p,
+                                'erro': e
+                            })
                         else:
                             conexao.commit()
             
@@ -293,140 +319,191 @@ def apagar_solicitacao(request, num_solicitacao):
             return redirect('lista_solicitacoes')
         
 
+    # formset_original = ProductFormset(request.POST, instance=solicitacao)
+    # IF FORMSET.ATRIBUTO <> FORMSET_ORIGINAL.ATRIBUTO: ADICIONAR A LÓGICA DE MUDANÇA APENAS SE FOR DIFERENTE ALGUM ATRIBUTO
+
 @login_required(login_url='login')
 def editar_solicitacao(request, c1_num):
     solicitacao = get_object_or_404(Solicitacao, c1_num=c1_num)
-    # print(f'solicitacao: {solicitacao}')
-    # produtos_solicitacao = Produto.objects.filter(c1_num=solicitacao.c1_num)
-    # print(f'request.method: {request.method}')
     if request.method == 'POST':
-        solicitacao_form = SolicitacaoForm(instance=solicitacao)
-        # print(f'solicitacao_form: {solicitacao_form}')
-        formset = ProductFormset(instance=solicitacao)
-        # print(f'formset: {formset}')
-        print(f'request.POST: [{request.POST}]')
-
-        for form in formset:
-            print(f"Erros no formulário {form.prefix}: {form.errors}")
-
+        formset = ProductFormset(request.POST, instance=solicitacao)
+        
         if formset.is_valid():
-            print('formset.is_valid')
             try:
-                solicitacao_form.save()
-                instances = formset.save(commit=False)
-
                 connectionString = f"DRIVER={{ODBC Driver 17 for SQL Server}};SERVER={os.environ['HOST']};DATABASE={os.environ['DATABASE']};UID={os.environ['USER']};PWD={os.environ['PASSWORD']};TrustServerCertificate=yes"
                 with pyodbc.connect(connectionString) as conexao:
                     with conexao.cursor() as cursor:
                         erros = []
-                        for num, instance in enumerate(instances):
-                            print(f'instance: {instance}')
-                            try:
-                                cursor.execute(f"select MAX(B1_DESC) from SB1010 WHERE B1_COD = '{instance.c1_produto}' AND D_E_L_E_T_ <> '*' AND B1_MSBLQL = '2' AND B1_FILIAL = '01'")
-                                instance.c1_descri = cursor.fetchall()[0][0]
+                        
+                        for form in formset:
+                            if form.has_changed():
+                                try:
+                                    # Obter a instância do modelo a partir do formulário
+                                    instance = form.save(commit=False)
+                                    print(f"Formulário {form.prefix} foi alterado")
+                                    print(f"Campos alterados: {form.changed_data}")
+                                    
+                                    # Para cada campo alterado, comparar os valores
+                                    for field_name in form.changed_data:
+                                        original_value = form.initial.get(field_name)
+                                        new_value = form.cleaned_data.get(field_name)
+                                        print(f"Campo {field_name} alterado: '{original_value}' -> '{new_value}'")
+                                        
+                                        if field_name == 'c1_produto':
+                                            cursor.execute(f"select MAX(B1_DESC) from SB1010 WHERE B1_COD = '{instance.c1_produto}' AND D_E_L_E_T_ <> '*' AND B1_MSBLQL = '2' AND B1_FILIAL = '01'")
+                                            instance.c1_descri = cursor.fetchall()[0][0]
+                                            
+                                            produto = str(instance.c1_descri).replace("\n", " ").replace("\r", " ")[:30]
 
-                                produto = str(instance.c1_descri).replace("\n", " ").replace("\r", " ")[:30]
+                                            cursor.execute(f"select MAX(B1_UM) from SB1010 WHERE B1_COD = '{instance.c1_produto}' AND D_E_L_E_T_ <> '*' AND B1_MSBLQL = '2' AND B1_FILIAL = '01'")
+                                            instance.c1_um = cursor.fetchall()[0][0]
 
-                                cursor.execute(f"select MAX(B1_UM) from SB1010 WHERE B1_COD = '{instance.c1_produto}' AND D_E_L_E_T_ <> '*' AND B1_MSBLQL = '2' AND B1_FILIAL = '01'")
-                                instance.c1_um =  cursor.fetchall()[0][0]
+                                            cursor.execute(f"select MAX(B1_LOCPAD) from SB1010 WHERE B1_COD = '{instance.c1_produto}' AND D_E_L_E_T_ <> '*' AND B1_MSBLQL = '2' AND B1_FILIAL = '01'")
+                                            instance.c1_local = cursor.fetchall()[0][0]
+                                            
+                                            cursor.execute(f"SELECT MAX(B1_CONTA) from SB1010 WHERE B1_COD = '{instance.c1_produto}' AND D_E_L_E_T_ <> '*' AND B1_MSBLQL = '2' AND B1_FILIAL = '01'")
+                                            instance.b1_conta = cursor.fetchall()[0][0]
 
-                                cursor.execute(f"select MAX(B1_LOCPAD) from SB1010 WHERE B1_COD = '{instance.c1_produto}' AND D_E_L_E_T_ <> '*' AND B1_MSBLQL = '2' AND B1_FILIAL = '01'")
-                                instance.c1_local =  cursor.fetchall()[0][0]
-                                
-                                cursor.execute(f"SELECT MAX(B1_CONTA) from SB1010 WHERE B1_COD = '{instance.c1_produto}' AND D_E_L_E_T_ <> '*' AND B1_MSBLQL = '2' AND B1_FILIAL = '01'")
-                                instance.b1_conta =  cursor.fetchall()[0][0]
-                                
-                                instance.c1_filent = '0101'
+                                            cursor.execute((f"UPDATE SC1010 "
+                                            f"SET C1_DESCRI = ?, C1_PRODUTO = ?, "
+                                            f"C1_UM = ?, C1_LOCAL = ? "
+                                            f"WHERE C1_FILIAL = '0101' AND C1_NUM = ? AND C1_ITEM = ?"), 
+                                            (produto, instance.c1_produto, instance.c1_um, instance.c1_local, solicitacao.c1_num, instance.c1_item))
 
-                                cursor.execute((
-                                    f"UPDATE SC1010 "
-                                    f"SET C1_DESCRI = ?, C1_CC = ?, C1_PRODUTO = ?, "
-                                    f"C1_LOCAL = ?, C1_QUANT = ?, C1_UM = ?, C1_FILENT = ?, "
-                                    f"C1_DATPRF = ?, C1_XOBMEMO = ? "
-                                    f"WHERE C1_NUM = ? AND C1_ITEM = ?"
-                                ), (produto, instance.c1_cc, instance.c1_produto, instance.c1_local, instance.c1_quant,
-                                    instance.c1_um, instance.c1_filent, str(instance.c1_datprf).replace('-', ''),
-                                    str(instance.c1_obs).encode('latin-1'), solicitacao.c1_num, instance.c1_item))
+                                        if field_name == 'c1_quant':
+                                            cursor.execute((f"UPDATE SC1010 "
+                                            f"SET C1_QUANT = ? "
+                                            f"WHERE C1_FILIAL = '0101' AND C1_NUM = ? AND C1_ITEM = ?"), 
+                                            (instance.c1_quant, solicitacao.c1_num, instance.c1_item))
+                                        
+                                        if field_name == 'c1_cc':
+                                            cursor.execute((f"UPDATE SC1010 "
+                                            f"SET C1_CC = ? "
+                                            f"WHERE C1_FILIAL = '0101' AND C1_NUM = ? AND C1_ITEM = ?"), 
+                                            (instance.c1_cc, solicitacao.c1_num, instance.c1_item))
+                                        
+                                        if field_name == 'c1_datprf':
+                                            cursor.execute((f"UPDATE SC1010 "
+                                            f"SET C1_DATPRF = ? "
+                                            f"WHERE C1_FILIAL = '0101' AND C1_NUM = ? AND C1_ITEM = ?"), 
+                                            (str(instance.c1_datprf).replace('-', ''), solicitacao.c1_num, instance.c1_item))
 
-                                if instance.ctj_desc != '':
-                                    instance.c1_cc = '                '
-                                    cursor.execute(
-                                        f"SELECT "
-                                            f"CTJ_SEQUEN, "
-                                            f"CTJ_PERCEN, "
-                                            f"CTJ_CCD "
-                                        f"FROM CTJ010 "
-                                        f"WHERE CTJ_RATEIO = '{instance.ctj_desc}'"
-                                    )
+                                        if field_name == 'c1_obs':
+                                            cursor.execute((f"UPDATE SC1010 "
+                                            f"SET C1_XOBMEMO = ? "
+                                            f"WHERE C1_FILIAL = '0101' AND C1_NUM = ? AND C1_ITEM = ?"), 
+                                            (str(instance.c1_obs).encode('latin-1'), solicitacao.c1_num, instance.c1_item))
 
-                                    rateios = cursor.fetchall()
-                                    recno_rateio = -99999
-                                    for rateio in rateios:
-                                        if recno_rateio < 0:
-                                            cursor.execute("""SELECT MAX(R_E_C_N_O_) + 1 FROM SCX010 """)
-                                            recno_rateio = cursor.fetchone()[0]
-                                        else:
-                                            recno_rateio += 1
+                                        if field_name == 'ctj_desc':
+                                            
+                                            cursor.execute((
+                                                f"SELECT R_E_C_N_O_ FROM SCX010 "
+                                                f"WHERE CX_FILIAL = '0101' AND CX_SOLICIT = ? AND CX_ITEMSOL = ?"
+                                            ), (solicitacao.c1_num, instance.c1_item))
 
-                                        cursor.execute(
-                                            (
-                                                f"INSERT INTO SCX010 "
-                                                f"(CX_FILIAL, CX_SOLICIT, CX_ITEMSOL, CX_ITEM, CX_PERC, CX_CC, CX_CONTA, R_E_C_N_O_)"
-                                                    f"VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
-                                            ), (str(instance.c1_filent), str(solicitacao.c1_num), str(instance.c1_item), str(rateio[0][1:]), str(rateio[1])[1:], str(rateio[2]), str(instance.b1_conta), str(recno_rateio))) 
-                                        conexao.commit()
+                                            rateios_gravados = cursor.fetchall()
 
-                                    cursor.execute((
-                                        f"UPDATE SC1010 "
-                                        f"SET C1_RATEIO = '1' "
-                                        f"WHERE C1_NUM = ? "
-                                        f"AND C1_ITEM = ?"),
-                                        (solicitacao.c1_num, instance.c1_item)    
-                                    )
-                            except pyodbc.Error as e:
-                                erros.append({
-                                    'produto': produto,
-                                    'erro': e
-                                })
-                            else:
-                                instance.save()
-                                conexao.commit()
-            
-                if erros:
-                    for erro in erros:
-                        messages.error(request, f"Não foi possível atualizar a solicitação para o produto {erro['produto']}. Tente novamente mais tarde.<br>ERRO: {erro['erro']}")
-                else:
-                    messages.success(request, "Solicitação atualizada com sucesso!")
-                            
-                return redirect('lista_solicitacoes')   
+                                            recdel = -99999
+                                            for rateio in rateios_gravados:
+                                                if recdel < 0:
+                                                    cursor.execute("""SELECT MAX(R_E_C_D_E_L_) + 1 FROM SCX010 """)
+                                                    recdel = cursor.fetchone()[0]
+                                                else:
+                                                    recdel += 1
+                                            
+                                                # Apaga os rateios relacionados
+                                                cursor.execute("""
+                                                    UPDATE SCX010
+                                                    SET D_E_L_E_T_ = ?,
+                                                    R_E_C_D_E_L_ = ?
+                                                    WHERE R_E_C_N_O_ = ?
+                                                """, ('*', recdel, rateio[0]))
+                                                conexao.commit()
+                                            
+                                            if instance.ctj_desc != '':
+                                                instance.c1_cc = '                '
+
+                                                cursor.execute(
+                                                    f"SELECT "
+                                                        f"CTJ_SEQUEN, "
+                                                        f"CTJ_PERCEN, "
+                                                        f"CTJ_CCD "
+                                                    f"FROM CTJ010 "
+                                                    f"WHERE CTJ_RATEIO = '{instance.ctj_desc}'"
+                                                )
+
+                                                rateios = cursor.fetchall()
+                                                recno_rateio = -99999
+                                                for rateio in rateios:
+                                                    if recno_rateio < 0:
+                                                        cursor.execute("""SELECT MAX(R_E_C_N_O_) + 1 FROM SCX010 """)
+                                                        recno_rateio = cursor.fetchone()[0]
+                                                    else:
+                                                        recno_rateio += 1
+
+                                                    cursor.execute(
+                                                        (
+                                                            f"INSERT INTO SCX010 "
+                                                            f"(CX_FILIAL, CX_SOLICIT, CX_ITEMSOL, CX_ITEM, CX_PERC, CX_CC, CX_CONTA, R_E_C_N_O_)"
+                                                                f"VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
+                                                        ), ('0101', str(solicitacao.c1_num), str(instance.c1_item), str(rateio[0][1:]), str(rateio[1])[1:], str(rateio[2]), str(instance.b1_conta), str(recno_rateio))
+                                                    )
+                                                    conexao.commit()
+
+                                                cursor.execute((
+                                                    f"UPDATE SC1010 "
+                                                    f"SET C1_RATEIO = '1', "
+                                                    f"C1_CC = '                ' "
+                                                    f"WHERE C1_NUM = ? "
+                                                    f"AND C1_ITEM = ?"),
+                                                    (solicitacao.c1_num, instance.c1_item)    
+                                                )
+                                            else:
+                                                cursor.execute((
+                                                    f"UPDATE SC1010 "
+                                                    f"SET C1_RATEIO = '2' "
+                                                    f"WHERE C1_NUM = ? "
+                                                    f"AND C1_ITEM = ?"),
+                                                    (solicitacao.c1_num, instance.c1_item)    
+                                                )
+
+                                    instance.save()
+                                    conexao.commit()
+                                    messages.success(request, "Solicitação atualizada com sucesso!")
+                                    
+                                except pyodbc.Error as e:
+                                    produto_info = getattr(instance, 'c1_produto', 'Não identificado')
+                                    erros.append({
+                                        'produto': produto_info,
+                                        'erro': e
+                                    })
+                        
+                        if erros:
+                            for erro in erros:
+                                print(erro)
+                                messages.error(request, f"Não foi possível atualizar a solicitação para o produto {erro['produto']}. Tente novamente mais tarde.<br>ERRO: {erro['erro']}")
+                        
+                        return redirect('lista_solicitacoes')
 
             except Exception as e:
+                print(e)
                 messages.error(request, f"Erro ao atualizar solicitação, por favor contate o administrador.<br>ERRO: {e}")
                 return redirect('lista_solicitacoes')
         else:
-            # Form is invalid, render the template with errors
-            print('Form is invalid')
-            # print(formset.errors)
-            print(f'formset.non_form_errors: {formset.non_form_errors}')
-            print(f'formset.non_form_errors(): {formset.non_form_errors()}')
-            return render(request, 'solicitacoes/solicitacao_editada.html', {
+            # print('Form is invalid')
+            # print(f'formset.non_form_errors: {formset.non_form_errors}')
+            # print(f'formset.errors: {formset.errors}')
+            return render(request, 'solicitacoes/editar_solicitacao_form.html', {
                 'solicitacao': solicitacao,
-                'solicitacao_form': solicitacao_form,
                 'formset': formset,
                 'errors': formset.errors
             })
         
     else:
-        # print('GET request - initialize the form and formset with existing data')
-        # print(f'solicitacao: {solicitacao}')
-        # print(f'solicitacao.produto_set.all(): {solicitacao.produto_set.all()}')
-        solicitacao_form = SolicitacaoForm(instance=solicitacao)
+        
         formset = ProductFormset(instance=solicitacao)
-        # for produto in solicitacao.produto_set.all():
-        #     print(produto.r_e_c_n_o, produto.c1_produto, produto.c1_datprf)
         
         return render(request, 'solicitacoes/editar_solicitacao_form.html', {
             'solicitacao': solicitacao,
-            'solicitacao_form': solicitacao_form,
             'formset': formset,
         })

@@ -245,6 +245,7 @@
                             <tbody id="produtos-formset">
                                 {% for form in formset %}
                                 <tr class="produto-form">
+                                    <input type="hidden" name="{{ form.r_e_c_n_o.html_name }}" value="{{ form.r_e_c_n_o.value|default_if_none:'' }}">
                                     <td>
                                         {{ form.c1_produto }}
                                         {% if form.c1_produto.errors %}
@@ -505,11 +506,10 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Fadicionar 15 dias à data atual
             function getFutureDate() {
                 let date = new Date();
                 date.setDate(date.getDate() + 15);
-                return date.toISOString().split('T')[0]; // Formato YYYY-MM-DD
+                return date.toISOString().split('T')[0]; 
             }
 
             function setDefaultDates() {
@@ -521,25 +521,7 @@
                 });
             }
 
-            // Executa quando a página carrega
             setDefaultDates();
-
-            // Para formsets dinâmicos, observe quando novos forms são adicionados
-            // const divsComNecessidade = formsetContainer.querySelectorAll('div.data-necessidade');
-            // if (formsetContainer) {
-            //     const observer = new MutationObserver(function(mutations) {
-            //         mutations.forEach(function(mutation) {
-            //             if (mutation.addedNodes.length) {
-            //                 setDefaultDates();
-            //             }
-            //         });
-            //     });
-
-            //     observer.observe(formsetContainer, {
-            //         childList: true,
-            //         subtree: true
-            //     });
-            // }
         });
     </script>
 </body>

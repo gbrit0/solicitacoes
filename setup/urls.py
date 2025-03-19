@@ -21,10 +21,10 @@ from django.conf import settings
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 
 urlpatterns = [
-    path('solicitacoes/admin/', admin.site.urls),
-    path('solicitacoes/', include('home.urls')),
-    path('solicitacoes/', include('usuarios.urls')),
-    path('solicitacoes/', include('solicitacoes.urls')),
+    path('admin/', admin.site.urls),
+    path('', include('home.urls')),
+    path('', include('usuarios.urls')),
+    path('', include('solicitacoes.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
 

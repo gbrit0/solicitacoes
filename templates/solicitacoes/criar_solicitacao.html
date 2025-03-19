@@ -298,7 +298,7 @@
                                             <i class="fa-solid fa-arrows-split-up-and-left"></i>
                                         </button> -->
                                         <button data-bs-toggle="tooltip" data-bs-placement="top" title="Remover item" type="button" class="btn btn-danger btn-sm remove-produto">
-                                            <i class="fas fa-trash">{% if form.instance.pk %}{{ form.DELETE }}{% endif %}</i>
+                                            <i class="fas fa-trash">{% if form.instance.pk %}{{ form.is_deleted }}{% endif %}</i>
                                         </button>
                                     </td>
                                 </tr>

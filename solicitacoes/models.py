@@ -27,12 +27,10 @@ class Produto(models.Model):
    c1_quant = models.DecimalField(max_digits=12, decimal_places=2)
    c1_cc = models.CharField(max_length=60, blank=True, null=True, default='')
    c1_datprf = models.DateField(blank=False, default='2025-01-01')
-   ctj_desc = models.CharField(max_length=40, blank=True, null=True, default='')
+   ctj_desc = models.CharField(max_length=40, blank=True, default='')
    c1_obs = models.TextField(default="")
    r_e_c_n_o = models.BigIntegerField(primary_key=True, default=0)
    is_deleted = models.BooleanField(blank= False, default=False)  # Campo para controle de deleção
-
-   
 
    def __str__(self):
       return self.c1_produto
