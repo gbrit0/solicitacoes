@@ -92,3 +92,4 @@ sudo systemctl restart nginx
 ```
 
 Por fim, acesse a aplicação para verificar se os arquivos estáticos estão sendo carregados corretamente.
+

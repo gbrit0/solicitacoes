@@ -39,7 +39,8 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         max_length=6,
         unique=True,
         editable=False,
-        default=None
+        default=None,
+        null=False  # Adicionado temporariamente apenas para migração
     )
 
     cpf = models.CharField(
@@ -61,16 +62,31 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
     class Meta:
         permissions = [
-            {"ver_todas_solicitacoes", "Pode ver todas as solicitações"},
-            {"criar_novos_usuários", "Pode criar novos usuários"}
+            ("ver_todas_solicitacoes", "Pode ver todas as solicitações"),  # Corrigido para usar parênteses
+            ("criar_novos_usuários", "Pode criar novos usuários")
         ]
 
     def __str__(self):
         return f"{self.nome}"
     
     def save(self, *args, **kwargs):
-        # if not self.id:
-        #     self.id = '000001'    
-        # Remove caracteres não numéricos antes de salvar
+        # Verifica se é uma nova instância (sem ID)
+        if not self.id:
+            # Gera um novo ID sequencial
+            ultimo_usuario = CustomUser.objects.order_by('-id').first()
+            if ultimo_usuario and ultimo_usuario.id:
+                try:
+                    # Tenta converter o último ID para um número e incrementar
+                    ultimo_id = int(ultimo_usuario.id)
+                    novo_id = str(ultimo_id + 1).zfill(6)  # Garante 6 dígitos com zeros à esquerda
+                except ValueError:
+                    # Caso o ID não seja numérico, comece com '000001'
+                    novo_id = '000001'
+            else:
+                # Se não existir usuário anterior, comece com '000001'
+                novo_id = '000001'
+            self.id = novo_id
+            
+        # Remove caracteres não numéricos do CPF
         self.cpf = re.sub(r'\D', '', self.cpf)
         super().save(*args, **kwargs)
