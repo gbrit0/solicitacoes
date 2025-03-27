@@ -146,16 +146,20 @@ WSGI_APPLICATION = 'setup.wsgi.application'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
 DATABASES = {
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.mysql',
+    #     'NAME': os.getenv("DEFAULT_DATABASE_NAME"),
+    #     'USER': os.getenv("DEFAULT_DATABASE_USER"),
+    #     'PASSWORD': os.getenv("DEFAULT_DATABASE_PASSWORD"),  
+    #     'HOST': os.getenv("DEFAULT_DATABASE_HOST"), 
+    #     'PORT': os.getenv("DEFAULT_DATABASE_PORT"),
+    #     'OPTIONS': {
+    #         'charset': 'utf8mb4',
+    #     },
+    # },
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': os.getenv("DEFAULT_DATABASE_NAME"),
-        'USER': os.getenv("DEFAULT_DATABASE_USER"),
-        'PASSWORD': os.getenv("DEFAULT_DATABASE_PASSWORD"),  
-        'HOST': os.getenv("DEFAULT_DATABASE_HOST"), 
-        'PORT': os.getenv("DEFAULT_DATABASE_PORT"),
-        'OPTIONS': {
-            'charset': 'utf8mb4',
-        },
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite',
     },
     'protheus':{
        'ENGINE': 'mssql',

@@ -150,8 +150,6 @@ class ProdutosForm(forms.ModelForm):
         connectionString = f"DRIVER={{ODBC Driver 17 for SQL Server}};SERVER={os.environ['HOST']};DATABASE={os.environ['DATABASE']};UID={os.environ['USER']};PWD={os.environ['PASSWORD']};TrustServerCertificate=yes"
         with pyodbc.connect(connectionString) as conexao:
             with conexao.cursor() as cursor:
-                cursor.execute("""SELECT MAX(R_E_C_N_O_) + 1 FROM SC1010 """)
-                self.fields['r_e_c_n_o'].initial = cursor.fetchone()[0] 
 
                 cursor.execute("""SELECT 
                                      TRIM(B1_COD) AS cod_produto,
@@ -194,7 +192,7 @@ ProductFormset = inlineformset_factory(
       Solicitacao,
       Produto,
       form=ProdutosForm,
-      fields=('r_e_c_n_o', 'c1_cc', 'c1_produto', 'c1_datprf', 'c1_quant', 'c1_obs', 'ctj_desc'),
+      fields=('c1_cc', 'c1_produto', 'c1_datprf', 'c1_quant', 'c1_obs', 'ctj_desc'),
       extra=0,
       can_delete=True,
       can_delete_extra=True

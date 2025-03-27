@@ -17,6 +17,7 @@ def criar_solicitacao(request):
         formset = ProductFormset(request.POST)
         
         if formset.is_valid():
+            print('formset.is_valid()')
             try:
                 solicitacao_form = solicitacao_form.save(commit=False)
                 solicitacao_form.c1_filial = '0101'
@@ -51,8 +52,8 @@ def criar_solicitacao(request):
                         for num, instance in enumerate(instances):
                             try:
                                 
-                                # cursor.execute("""SELECT MAX(R_E_C_N_O_) + 1 FROM SC1010 """)
-                                # instance.r_e_c_n_o = cursor.fetchone()[0] 
+                                cursor.execute("""SELECT MAX(R_E_C_N_O_) + 1 FROM SC1010 """)
+                                instance.r_e_c_n_o = cursor.fetchone()[0] 
 
                                 instance.c1_num = solicitacao_form
 
@@ -153,9 +154,9 @@ def criar_solicitacao(request):
                 return redirect('lista_solicitacoes')
             
         else:
-            # print('Form is invalid')
-            # print(f'formset.non_form_errors: {formset.non_form_errors}')
-            # print(f'formset.errors: {formset.errors}')
+            print('Form is invalid')
+            print(f'formset.non_form_errors: {formset.non_form_errors}')
+            print(f'formset.errors: {formset.errors}')
             return render(request, 'solicitacoes/criar_solicitacao.html', {
                 'solicitacao_form': solicitacao_form,
                 'formset': formset,
