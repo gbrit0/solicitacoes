@@ -15,6 +15,7 @@ def criar_solicitacao(request):
         # print(f'request.POST: [{request.POST}]\n')
         solicitacao_form = SolicitacaoForm()
         formset = ProductFormset(request.POST)
+        
         if formset.is_valid():
             try:
                 solicitacao_form = solicitacao_form.save(commit=False)
@@ -329,7 +330,7 @@ def editar_solicitacao(request, c1_num):
         formset = ProductFormset(request.POST, instance=solicitacao)
         
         if formset.is_valid():
-            try:
+            # try:
                 connectionString = f"DRIVER={{ODBC Driver 17 for SQL Server}};SERVER={os.environ['HOST']};DATABASE={os.environ['DATABASE']};UID={os.environ['USER']};PWD={os.environ['PASSWORD']};TrustServerCertificate=yes"
                 with pyodbc.connect(connectionString) as conexao:
                     with conexao.cursor() as cursor:
@@ -485,10 +486,10 @@ def editar_solicitacao(request, c1_num):
                         
                         return redirect('lista_solicitacoes')
 
-            except Exception as e:
-                print(e)
-                messages.error(request, f"Erro ao atualizar solicitação, por favor contate o administrador.<br>ERRO: {e}")
-                return redirect('lista_solicitacoes')
+            # except Exception as e:
+            #     print(e)
+            #     messages.error(request, f"Erro ao atualizar solicitação, por favor contate o administrador.<br>ERRO: {e}")
+            #     return redirect('lista_solicitacoes')
         else:
             # print('Form is invalid')
             # print(f'formset.non_form_errors: {formset.non_form_errors}')

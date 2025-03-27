@@ -13,7 +13,7 @@ class Solicitacao(models.Model):
    status = models.CharField(max_length=30, default='')
 
    def __str__(self):
-      return self.c1_num
+      return str(self.c1_num)
    
 class Produto(models.Model):
    c1_num = models.ForeignKey(Solicitacao, to_field='c1_num', default='', on_delete=models.DO_NOTHING)

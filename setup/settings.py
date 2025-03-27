@@ -25,7 +25,7 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv("DEBUG")
+DEBUG = True
 
 ALLOWED_HOSTS = [
    '192.168.15.60',
@@ -35,11 +35,12 @@ ALLOWED_HOSTS = [
    '192.168.4.53',
    'https://api.brggeradores.com.br',
    'solicitacoes.brggeradores.com.br',
+   'https://solicitacoes.brggeradores.com.br',
 ]
 
 CSRF_TRUSTED_ORIGINS = [
     'https://api.brggeradores.com.br',  # Substitua pelo seu domínio real
-    'http://192.168.15.60:8000',
+    'http://192.168.15.60:55001',
     'https://solicitacoes.brggeradores.com.br',
 ]
 
@@ -77,6 +78,7 @@ MIDDLEWARE = [
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:8000',
     'http://127.0.0.1:8000',
+    'https://solicitacoes.brggeradores.com.br',
 ]
 
 CELERY_BROKER_URL = 'redis://localhost:6379/0'

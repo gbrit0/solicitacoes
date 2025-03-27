@@ -1,10 +1,10 @@
 #! /bin/bash
-cd /home/gabriel/solicitacoes
+cd /home/bot/solicitacoes
 while :
 do
-   cd /home/gabriel/solicitacoes
+   cd /home/bot/solicitacoes
    # Mata processos gunicorn
-   pkill -f "/home/gabriel/solicitacoes/venv/bin/gunicorn"
+   pkill -f "/home/bot/solicitacoes/venv/bin/gunicorn"
    printf "\n$(date) Sistema de Solicitacoes inicializado\n"
    source venv/bin/activate
    gunicorn setup.wsgi:application --bind 0.0.0.0:55002 > solicitacoes.log
