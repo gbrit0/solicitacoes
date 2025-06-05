@@ -108,6 +108,7 @@
             transition: opacity 0.3s ease;
         }
     </style>
+    
     <style>
         /* Animação para entrada do alerta */
         .alert {
@@ -210,20 +211,20 @@
                 {% if form.errors %}
                 <div class="alert alert-danger alert-dismissible fade show" role="alert">
                     {% for field in form %}
-                    {% if field.errors %}
-                    <strong>{{ field.label }}:</strong>
-                    {% for error in field.errors %}
-                    {{ error }}<br>
-                    {% endfor %}
-                    {% endif %}
-                    {% endfor %}
+                        {% if field.errors %}
+                        <strong>{{ field.label }}:</strong>
+                        {% for error in field.errors %}
+                        {{ error }}<br>
+                        {% endfor %}
+                        {% endif %}
+                        {% endfor %}
 
-                    {% if form.non_field_errors %}
-                    {% for error in form.non_field_errors %}
-                    {{ error }}
-                    {% endfor %}
-                    {% endif %}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        {% if form.non_field_errors %}
+                        {% for error in form.non_field_errors %}
+                        {{ error }}
+                        {% endfor %}
+                        {% endif %}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
                 {% endif %}
             </div>
@@ -231,16 +232,16 @@
 
                 <div class="d-flex align-items-center pb-5 gap-3 w-100">
                     <div class="flex-grow-1">
-                        <label for="{{ field.id_for_label }}" class="form-label">{{ form.data_inicio.label }}</label>
+                        <label class="form-label">{{ form.data_inicio.label }}</label>
                         {{ form.data_inicio }}
                     </div>
                     <div class="flex-grow-1">
-                        <label for="{{ field.id_for_label }}" class="form-label">{{ form.data_fim.label }}</label>
+                        <label class="form-label">{{ form.data_fim.label }}</label>
                         {{ form.data_fim }}
                     </div>
                     {% if user.role == 'admin' %}
                     <div class="flex-grow-1">
-                        <label for="{{ field.id_for_label }}" class="form-label">{{ form.usuario.label }}</label>
+                        <label class="form-label">{{ form.usuario.label }}</label>
                         {{ form.usuario }}
                     </div>
                     {% endif %}
@@ -283,8 +284,8 @@
                             <td style="display: flex; gap: 5px;">
 
                                 <a type="button" class="btn btn-warning btn-sm edita-solicitacao"
-                                    href="{% url 'editar_solicitacao' solicitacao.solicitacao.c1_num %}" data-bs-placement="top"
-                                    title="Editar Solicitação">
+                                    href="{% url 'editar_solicitacao' solicitacao.solicitacao.c1_num %}"
+                                    data-bs-placement="top" title="Editar Solicitação">
                                     <i class="fa-solid fa-pen"></i>
                                 </a>
 
@@ -323,8 +324,11 @@
                 </div>
 
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-target="#editSolicit" data-bs-toggle="modal"
-                        data-bs-dismiss="modal">Editar Solicitação</button>
+                    <a type="button" class="btn btn-warning btn-sm edita-solicitacao"
+                        id="editar_solicitacao"
+                        data-bs-placement="top" title="Editar Solicitação">
+                        <i class="fa-solid fa-pen"></i> Editar a Solicitação
+                    </a>
                     <a method="POST" id="confirmDeleteButton" href="#" class="btn btn-primary">Confirmar</a>
                 </div>
             </div>
@@ -334,16 +338,12 @@
 
 
     <!-- Modal de edição de solicitação -->
-    <div class="modal fade" id="editSolicit" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false"
-        tabindex="-1" aria-labelledby="editSolicitLabel" aria-hidden="true">
+    <div class="modal fade" id="editSolicit" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="editSolicitLabel" aria-hidden="true">
         <div class="modal-dialog modal-fullscreen">
             <div class="modal-content">
                 <div class="modal-header">
                     <h4 class="modal-title" id="editSolicitLabel">Editar Solicitação</h4>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
-                </div>
-                <div class="modal-body card">
-                    
                 </div>
             </div>
         </div>
@@ -629,8 +629,20 @@
             confirmDeleteModal.addEventListener("show.bs.modal", function (event) {
                 var button = event.relatedTarget;  // Botão que acionou o modal
                 var numSolicitacao = button.getAttribute("data-num");  // Pega o número da solicitação
-                var deleteUrl = `/solicitacoes/${numSolicitacao}/delete`;  // Monta a URL
+                var deleteUrl = `/${numSolicitacao}/delete`;  // Monta a URL
                 document.getElementById("confirmDeleteButton").setAttribute("href", deleteUrl);
+            });
+        });
+    </script>
+    
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var confirmDeleteModal = document.getElementById("confirmDelete");
+            confirmDeleteModal.addEventListener("show.bs.modal", function (event) {
+                var button = event.relatedTarget;  // Botão que acionou o modal
+                var numSolicitacao = button.getAttribute("data-num");  // Pega o número da solicitação
+                var editUrl = `/editar_solicitacao/${numSolicitacao}/`;  // Monta a URL "/${numSolicitacao}/delete"
+                document.getElementById("editar_solicitacao").setAttribute("href", editUrl);
             });
         });
     </script>

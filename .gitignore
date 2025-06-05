@@ -179,3 +179,4 @@ producao.md
 producao.pdf
 
 *.sql
+.vscode/
