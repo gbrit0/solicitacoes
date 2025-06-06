@@ -43,6 +43,7 @@ CSRF_TRUSTED_ORIGINS = [
     'https://api.brggeradores.com.br',  # Substitua pelo seu domínio real
     'http://192.168.15.60:55001',
     'http://192.168.15.60:8602',
+    'http://localhost:8000',
     'https://solicitacoes.brggeradores.com.br',
 ]
 
