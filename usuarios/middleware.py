@@ -16,8 +16,6 @@ class RoleMiddleware:
         return self.get_response(request)
 
 
-
-
 class SessionTimeoutMiddleware(MiddlewareMixin):
     def process_request(self, request):
         if not request.user.is_authenticated:

@@ -1,11 +1,8 @@
 from django.urls import path
-from usuarios.views import login, cadastro, logout #, teste
+from .views import LoginAPIView, CadastroAPIView, LogoutAPIView
 
 urlpatterns = [
-   path('login/', login, name='login'),
-   path('logout', logout, name='logout'),
-   path('cadastro', cadastro, name='cadastro'),
-   path('', login, name='login'),
-   # path('/', login, name='login'),
-   # path('solicitacoes', teste, name='teste')
+    path('api/login/', LoginAPIView.as_view(), name='api_login'),
+    path('api/cadastro/', CadastroAPIView.as_view(), name='api_cadastro'),
+    path('api/logout/', LogoutAPIView.as_view(), name='api_logout'),
 ]

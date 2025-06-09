@@ -59,11 +59,39 @@ INSTALLED_APPS = [
     'corsheaders',
     'django_extensions',
     'django.contrib.staticfiles',
-    'home.apps.HomeConfig',
     'usuarios.apps.UsuariosConfig',
-    'solicitacoes.apps.SolicitacoesConfig',
+    'rest_framework',
     'widget_tweaks',
+    'drf_spectacular'
 ]
+
+
+REST_FRAMEWORK = {
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+}
+
+# Configurações opcionais para drf-spectacular
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'Sua API Django REST Framework',
+    'DESCRIPTION': 'Documentação da API de autenticação, autorização e login das solicitações.',
+    'VERSION': '1.0.0',
+    'SERVE_INCLUDE_SCHEMA': False, # Para servir apenas a interface e não o arquivo YAML separadamente
+    # OUTROS AJUSTES (veja a documentação do drf-spectacular para mais opções)
+    # 'SWAGGER_UI_SETTINGS': {
+    #     'deepLinking': True,
+    #     'persistAuthorization': True,
+    #     'displayOperationId': True,
+    # },
+    # 'REDOC_UI_SETTINGS': {
+    #     'theme': {
+    #         'colors': {
+    #             'primary': {
+    #                 'main': '#606060'
+    #             }
+    #         }
+    #     }
+    # }
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -177,7 +205,6 @@ DATABASES = {
     }
 }
 
-DATABASE_ROUTERS = ['home.routers.ProtheusRouter']
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
