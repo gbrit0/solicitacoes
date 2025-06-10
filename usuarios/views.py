@@ -4,7 +4,9 @@ from rest_framework import status, permissions
 from django.contrib.auth import login as auth_login, logout as auth_logout
 from django.contrib.auth import get_user_model
 from drf_spectacular.utils import extend_schema, OpenApiExample
-from .serializers import LoginSerializer, CadastroSerializer
+from .serializers import LoginSerializer, CadastroSerializer, EdicaoUsuarioSerializer
+from rest_framework.generics import get_object_or_404
+from drf_spectacular.utils import extend_schema_view, extend_schema
 
 User = get_user_model()
 
@@ -98,3 +100,50 @@ class LogoutAPIView(APIView):
     def post(self, request):
         auth_logout(request)
         return Response({"message": "Logout realizado com sucesso!"}, status=status.HTTP_200_OK)
+
+
+class EdicaoUsuarioAPIView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    @extend_schema(
+        request=EdicaoUsuarioSerializer,
+        responses={
+            200: {
+                'type': 'object',
+                'properties': {
+                    'message': {
+                        'type': 'string',
+                        'description': 'Usuário editado com sucesso!'
+                    }
+                }
+            },
+            400: {
+                'description': 'Dados inválidos.'
+            },
+            404: {
+                'description': 'Usuário não encontrado.'
+            },
+        },
+        summary="Edita um usuário existente.",
+        description="Este endpoint recebe os dados a serem atualizados de um usuário identificado pelo CPF.",
+        examples=[
+            OpenApiExample(
+                'Exemplo de Edição',
+                value={
+                    'nome': 'Novo Nome',
+                    'email': 'novo@email.com',
+                    'role': 'admin',
+                    'senha': 'novasenhaopcional'
+                },
+                request_only=True,
+                media_type='application/json',
+            )
+        ]
+    )
+    def put(self, request, cpf):
+        user = get_object_or_404(User, cpf=cpf)
+        serializer = EdicaoUsuarioSerializer(user, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({"message": "Usuário editado com sucesso!"}, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
