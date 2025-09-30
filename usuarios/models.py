@@ -49,6 +49,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         validators=[cpf_validate],
         primary_key=True
     )
+    
     email = models.EmailField(unique=True)
     nome = models.CharField(max_length=255)
     is_active = models.BooleanField(default=True)
